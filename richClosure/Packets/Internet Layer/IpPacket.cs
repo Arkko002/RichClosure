@@ -4,10 +4,16 @@ using System.Windows.Controls;
 
 namespace richClosure.Packets.InternetLayer
 {
-
+    class IpFlags
+    {
+        public CustomBool DF = new CustomBool();
+        public CustomBool MF = new CustomBool();
+        public CustomBool Res = new CustomBool();
+    }
 
     class IpPacket : IPacket
     {
+
         public IpPacket()
         {
         }
@@ -31,7 +37,7 @@ namespace richClosure.Packets.InternetLayer
         public byte Ip4Dscp { get; set; }
         public UInt16 Ip4Identification { get; set; }
         public UInt16 Ip4Offset { get; set; }
-        public IpFlagsEnum Ip4Flags { get; set; }
+        public IpFlags Ip4Flags { get; set; }
         public byte Ip4TimeToLive { get; set; }
         public IpProtocolEnum IpProtocol { get; set; }
         public uint Ip4HeaderChecksum { get; set; }

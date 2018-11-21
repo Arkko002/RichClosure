@@ -31,6 +31,20 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
 
 
             int ipFlags = ipFlagsAndOffset >> 13;
+            IpFlags ipFlagsObj = new IpFlags();
+
+            if((ipFlags & 1) != 0)
+            {
+                ipFlagsObj.Res.IsSet = true;
+            }
+            if((ipFlags & 2) != 0 )
+            {
+                ipFlagsObj.DF.IsSet = true;
+            }
+            if((ipFlags & 4) != 0)
+            {
+                ipFlagsObj.MF.IsSet = true;
+            }
 
             int ipOffset = ipFlagsAndOffset << 3;
             ipOffset >>= 3;
@@ -44,7 +58,7 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
                 EthDestinationMacAdr = "UNINCLUDED",
                 EthSourceMacAdr = "UNINCLUDED",
                 EthProtocol = 0,
-                Ip4Flags = (IpFlagsEnum)ipFlags,
+                Ip4Flags = ipFlagsObj,
                 Ip4TimeToLive = ipTimeToLive,
                 Ip4Adrs = new System.Collections.Generic.Dictionary<string, string>(),
                 IpProtocol = (IpProtocolEnum)ipProtocol,

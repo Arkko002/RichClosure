@@ -54,43 +54,43 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
             tcpFlagsBinStr = tcpFlagsBinStr.Insert(0, tcpNs.ToString());
             int tcpFlagsInt = Convert.ToInt32(tcpFlagsBinStr.ToString());
 
-            TcpFlags flags = new TcpFlags();
+            TcpFlags tcpFlagsObj = new TcpFlags();
             
             if((tcpFlagsInt & 1) != 0)
             {
-                flags.FIN = true;
+                tcpFlagsObj.FIN.IsSet = true;
             }
             if((tcpFlagsInt & 2) != 0)
             {
-                flags.SYN = true;
+                tcpFlagsObj.SYN.IsSet = true;
             }
             if((tcpFlagsInt & 4) != 0)
             {
-                flags.RST = true;
+                tcpFlagsObj.RST.IsSet = true;
             }
             if((tcpFlagsInt & 8) != 0)
             {
-                flags.PSH = true;
+                tcpFlagsObj.PSH.IsSet = true;
             }
             if((tcpFlagsInt & 16) != 0)
             {
-                flags.ACK = true;
+                tcpFlagsObj.ACK.IsSet = true;
             }
             if((tcpFlagsInt & 32) != 0)
             {
-                flags.URG = true;
+                tcpFlagsObj.URG.IsSet = true;
             }
             if((tcpFlagsInt & 64) != 0)
             {
-                flags.ECE = true;
+                tcpFlagsObj.ECE.IsSet = true;
             }
             if((tcpFlagsInt & 128) != 0)
             {
-                flags.CWR = true;
+                tcpFlagsObj.CWR.IsSet = true;
             }
             if((tcpFlagsInt & 256) != 0)
             {
-                flags.NS = true;
+                tcpFlagsObj.NS.IsSet = true;
             }
 
             if (tcpDataOffset > 5)
@@ -108,7 +108,7 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
                 TcpPorts = new System.Collections.Generic.Dictionary<string, string>(),
                 TcpUrgentPointer = tcpUrgPtr,
                 TcpChecksum = tcpChecksum,
-                TcpFlags = flags,
+                TcpFlags = tcpFlagsObj,
                 PacketDisplayedProtocol = "TCP"
             };
 

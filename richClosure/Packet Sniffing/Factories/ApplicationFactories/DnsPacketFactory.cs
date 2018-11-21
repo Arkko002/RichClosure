@@ -40,24 +40,38 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             byte dnsOpcode = Convert.ToByte(dnsFlagsBinStr.Substring(1, 4), 10);
 
             string dnsFlags = dnsFlagsBinStr.Substring(5, 7);
+            int dnsFlagsInt = Convert.ToInt32(dnsFlags);
+            DnsFlags dnsFlagsObj = new DnsFlags();
 
-            StringBuilder flagsBuilder = new StringBuilder();
-
-            for (int i = 0; i < dnsFlags.Length; i++)
+            if((dnsFlagsInt & 1) != 0)
             {
-                if (dnsFlags[i] == 1)
-                {
-                    flagsBuilder.Append((DnsFlagsEnum)i);
-                }
+                dnsFlagsObj.CD.IsSet = true;
             }
-
-            if (flagsBuilder.Length == 0)
+            if ((dnsFlagsInt & 2) != 0)
             {
-                flagsBuilder.Append("No Flags");
+                dnsFlagsObj.AD.IsSet = true;
             }
-
-            string dnsFlagsFinal = flagsBuilder.ToString();
-
+            if ((dnsFlagsInt & 4) != 0)
+            {
+                dnsFlagsObj.Z.IsSet = true;
+            }
+            if ((dnsFlagsInt & 8) != 0)
+            {
+                dnsFlagsObj.RA.IsSet = true;
+            }
+            if ((dnsFlagsInt & 16) != 0)
+            {
+                dnsFlagsObj.RA.IsSet = true;
+            }
+            if ((dnsFlagsInt & 32) != 0)
+            {
+                dnsFlagsObj.TC.IsSet = true;
+            }
+            if ((dnsFlagsInt & 64) != 0)
+            {
+                dnsFlagsObj.AA.IsSet = true;
+            }
+          
             byte dnsRcode = Convert.ToByte(dnsFlagsBinStr.Substring(12, 4), 10);
 
             List<DnsQuery> dnsQueries = new List<DnsQuery>();
@@ -111,7 +125,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             IPacket dnsPacket = new DnsUdpPacket(pac)
             {
                 DnsIdentification = dnsIdentification,
-                DnsFlags = dnsFlagsFinal,
+                DnsFlags = dnsFlagsObj,
                 DnsOpcode = (DnsOpcodeEnum)dnsOpcode,
                 DnsQR = dnsQR,
                 DnsRcode = (DnsRcodeEnum)dnsRcode,

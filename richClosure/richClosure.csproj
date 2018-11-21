@@ -92,6 +92,7 @@
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\DnsPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\HttpPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\TlsPacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Factories\FlagsChecker.cs" />
     <Compile Include="Packet Sniffing\Factories\IAbstractBufferFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\IAbstractPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\InternetFactories\IcmpPacketFactory.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Packets\Application Layer\DnsPacket.cs" />
     <Compile Include="ErrorLoger.cs" />
     <Compile Include="Packets\Application Layer\HttpPacket.cs" />
+    <Compile Include="Packets\CusomBool.cs" />
     <Compile Include="Packets\Internet Layer\IcmpPacket.cs" />
     <Compile Include="Packets\Internet Layer\IpPacket.cs" />
     <Compile Include="PacketListFilter.cs" />

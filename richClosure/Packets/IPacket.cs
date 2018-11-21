@@ -10,13 +10,6 @@ namespace richClosure
         UDP = 17
     };
 
-    public enum IpFlagsEnum
-    {
-        NoFlags = 0,
-        DontFragment = 2,
-        MoreFragments = 4
-    };
-
     public enum AppProtocolEnum
     {
         NoAppProtocol = 0,
@@ -25,7 +18,6 @@ namespace richClosure
         HTTP,
         TLS
     };
-
 
     interface IPacket
     {

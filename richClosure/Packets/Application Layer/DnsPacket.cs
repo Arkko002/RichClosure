@@ -35,17 +35,6 @@ namespace richClosure.Packets.ApplicationLayer
         BADTRUNC = 22
     };
 
-    enum DnsFlagsEnum
-    {
-        AA = 0,
-        TC = 1,
-        RD = 2,
-        RA = 3,
-        Z = 4,
-        AD = 5,
-        CD = 6
-    };
-
     enum DnsTypeEnum
     {
         NoType = 0,
@@ -133,12 +122,23 @@ namespace richClosure.Packets.ApplicationLayer
         Any = 255
     };
 
+    class DnsFlags
+    {
+        public CustomBool AA = new CustomBool();
+        public CustomBool TC = new CustomBool();
+        public CustomBool RD = new CustomBool();
+        public CustomBool RA = new CustomBool();
+        public CustomBool Z = new CustomBool();
+        public CustomBool AD = new CustomBool();
+        public CustomBool CD = new CustomBool();
+    }
+
     class DnsTcpPacket : TcpPacket
     {
         public UInt16 DnsIdentification { get; set; }
         public string DnsQR { get; set; }
         public DnsOpcodeEnum DnsOpcode { get; set; }
-        public string DnsFlags { get; set; }
+        public DnsFlags DnsFlags { get; set; }
         public DnsRcodeEnum DnsRcode { get; set; }
         public UInt16 DnsQuestions { get; set; }
         public UInt16 DnsAnswersRR { get; set; }
@@ -169,7 +169,7 @@ namespace richClosure.Packets.ApplicationLayer
         public UInt16 DnsIdentification { get; set; }
         public string DnsQR { get; set; }
         public DnsOpcodeEnum DnsOpcode { get; set; }
-        public string DnsFlags { get; set; }
+        public DnsFlags DnsFlags { get; set; }
         public DnsRcodeEnum DnsRcode { get; set; }
         public UInt16 DnsQuestions { get; set; }
         public UInt16 DnsAnswersRR { get; set; }

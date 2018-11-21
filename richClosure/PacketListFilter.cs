@@ -1,4 +1,5 @@
-﻿using richClosure.Packets.ApplicationLayer;
+﻿using richClosure.Packets;
+using richClosure.Packets.ApplicationLayer;
 using richClosure.Packets.InternetLayer;
 using richClosure.Packets.SessionLayer;
 using richClosure.Packets.TransportLayer;
@@ -94,6 +95,13 @@ namespace richClosure
 
                         isFound = CompareStr(conditionStrSegments.ElementAt(i)[1], packetValue, conditionValue);
                         boolList.Add(isFound);                        
+                    }
+                    else if (searchedProperties[i].PropertyType == typeof(CustomBool))
+                    {
+                        string boolStr = searchedProperties[i].GetType().ToString();
+                        string conditionValue = conditionStrSegments.ElementAt(i)[2];
+
+                        isFound = CompareStr(conditionStrSegments.ElementAt(i)[1], boolStr, conditionValue);
                     }
                     else
                     {

@@ -6,20 +6,21 @@ namespace richClosure.Packets.TransportLayer
 {
     class TcpFlags
     {
-        public bool ACK { get; set; }
-        public bool FIN { get; set; }
-        public bool URG { get; set; }
-        public bool PSH { get; set; }
-        public bool RST { get; set; }
-        public bool ECE { get; set; }
-        public bool CWR { get; set; }
-        public bool SYN { get; set; }
-        public bool NS { get; set; }
+        public CustomBool ACK = new CustomBool();
+        public CustomBool FIN = new CustomBool();
+        public CustomBool URG = new CustomBool();
+        public CustomBool PSH = new CustomBool();
+        public CustomBool RST = new CustomBool();
+        public CustomBool ECE = new CustomBool();
+        public CustomBool CWR = new CustomBool();
+        public CustomBool SYN = new CustomBool();
+        public CustomBool NS = new CustomBool();
 
         public override string ToString()
         {
             return base.ToString(); 
         }
+
     }
 
     class TcpPacket : IpPacket
