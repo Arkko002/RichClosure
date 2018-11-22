@@ -112,8 +112,8 @@ namespace richClosure
             
             if(saveDialog.ShowDialog() == true)
             {
-                PacketLogWriter logWriter = new PacketLogWriter();
-                logWriter.WritePacketListLog(packetListViewModel.PacketList.ToList(), saveDialog.FileName);
+                //PacketLogWriter logWriter = new PacketLogWriter();
+                //logWriter.WritePacketListLog(packetListViewModel.PacketList.ToList(), saveDialog.FileName);
             }
 
         }
@@ -130,15 +130,15 @@ namespace richClosure
             if(openDialog.ShowDialog() == true)
             {
                 List<Dictionary<string, string>> tempPacketListDict = new List<Dictionary<string, string>>();
-                PacketLogParser logParser = new PacketLogParser();
-                logParser.ReadLogFile(openDialog.FileName, ref tempPacketListDict);
+                //PacketLogParser logParser = new PacketLogParser();
+                //logParser.ReadLogFile(openDialog.FileName, ref tempPacketListDict);
 
-                LogPacketFactory packetFactory = new LogPacketFactory();
+                //LogPacketFactory packetFactory = new LogPacketFactory();
 
                 foreach (var packetDict in tempPacketListDict)
                 {
-                    IPacket packet = packetFactory.CreatePacket(packetDict);
-                    packetListViewModel.PacketList.Add(packet);
+                    //IPacket packet = packetFactory.CreatePacket(packetDict);
+                    //packetListViewModel.PacketList.Add(packet);
                 }          
             }
         }

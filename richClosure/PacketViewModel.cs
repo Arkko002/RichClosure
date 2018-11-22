@@ -155,20 +155,11 @@ namespace richClosure
                     ipItem.Items.Add(new TreeViewItem { Header = "Identification: " + ip4Packet.Ip4Identification });
                     ipItem.Items.Add(new TreeViewItem { Header = "Offset: " + ip4Packet.Ip4Offset });
 
-                    switch (ip4Packet.Ip4Flags)
-                    {
-                        case IpFlagsEnum.DontFragment:
-                            ipItem.Items.Add(new TreeViewItem { Header = "Flags: Don't Fragment" });
-                            break;
-
-                        case IpFlagsEnum.MoreFragments:
-                            ipItem.Items.Add(new TreeViewItem { Header = "Flags: More Fragments Coming" });
-                            break;
-
-                        case IpFlagsEnum.NoFlags:
-                            ipItem.Items.Add(new TreeViewItem { Header = "Flags: No Flags Set" });
-                            break;
-                    }
+                    TreeViewItem ipFlagsItem = new TreeViewItem();
+                    ipFlagsItem.Items.Add(new TreeViewItem { Header = "DF - " + ip4Packet.Ip4Flags.DF });
+                    ipFlagsItem.Items.Add(new TreeViewItem { Header = "MF - " + ip4Packet.Ip4Flags.MF });
+                    ipFlagsItem.Items.Add(new TreeViewItem { Header = "Res. - " + ip4Packet.Ip4Flags.Res });
+                    ipItem.Items.Add(ipFlagsItem);
 
                     ipItem.Items.Add(new TreeViewItem { Header = "TTL: " + ip4Packet.Ip4TimeToLive });
                     ipItem.Items.Add(new TreeViewItem { Header = "Header Checksum: " + ip4Packet.Ip4HeaderChecksum });

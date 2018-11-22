@@ -122,7 +122,7 @@ namespace richClosure.Packets.ApplicationLayer
         Any = 255
     };
 
-    class DnsFlags
+    class DnsFlags : IFlags
     {
         public CustomBool AA = new CustomBool();
         public CustomBool TC = new CustomBool();

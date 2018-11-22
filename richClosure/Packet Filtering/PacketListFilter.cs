@@ -6,7 +6,6 @@ using richClosure.Packets.TransportLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 
 namespace richClosure
@@ -14,29 +13,37 @@ namespace richClosure
     class PacketListFilter
     {
         public void SearchList(List<IPacket> mainPacketList, List<IPacket> resultList, string conditionString)
-        {
-            SearchStringParser stringParser = new SearchStringParser();
-            string[] parsedOrStrings = stringParser.ParseOrString(conditionString);
+        {           
+            string[] parsedOrStrings = SearchStringParser.ParseOrString(conditionString);
 
-            if(parsedOrStrings != null)
+            if(!(parsedOrStrings is null))
             {
                 for (int i = 0; i < parsedOrStrings.Length; i++)
                 {
-                    List<string[]> conStrSegments = new List<string[]>();
-                    List<PropertyInfo> propertyInfos = new List<PropertyInfo>();
-                    conStrSegments.Add(parsedOrStrings[i].Split(' '));
-                    GetPacketTypeProperties(conStrSegments[0][0], propertyInfos);
-                    LookupPackets(mainPacketList, resultList, conStrSegments, propertyInfos, 1);
+                    SearchListWithSingleCondition(mainPacketList, resultList, parsedOrStrings[i]);                                    
                 }
             }
 
-            string[] parsedAndStrings = stringParser.ParseAndString(conditionString);
+            string[] parsedAndStrings = SearchStringParser.ParseAndString(conditionString);
 
-            if(parsedAndStrings != null)
+            if(!(parsedAndStrings is null))
             {
                 SearchListWithAnd(mainPacketList, resultList, parsedAndStrings);
             }
      
+            if(!(conditionString is null))
+            {
+                SearchListWithSingleCondition(mainPacketList, resultList, conditionString);
+            }
+        }
+
+        private void SearchListWithSingleCondition(List<IPacket> mainPacketList, List<IPacket> resultList, string conditionString)
+        {
+            List<string[]> conStrSegments = new List<string[]>();
+            conStrSegments.Add(SearchStringParser.ParseStringSegments(conditionString));
+            List<PropertyInfo> propertyInfos = new List<PropertyInfo>();
+            GetPacketTypeProperties(conStrSegments[0][0], propertyInfos);
+            LookupPackets(mainPacketList, resultList, conStrSegments, propertyInfos, 1);
         }
 
         private void SearchListWithAnd(List<IPacket> mainPacketList, List<IPacket> resultList, string[] conditionStrings)
@@ -125,59 +132,32 @@ namespace richClosure
 
         private void GetPacketTypeProperties(string command, List<PropertyInfo> searchedProperties)
         {
-            if (command.ToLower().Contains("ip"))
+            var ipacType = typeof(IPacket);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => ipacType.IsAssignableFrom(p) && !p.IsInterface);
+
+            foreach (var type in types)
             {
-                PropertyInfo[] packetProperties = typeof(IpPacket).GetProperties();
+                PropertyInfo[] packetProperties = type.GetProperties();
 
-                FindSearchedProperties(searchedProperties, command, packetProperties);
-
-            }
-            else if (command.ToLower().Contains("tcp"))
-            {
-                PropertyInfo[] packetProperties = typeof(TcpPacket).GetProperties();
-
-                FindSearchedProperties(searchedProperties, command, packetProperties);
-            }
-            else if (command.ToLower().Contains("udp"))
-            {
-                PropertyInfo[] packetProperties = typeof(UdpPacket).GetProperties();
-
-                FindSearchedProperties(searchedProperties, command, packetProperties);
-            }
-            else if (command.ToLower().Contains("icmp"))
-            {
-                PropertyInfo[] packetProperties = typeof(IcmpPacket).GetProperties();
-
-                FindSearchedProperties(searchedProperties, command, packetProperties);
-            }
-            else if(command.ToLower().Contains("dns"))
-            {
-                PropertyInfo[] packetProperties = typeof(DnsTcpPacket).GetProperties();
-
-                FindSearchedProperties(searchedProperties, command, packetProperties);
-            }
-            else if (command.ToLower().Contains("dhcp"))
-            {
-                PropertyInfo[] packetProperties = typeof(DhcpPacket).GetProperties();
-
-                FindSearchedProperties(searchedProperties, command, packetProperties);
-            }
-            else if (command.ToLower().Contains("http"))
-            {
-                PropertyInfo[] packetProperties = typeof(HttpPacket).GetProperties();
-
-                FindSearchedProperties(searchedProperties, command, packetProperties);
-            }
-            else if (command.ToLower().Contains("tls"))
-            {
-                PropertyInfo[] packetProperties = typeof(TlsPacket).GetProperties();
-
-                FindSearchedProperties(searchedProperties, command, packetProperties);
+                foreach (var prop in packetProperties)
+                {
+                    if(prop.Name.ToLower() == command.ToLower())
+                    {
+                        FindSearchedProperties(searchedProperties, command, packetProperties);
+                    }
+                }
             }
         }
 
         private void FindSearchedProperties(List<PropertyInfo> outputList, string searchedPropertyStr, PropertyInfo[] packetTypeProperties)
         {
+            if(searchedPropertyStr.Contains('.'))
+            {
+                FindNestedProperties(outputList, searchedPropertyStr, packetTypeProperties);
+            }
+
             foreach (var property in packetTypeProperties)
             {
                 if (property.Name.ToLower() == searchedPropertyStr.ToLower())
@@ -185,6 +165,26 @@ namespace richClosure
                     outputList.Add(property);
                 }
             }
+        }
+
+        private void FindNestedProperties(List<PropertyInfo> outputList, string searchedPropertyStr, PropertyInfo[] packetTypeProperties)
+        {
+            string[] propertyParts = searchedPropertyStr.Split('.');
+            PropertyInfo currentProperty = null;
+           
+            foreach (var property in packetTypeProperties)
+            {
+                if (property.Name.ToLower() == propertyParts[0].ToLower())
+                {
+                    currentProperty = property;
+                }
+            }
+
+            for (int i = 1; i < propertyParts.Length; i++)
+            {
+                Type obj = currentProperty.DeclaringType;
+                var nestedInfo = obj.GetProperties();
+            }          
         }
 
         private bool CompareNum(string op, UInt32 x, UInt32 y)

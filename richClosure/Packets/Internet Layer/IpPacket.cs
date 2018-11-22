@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace richClosure.Packets.InternetLayer
 {
-    class IpFlags
+    class IpFlags : IFlags
     {
         public CustomBool DF = new CustomBool();
         public CustomBool MF = new CustomBool();

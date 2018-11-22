@@ -110,9 +110,10 @@
     <Compile Include="ErrorLoger.cs" />
     <Compile Include="Packets\Application Layer\HttpPacket.cs" />
     <Compile Include="Packets\CusomBool.cs" />
+    <Compile Include="Packets\IFlags.cs" />
     <Compile Include="Packets\Internet Layer\IcmpPacket.cs" />
     <Compile Include="Packets\Internet Layer\IpPacket.cs" />
-    <Compile Include="PacketListFilter.cs" />
+    <Compile Include="Packet Filtering\PacketListFilter.cs" />
     <Compile Include="Packets Loging\PacketLogWriter.cs" />
     <Compile Include="Packet Sniffing\PacketSniffer.cs" />
     <Compile Include="Events\ShownPacketsUpdateEvent.cs" />
@@ -120,7 +121,7 @@
     <Compile Include="Packets\Session Layer\TlsPacket.cs" />
     <Compile Include="Packets\Transport Layer\TcpPacket.cs" />
     <Compile Include="Packets\Transport Layer\UdpPacket.cs" />
-    <Compile Include="SearchStringParser.cs" />
+    <Compile Include="Packet Filtering\SearchStringParser.cs" />
     <Page Include="AdapterSelectionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

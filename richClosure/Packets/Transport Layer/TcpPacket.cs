@@ -4,7 +4,7 @@ using richClosure.Packets.InternetLayer;
 
 namespace richClosure.Packets.TransportLayer
 {
-    class TcpFlags
+    class TcpFlags : IFlags
     {
         public CustomBool ACK = new CustomBool();
         public CustomBool FIN = new CustomBool();
@@ -15,12 +15,6 @@ namespace richClosure.Packets.TransportLayer
         public CustomBool CWR = new CustomBool();
         public CustomBool SYN = new CustomBool();
         public CustomBool NS = new CustomBool();
-
-        public override string ToString()
-        {
-            return base.ToString(); 
-        }
-
     }
 
     class TcpPacket : IpPacket
