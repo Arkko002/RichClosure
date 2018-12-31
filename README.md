@@ -20,7 +20,7 @@ The search function uses queries provided by the user in the search box on the t
 
 ## Screenshots
 
-![alt text](https://i.imgur.com/8wy0g4p.png | witdth=100) *Network adapter selection*
+![alt text](https://i.imgur.com/8wy0g4p.png) *Network adapter selection*
 
 
 ![alt text](https://i.imgur.com/eaL34Gq.png) *GUI*
