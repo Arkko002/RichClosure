@@ -2,10 +2,10 @@
 
 
 ## Description
-RichClosure is a packet analyzing tool written in C# using the WPF framework and implements the MVVM design patter. It allows user to capture packets from a selected adapter, view the packet's detail including hex and ASCII values. The main element of the GUI is packet list, which includes filtering throught the search function that accept queries based on properties names.
+RichClosure is a packet analyzing tool written in C# using the WPF framework and implements the MVVM design patter. It allows user to capture packets from a selected adapter, view the packet's detail including hex and ASCII values. The main element of the GUI is packet list, which can be filtered using the search function, or by the use of context menu which includes creating conversation filters.
 
 #### Search function
-//Explain search function here
+The search function uses queries provided by the user in the search box on the top right of the GUI. Search class uses reflection to find the data provided by the user in the main packet list and compares it with values provided in the query according to the provided comparision operators. It also allows user to query few values at once with the use of logical operators AND and OR.
 
 #### Suported packet types:
 - IPv4
@@ -17,7 +17,6 @@ RichClosure is a packet analyzing tool written in C# using the WPF framework and
 - DNS
 - HTTP
 - TLS
-
 
 ## Screenshots
 
