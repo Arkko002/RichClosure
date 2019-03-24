@@ -6,8 +6,8 @@ namespace richClosure.Packets.TransportLayer
 {
     class UdpPacket : IpPacket
     {
-        public UInt16 UdpLength { get; set; }
-        public UInt16 UdpChecksum { get; set; }
+        public ushort UdpLength { get; set; }
+        public ushort UdpChecksum { get; set; }
         public Dictionary<string, string> UdpPorts { get; set; }
 
         public UdpPacket(IPacket packet)

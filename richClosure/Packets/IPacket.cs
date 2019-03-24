@@ -23,7 +23,7 @@ namespace richClosure
     {
         byte IpVersion { get; set; }
         string PacketData { get; set; }
-        UInt16 IpTotalLength { get; set; }
+        ushort IpTotalLength { get; set; }
         ulong PacketId { get; set; }
         string TimeDateCaptured { get; set; }
         IpProtocolEnum IpProtocol { get; set; }

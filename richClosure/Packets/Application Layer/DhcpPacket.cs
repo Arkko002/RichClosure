@@ -97,8 +97,8 @@ namespace richClosure.Packets.ApplicationLayer
         public DhcpHardwareTypeEnum DhcpHardType { get; set; }
         public byte DhcpHardAdrLength { get; set; }
         public byte DhcpHopCount { get; set; }
-        public UInt32 DhcpTransactionId { get; set; }
-        public UInt16 DhcpNumOfSeconds { get; set; }
+        public uint DhcpTransactionId { get; set; }
+        public ushort DhcpNumOfSeconds { get; set; }
         public string DhcpFlags { get; set; }
         public string DhcpClientIpAdr { get; set; }
         public string DhcpYourIpAdr { get; set; }

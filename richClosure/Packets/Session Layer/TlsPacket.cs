@@ -79,7 +79,7 @@ namespace richClosure.Packets.SessionLayer
     {
         public TlsContentTypeEnum TlsType { get; set; }
         public string TlsVersion { get; set; }
-        public UInt16 TlsDataLength { get; set; }
+        public ushort TlsDataLength { get; set; }
         public string TlsEncryptedData { get; set; }
 
 
