@@ -23,9 +23,9 @@ namespace richClosure.Packets.TransportLayer
         public uint TcpSequenceNumber { get; set; }
         public uint TcpAckNumber { get; set; }
         public byte TcpDataOffset { get; set; }
-        public UInt16 TcpUrgentPointer { get; set; }
-        public UInt16 TcpWindowSize { get; set; }
-        public UInt16 TcpChecksum { get; set; }
+        public ushort TcpUrgentPointer { get; set; }
+        public ushort TcpWindowSize { get; set; }
+        public ushort TcpChecksum { get; set; }
         public Dictionary<string, string> TcpPorts { get; set; }
         public TcpFlags TcpFlags { get; set; }
 

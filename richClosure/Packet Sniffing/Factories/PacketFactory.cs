@@ -7,6 +7,8 @@ using System.IO;
 
 namespace richClosure.Packet_Sniffing.Factories
 {
+    //TODO Break down methods
+
     class PacketFactory : IAbstractBufferFactory
     {
         ulong packetId;
@@ -85,5 +87,9 @@ namespace richClosure.Packet_Sniffing.Factories
             }
         }
 
+        private IP SetIp4PacketHeaders(IPacket packet)
+        {
+
+        }
     }
 }
