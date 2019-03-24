@@ -45,70 +45,38 @@ namespace richClosure
         private void SearchListWithSingleCondition(SearchQuery searchQuery)
         {
             List<PropertyInfo> propertyInfos = GetPacketTypeProperties(searchQuery.SearchedProperty);
-            LookupSinglePacket(searchQuery, propertyInfos);
+            LookupSingleProperty(searchQuery, propertyInfos);
         }
 
         private void SearchListWithAnd(List<SearchQuery> searchQueries)
         {
             List<PropertyInfo> searchedProperties = new List<PropertyInfo>();
-            int boolNum = searchQueries.Count;
             List<string[]> conditionStringsList = new List<string[]>();
 
             foreach (var query in searchQueries)
             {
-                GetPacketTypeProperties(query.SearchedProperty, searchedProperties);              
+                searchedProperties.AddRange(GetPacketTypeProperties(query.SearchedProperty));              
             }
 
-            LookupSeveralPackets(conditionStringsList, searchedProperties, searchedProperties.Count);
+            LookupSeveralProperties(searchQueries, searchedProperties);
         }
 
-        //TODO Break this down into shared code, then do "LookupSinglePacket" and "LookupSeveralPackets"
-        private void LookupSinglePacket(SearchQuery searchQuery, List<PropertyInfo> searchedProperties)
-                                   
+        //TODO Break this down into shared code, then do "LookupSingleProperty" and "LookupSeveralProperties"
+        private void LookupSingleProperty(SearchQuery searchQuery, List<PropertyInfo> searchedProperties)                               
         {
             foreach (IPacket packet in _mainPacketList)
             {
-                bool isFound = false;
-
-                for (int i = 0; i < searchedProperties.Count; i++)
+                foreach (var searchedProperty in searchedProperties)
                 {
-                    if (!searchedProperties[i].Name.ToLower().Contains("ip"))
+                    if (CheckIfDeclaringTypeMatches(searchedProperty, packet))
                     {
-                        if (searchedProperties[i].DeclaringType != packet.GetType())
-                        {
-                            isFound = false;
-                            continue;
-                        }
+                        continue;
                     }
-
-                    if(searchedProperties[i].PropertyType == typeof(Dictionary<string, string>))
+                    
+                    if (ComparePacketsAndSearchedValues(searchedProperty, searchQuery, packet))
                     {
-                        isFound = CheckIfExistsInDictionary(searchedProperties[i], packet, searchQuery.SearchedValue);
+                        _resultList.Add(packet);
                     }
-                    else if (searchedProperties[i].PropertyType == typeof(string) || searchedProperties[i].PropertyType.IsEnum)
-                    {                        
-                        string packetValue = searchedProperties[i].GetValue(packet).ToString();
-
-                        isFound = CompareStr(searchQuery.OperatorStr, packetValue, searchQuery.SearchedValue);                   
-                    }
-                    else if (searchedProperties[i].PropertyType == typeof(CustomBool))
-                    {
-                        string boolStr = searchedProperties[i].GetType().ToString();
-
-                        isFound = CompareStr(searchQuery.OperatorStr, boolStr, searchQuery.SearchedValue);
-                    }
-                    else
-                    {
-                        UInt32 packetValue = UInt32.Parse(searchedProperties[i].GetValue(packet).ToString());
-                        UInt32 conditionValue = UInt32.Parse(searchQuery.SearchedValue);
-
-                        isFound = CompareNum(searchQuery.OperatorStr, packetValue, conditionValue);
-                    }
-                }
-
-                if (isFound)
-                {
-                    _resultList.Add(packet);
                 }
 
                 //if (boolList.Count == boolNum && boolList.All(e => e))
@@ -122,17 +90,77 @@ namespace richClosure
         }
 
         //TODO
-        private void LookupSeveralPackets(List<SearchQuery> searchQueries, List<PropertyInfo> searchedProperties)
+        private void LookupSeveralProperties(List<SearchQuery> searchQueries, List<PropertyInfo> searchedProperties)
         {
             foreach (IPacket packet in _mainPacketList)
             {
-                bool isFound = false;
+                List<bool> propertiesMatched = new List<bool>();
 
-                for (int i = 0; i < searchedProperties.Count; i++)
+                foreach (var searchQuery in searchQueries)
                 {
-                    
+                    foreach (var searchedProperty in searchedProperties)
+                    {
+                        if (!CheckIfDeclaringTypeMatches(searchedProperty, packet))
+                        {
+                            propertiesMatched.Add(false);
+                            continue;
+                        }
+
+                        propertiesMatched.Add(ComparePacketsAndSearchedValues(searchedProperty, searchQuery, packet));
+                    }
+                }
+
+                if (propertiesMatched.Count == searchQueries.Count && propertiesMatched.All(p => p == true))
+                {
+                    if (!_resultList.Contains(packet))
+                    {
+                        _resultList.Add(packet);
+                    }
                 }
             }
+        }
+
+        //TODO Get rid of ifs
+        private bool ComparePacketsAndSearchedValues(PropertyInfo searchedProperty, SearchQuery searchQuery, IPacket packet)
+        {
+            if (searchedProperty.PropertyType == typeof(Dictionary<string, string>))
+            {
+                return CheckIfExistsInDictionary(searchedProperty, packet, searchQuery.SearchedValue);
+            }
+
+            if (searchedProperty.PropertyType == typeof(string) || searchedProperty.PropertyType.IsEnum ||
+                searchedProperty.PropertyType == typeof(CustomBool))
+            {
+                string packetValue = searchedProperty.GetValue(packet).ToString();
+
+                return CompareStr(searchQuery.OperatorStr, packetValue, searchQuery.SearchedValue);
+            }
+
+            if (IsNumericType(searchedProperty.PropertyType))
+            {
+                //Convert all values into ulong to prevent unnecessary CompareNum overloads
+                ulong packetValue = (ulong)searchedProperty.GetValue(packet);
+                ulong conditionValue = ulong.Parse(searchQuery.SearchedValue);
+
+                return CompareNum(searchQuery.OperatorStr, packetValue, conditionValue);
+            }
+
+            return false;
+        }
+
+        private bool CheckIfDeclaringTypeMatches(PropertyInfo searchedProperty, IPacket packet)
+        {
+            if (!searchedProperty.Name.ToLower().Contains("ip"))
+            {
+                if (searchedProperty.DeclaringType != packet.GetType())
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return true;
         }
 
         private bool CheckIfExistsInDictionary(PropertyInfo propertyInfo, IPacket packet, string value)
@@ -152,12 +180,7 @@ namespace richClosure
 
         private List<PropertyInfo> GetPacketTypeProperties(string searchedProperty)
         {
-            //Find all of properties of packets in current assembly
-            var ipacType = typeof(IPacket);
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p => ipacType.IsAssignableFrom(p) && !p.IsInterface);
-
+            List<Type> types = GetAllPacketTypesInAssembly();
 
             List<PropertyInfo> SearchedProperties = new List<PropertyInfo>();
             foreach (var type in types)
@@ -167,6 +190,16 @@ namespace richClosure
             }
 
             return SearchedProperties;
+        }
+
+        private List<Type> GetAllPacketTypesInAssembly()
+        {
+            var iPacType = typeof(IPacket);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => iPacType.IsAssignableFrom(p) && !p.IsInterface).ToList();
+
+            return types;
         }
 
         private List<PropertyInfo> FindSearchedProperties(string searchedProperty, PropertyInfo[] assemblyPacketProperties)
@@ -209,7 +242,7 @@ namespace richClosure
         //    }          
         //}
 
-        private bool CompareNum(string op, UInt32 x, UInt32 y)
+        private bool CompareNum(string op, ulong x, ulong y)
         {
             switch(op)
             {
@@ -231,6 +264,20 @@ namespace richClosure
                 case "=": return x == y;
                 case "!=": return x != y;
                 default: return false;
+            }
+        }
+
+        private bool IsNumericType(object o)
+        {
+            switch (Type.GetTypeCode(o.GetType()))
+            {
+                case TypeCode.Byte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                    return true;
+                default:
+                    return false;
             }
         }
     }
