@@ -38,7 +38,7 @@ namespace richClosure
             packetSnifferThread.Start();
 
 
-            Thread factoryThread = new Thread(() => packetSniffer.CreatePacketsFromQueue(PacketList));
+            Thread factoryThread = new Thread(() => packetSniffer.GetPacketDataFromQueue(PacketList));
             factoryThread.IsBackground = true;
             factoryThread.Start();
         }

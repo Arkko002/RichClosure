@@ -15,28 +15,55 @@ namespace richClosure
         private IPEndPoint endPoint;
         private ConcurrentQueue<byte[]> packetQueue = new ConcurrentQueue<byte[]>();
         private AutoResetEvent _queueNotifier = new AutoResetEvent(false);
+        private ObservableCollection<IPacket> _packetCollection;
+
 
         volatile bool _shouldWork = true;
 
-        public PacketSniffer(NetworkInterface adapter)
+        public PacketSniffer(NetworkInterface adapter, ObservableCollection<IPacket> packetCollection)
         {
             Adapter = adapter;
             IPInterfaceProperties AdapterProperties = Adapter.GetIPProperties();
             UnicastIPAddressInformationCollection unicastIPs = AdapterProperties.UnicastAddresses;
+            _packetCollection = packetCollection;
+            
+            GetAdapterEndpoint(unicastIPs);
+       
+        }
 
-            foreach (var adr in unicastIPs)
+        private void GetAdapterEndpoint(UnicastIPAddressInformationCollection unicastIps)
+        {
+            foreach (var adr in unicastIps)
             {
                 if (adr.Address.AddressFamily == AddressFamily.InterNetwork)
                 {
                     endPoint = new IPEndPoint(adr.Address, 0);
                     break;
                 }
-            }            
+            }
         }
 
-        public void SniffPackets(ObservableCollection<IPacket> packetList)
-        { 
-            Socket socket = new Socket(AddressFamily.InterNetwork,SocketType.Raw, ProtocolType.IP);
+        public void SniffPackets()
+        {
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
+            socket = ConfigureSocket(socket);
+
+            while (_shouldWork)
+            {
+                EnqueueIncomingPackets(socket);
+            }
+        }
+
+        private void EnqueueIncomingPackets(Socket socket)
+        {
+            byte[] buffer = new byte[65565];
+            socket.Receive(buffer);
+            packetQueue.Enqueue(buffer);
+            _queueNotifier.Set();
+        }
+
+        private Socket ConfigureSocket(Socket socket)
+        {
             socket.Bind(endPoint);
             socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.HeaderIncluded, true);
 
@@ -44,20 +71,11 @@ namespace richClosure
             byte[] outValue = new byte[] { 0, 0, 0, 0 };
             socket.IOControl(IOControlCode.ReceiveAll, inValue, outValue);
 
-            byte[] buffer = new byte[65565];
-
-            while (_shouldWork)
-            {
-                socket.Receive(buffer);
-                packetQueue.Enqueue(buffer);
-                _queueNotifier.Set();
-            }
+            return socket;
         }
 
-        public void CreatePacketsFromQueue(ObservableCollection<IPacket> packetList)
+        public void GetPacketDataFromQueue()
         {
-            IAbstractBufferFactory packetFactory = new PacketFactory();
-
             while (_shouldWork)
             {
                 _queueNotifier.WaitOne();
@@ -65,13 +83,20 @@ namespace richClosure
                 byte[] buffer;
                 if (packetQueue.TryDequeue(out buffer))
                 {
-                    MemoryStream memoryStream = new MemoryStream(buffer);
-                    BinaryReader binaryReader = new BinaryReader(memoryStream);
-
-                    IPacket packet = packetFactory.CreatePacket(buffer, binaryReader);
-                    packetList.Add(packet);
+                    CreatePacketFromBuffer(buffer);
                 }
             }
+        }
+
+        private void CreatePacketFromBuffer(byte[] buffer)
+        {
+            IAbstractBufferFactory packetFactory = new PacketFactory();
+
+            MemoryStream memoryStream = new MemoryStream(buffer);
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+
+            IPacket packet = packetFactory.CreatePacket(buffer, binaryReader);
+            _packetCollection.Add(packet);          
         }
 
         public void StopWorking()
