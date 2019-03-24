@@ -91,6 +91,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Packet Filtering\SearchQuery.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\DhcpPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\DnsPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\HttpPacketFactory.cs" />

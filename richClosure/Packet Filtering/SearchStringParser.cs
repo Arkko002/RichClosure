@@ -3,30 +3,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using richClosure.Packet_Filtering;
 
 namespace richClosure
 {
     class SearchStringParser
     {
-        public static (string property, string comparisionOp, string value)? ParseOrString(string commandString)
+        public static List<SearchQuery> ParseOrString(string commandString)
         {
             string[] parsedOrConditions = commandString.Split('|');
+            List<SearchQuery> searchQueries = new List<SearchQuery>();
 
-            return (parsedOrConditions[0], parsedOrConditions[1], parsedOrConditions[2]);
+            foreach (var op in parsedOrConditions)
+            {
+                SearchQuery query = new SearchQuery()
+                {
+                    SearchedProperty = op[0].ToString(),
+                    OperatorStr = op[1].ToString(),
+                    SearchedValue = op[2].ToString()
+                };
+
+                searchQueries.Add(query);
+            }
+
+            return searchQueries;
         }
 
-        public static (string property, string comparisionOp, string value)? ParseAndString(string commandString)
+        public static List<SearchQuery> ParseAndString(string commandString)
         {
             string[] parsedAndConditions = commandString.Split('&');
-        
-            return (parsedAndConditions[0], parsedAndConditions[1], parsedAndConditions[2]);
-        }
 
-        public static (string property, string comparisionOp, string value)? ParseStringSegments(string commandString)
-        {
-            string[] parsedString = commandString.Split(' ');
+            List<SearchQuery> searchQueries = new List<SearchQuery>();
 
-            return (parsedString[0], parsedString[1], parsedString[2]);
+            foreach (var op in parsedAndConditions)
+            {
+                SearchQuery query = new SearchQuery()
+                {
+                    SearchedProperty = op[0].ToString(),
+                    OperatorStr = op[1].ToString(),
+                    SearchedValue = op[2].ToString()
+                };
+
+                searchQueries.Add(query);
+            }
+
+            return searchQueries;
         }
     }
 }

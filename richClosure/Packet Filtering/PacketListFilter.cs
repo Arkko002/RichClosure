@@ -7,185 +7,207 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using richClosure.Packet_Filtering;
 
 namespace richClosure
 {
     class PacketListFilter
     {
-        public void SearchList(List<IPacket> mainPacketList, List<IPacket> resultList, string conditionString)
-        {           
-            string[] parsedOrStrings = SearchStringParser.ParseOrString(conditionString);
+        //TODO Write unit tests for this
 
-            if(!(parsedOrStrings is null))
-            {
-                for (int i = 0; i < parsedOrStrings.Length; i++)
-                {
-                    SearchListWithSingleCondition(mainPacketList, resultList, parsedOrStrings[i]);                                    
-                }
-            }
+        private List<IPacket> _mainPacketList;
+        private List<IPacket> _resultList;
 
-            string[] parsedAndStrings = SearchStringParser.ParseAndString(conditionString);
-
-            if(!(parsedAndStrings is null))
-            {
-                SearchListWithAnd(mainPacketList, resultList, parsedAndStrings);
-            }
-     
-            if(!(conditionString is null))
-            {
-                SearchListWithSingleCondition(mainPacketList, resultList, conditionString);
-            }
-        }
-
-        private void SearchListWithSingleCondition(List<IPacket> mainPacketList, List<IPacket> resultList, string conditionString)
+        public PacketListFilter(List<IPacket> mainPacketList)
         {
-            List<string[]> conStrSegments = new List<string[]>();
-            conStrSegments.Add(SearchStringParser.ParseStringSegments(conditionString));
-            List<PropertyInfo> propertyInfos = new List<PropertyInfo>();
-            GetPacketTypeProperties(conStrSegments[0][0], propertyInfos);
-            LookupPackets(mainPacketList, resultList, conStrSegments, propertyInfos, 1);
+            _mainPacketList = mainPacketList;
+            _resultList = new List<IPacket>();
         }
 
-        private void SearchListWithAnd(List<IPacket> mainPacketList, List<IPacket> resultList, string[] conditionStrings)
+        public void SearchList(string conditionString)
+        {           
+            List<SearchQuery> OrSearchQueries = SearchStringParser.ParseOrString(conditionString);
+
+            foreach (var query in OrSearchQueries)
+            {
+                SearchListWithSingleCondition(query);
+            }
+            
+            List<SearchQuery> AndSearchQueries = SearchStringParser.ParseAndString(conditionString);
+
+            if (AndSearchQueries.Count > 0)
+            {
+                SearchListWithAnd(AndSearchQueries);
+            }
+   
+        }
+
+        private void SearchListWithSingleCondition(SearchQuery searchQuery)
+        {
+            List<PropertyInfo> propertyInfos = GetPacketTypeProperties(searchQuery.SearchedProperty);
+            LookupSinglePacket(searchQuery, propertyInfos);
+        }
+
+        private void SearchListWithAnd(List<SearchQuery> searchQueries)
         {
             List<PropertyInfo> searchedProperties = new List<PropertyInfo>();
-            int boolNum = conditionStrings.Length;
+            int boolNum = searchQueries.Count;
             List<string[]> conditionStringsList = new List<string[]>();
 
-            foreach (string str in conditionStrings)
+            foreach (var query in searchQueries)
             {
-                string[] conditionStrSegments = str.Split(' ');
-                conditionStringsList.Add(conditionStrSegments);
-
-                GetPacketTypeProperties(conditionStrSegments[0], searchedProperties);              
+                GetPacketTypeProperties(query.SearchedProperty, searchedProperties);              
             }
 
-            LookupPackets(mainPacketList, resultList, conditionStringsList, searchedProperties, searchedProperties.Count);
+            LookupSeveralPackets(conditionStringsList, searchedProperties, searchedProperties.Count);
         }
 
-        private void LookupPackets(List<IPacket> mainPacketList, List<IPacket> resultList, List<string[]> conditionStrSegments, List<PropertyInfo> searchedProperties,
-                                   int boolNum)
+        //TODO Break this down into shared code, then do "LookupSinglePacket" and "LookupSeveralPackets"
+        private void LookupSinglePacket(SearchQuery searchQuery, List<PropertyInfo> searchedProperties)
+                                   
         {
-            foreach (IPacket packet in mainPacketList)
+            foreach (IPacket packet in _mainPacketList)
             {
-                bool isFound = true;
-                List<bool> boolList = new List<bool>();
+                bool isFound = false;
 
                 for (int i = 0; i < searchedProperties.Count; i++)
                 {
-                    if (!searchedProperties[i].Name.ToString().ToLower().Contains("ip"))
+                    if (!searchedProperties[i].Name.ToLower().Contains("ip"))
                     {
                         if (searchedProperties[i].DeclaringType != packet.GetType())
                         {
                             isFound = false;
-                            boolList.Add(isFound);
                             continue;
                         }
                     }
 
                     if(searchedProperties[i].PropertyType == typeof(Dictionary<string, string>))
                     {
-                        Dictionary<string, string> dictObject = searchedProperties[i].GetValue(packet, null) as Dictionary<string, string>;
-
-                        foreach(var item in dictObject)
-                        {
-                            if (item.Value == conditionStrSegments.ElementAt(i)[2])
-                            {
-                                boolList.Add(isFound);
-                            }
-                        }
+                        isFound = CheckIfExistsInDictionary(searchedProperties[i], packet, searchQuery.SearchedValue);
                     }
                     else if (searchedProperties[i].PropertyType == typeof(string) || searchedProperties[i].PropertyType.IsEnum)
                     {                        
                         string packetValue = searchedProperties[i].GetValue(packet).ToString();
-                        string conditionValue = conditionStrSegments.ElementAt(i)[2];
 
-                        isFound = CompareStr(conditionStrSegments.ElementAt(i)[1], packetValue, conditionValue);
-                        boolList.Add(isFound);                        
+                        isFound = CompareStr(searchQuery.OperatorStr, packetValue, searchQuery.SearchedValue);                   
                     }
                     else if (searchedProperties[i].PropertyType == typeof(CustomBool))
                     {
                         string boolStr = searchedProperties[i].GetType().ToString();
-                        string conditionValue = conditionStrSegments.ElementAt(i)[2];
 
-                        isFound = CompareStr(conditionStrSegments.ElementAt(i)[1], boolStr, conditionValue);
+                        isFound = CompareStr(searchQuery.OperatorStr, boolStr, searchQuery.SearchedValue);
                     }
                     else
                     {
                         UInt32 packetValue = UInt32.Parse(searchedProperties[i].GetValue(packet).ToString());
-                        UInt32 conditionValue = UInt32.Parse(conditionStrSegments.ElementAt(i)[2]);
+                        UInt32 conditionValue = UInt32.Parse(searchQuery.SearchedValue);
 
-                        isFound = CompareNum(conditionStrSegments.ElementAt(i)[1], packetValue, conditionValue);
-                        boolList.Add(isFound);
+                        isFound = CompareNum(searchQuery.OperatorStr, packetValue, conditionValue);
                     }
                 }
 
-                if (boolList.Count == boolNum && boolList.All(e => e == true))
+                if (isFound)
                 {
-                    if (!resultList.Contains(packet))
-                    {
-                        resultList.Add(packet);
-                    }
+                    _resultList.Add(packet);
+                }
+
+                //if (boolList.Count == boolNum && boolList.All(e => e))
+                //{
+                //    if (!_resultList.Contains(packet))
+                //    {
+                //        _resultList.Add(packet);
+                //    }
+                //}
+            }
+        }
+
+        //TODO
+        private void LookupSeveralPackets(List<SearchQuery> searchQueries, List<PropertyInfo> searchedProperties)
+        {
+            foreach (IPacket packet in _mainPacketList)
+            {
+                bool isFound = false;
+
+                for (int i = 0; i < searchedProperties.Count; i++)
+                {
+                    
                 }
             }
         }
 
-        private void GetPacketTypeProperties(string command, List<PropertyInfo> searchedProperties)
+        private bool CheckIfExistsInDictionary(PropertyInfo propertyInfo, IPacket packet, string value)
         {
+            Dictionary<string, string> dictObject = propertyInfo.GetValue(packet, null) as Dictionary<string, string>;
+
+            foreach (var item in dictObject)
+            {
+                if (item.Value == value)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private List<PropertyInfo> GetPacketTypeProperties(string searchedProperty)
+        {
+            //Find all of properties of packets in current assembly
             var ipacType = typeof(IPacket);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(p => ipacType.IsAssignableFrom(p) && !p.IsInterface);
 
+
+            List<PropertyInfo> SearchedProperties = new List<PropertyInfo>();
             foreach (var type in types)
             {
-                PropertyInfo[] packetProperties = type.GetProperties();
-
-                foreach (var prop in packetProperties)
-                {
-                    if(prop.Name.ToLower() == command.ToLower())
-                    {
-                        FindSearchedProperties(searchedProperties, command, packetProperties);
-                    }
-                }
+                PropertyInfo[] assemblyPacketProperties = type.GetProperties();
+                SearchedProperties = FindSearchedProperties(searchedProperty, assemblyPacketProperties);
             }
+
+            return SearchedProperties;
         }
 
-        private void FindSearchedProperties(List<PropertyInfo> outputList, string searchedPropertyStr, PropertyInfo[] packetTypeProperties)
+        private List<PropertyInfo> FindSearchedProperties(string searchedProperty, PropertyInfo[] assemblyPacketProperties)
         {
-            if(searchedPropertyStr.Contains('.'))
+            if(searchedProperty.Contains('.'))
             {
-                FindNestedProperties(outputList, searchedPropertyStr, packetTypeProperties);
+                //FindNestedProperties(outputList, searchedPropertyStr, assemblyPacketProperties);
             }
 
-            foreach (var property in packetTypeProperties)
+            List<PropertyInfo> outputList = new List<PropertyInfo>();
+            foreach (var property in assemblyPacketProperties)
             {
-                if (property.Name.ToLower() == searchedPropertyStr.ToLower())
+                if (property.Name.ToLower() == searchedProperty.ToLower())
                 {
                     outputList.Add(property);
                 }
             }
+
+            return outputList;
         }
 
-        private void FindNestedProperties(List<PropertyInfo> outputList, string searchedPropertyStr, PropertyInfo[] packetTypeProperties)
-        {
-            string[] propertyParts = searchedPropertyStr.Split('.');
-            PropertyInfo currentProperty = null;
+        //TODO This isn't finished
+        //private List<PropertyInfo> FindNestedProperties(string searchedPropertyStr, PropertyInfo[] assemblyPacketProperties)
+        //{
+        //    string[] propertyParts = searchedPropertyStr.Split('.');
+        //    PropertyInfo currentProperty = null;
            
-            foreach (var property in packetTypeProperties)
-            {
-                if (property.Name.ToLower() == propertyParts[0].ToLower())
-                {
-                    currentProperty = property;
-                }
-            }
+        //    foreach (var property in assemblyPacketProperties)
+        //    {
+        //        if (property.Name.ToLower() == propertyParts[0].ToLower())
+        //        {
+        //            currentProperty = property;
+        //        }
+        //    }
 
-            for (int i = 1; i < propertyParts.Length; i++)
-            {
-                Type obj = currentProperty.DeclaringType;
-                var nestedInfo = obj.GetProperties();
-            }          
-        }
+        //    for (int i = 1; i < propertyParts.Length; i++)
+        //    {
+        //        Type obj = currentProperty.DeclaringType;
+        //        var nestedInfo = obj.GetProperties();
+        //    }          
+        //}
 
         private bool CompareNum(string op, UInt32 x, UInt32 y)
         {
