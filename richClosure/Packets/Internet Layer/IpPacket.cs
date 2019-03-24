@@ -26,7 +26,7 @@ namespace richClosure.Packets.InternetLayer
         public string EthSourceMacAdr { get; set; }
         public uint EthProtocol { get; set; }
         public byte IpVersion { get; set; }
-        public ushort IpTotalLength { get; set; }
+        public UInt16 IpTotalLength { get; set; }
         public AppProtocolEnum IpAppProtocol { get; set; }
         public string PacketDisplayedProtocol { get; set; }
         public string PacketComment { get; set; }
@@ -35,8 +35,8 @@ namespace richClosure.Packets.InternetLayer
         public byte Ip4HeaderLength { get; set; }
         public Dictionary<string, string> Ip4Adrs { get; set; }
         public byte Ip4Dscp { get; set; }
-        public ushort Ip4Identification { get; set; }
-        public ushort Ip4Offset { get; set; }
+        public UInt16 Ip4Identification { get; set; }
+        public UInt16 Ip4Offset { get; set; }
         public IpFlags Ip4Flags { get; set; }
         public byte Ip4TimeToLive { get; set; }
         public IpProtocolEnum IpProtocol { get; set; }
@@ -48,5 +48,6 @@ namespace richClosure.Packets.InternetLayer
         public UInt32 Ip6FlowLabel { get; set; }
         public byte Ip6HopLimit { get; set; }
         public Dictionary<string, string> Ip6Adrs { get; set; }
+
     }
 }

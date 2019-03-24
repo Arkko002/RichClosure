@@ -135,15 +135,15 @@ namespace richClosure.Packets.ApplicationLayer
 
     class DnsTcpPacket : TcpPacket
     {
-        public ushort DnsIdentification { get; set; }
+        public UInt16 DnsIdentification { get; set; }
         public string DnsQR { get; set; }
         public DnsOpcodeEnum DnsOpcode { get; set; }
         public DnsFlags DnsFlags { get; set; }
         public DnsRcodeEnum DnsRcode { get; set; }
-        public ushort DnsQuestions { get; set; }
-        public ushort DnsAnswersRR { get; set; }
-        public ushort DnsAuthRR { get; set; }
-        public ushort DnsAdditionalRR { get; set; }
+        public UInt16 DnsQuestions { get; set; }
+        public UInt16 DnsAnswersRR { get; set; }
+        public UInt16 DnsAuthRR { get; set; }
+        public UInt16 DnsAdditionalRR { get; set; }
         public List<DnsQuery> DnsQuerryList { get; set; }
         public List<DnsRecord> DnsAnswerList { get; set; }
         public List<DnsRecord> DnsAuthList { get; set; }
