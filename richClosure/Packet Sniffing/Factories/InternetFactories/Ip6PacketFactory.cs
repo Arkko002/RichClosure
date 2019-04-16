@@ -5,7 +5,7 @@ using System.Net;
 
 namespace richClosure.Packet_Sniffing.Factories
 {
-    class Ip6PacketFactory : IAbstractBufferFactory
+    class Ip6PacketFactory : IAbstractFactory
     {
         public IPacket CreatePacket(byte[] buffer, BinaryReader binaryReader)
         {

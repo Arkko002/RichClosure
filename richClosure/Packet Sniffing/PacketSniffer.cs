@@ -90,7 +90,7 @@ namespace richClosure
 
         private void CreatePacketFromBuffer(byte[] buffer)
         {
-            IAbstractBufferFactory packetFactory = new PacketFactory();
+            IAbstractFactory packetFactory = new PacketFactory();
 
             MemoryStream memoryStream = new MemoryStream(buffer);
             BinaryReader binaryReader = new BinaryReader(memoryStream);

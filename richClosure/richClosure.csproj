@@ -97,8 +97,7 @@
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\HttpPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\TlsPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\FlagsChecker.cs" />
-    <Compile Include="Packet Sniffing\Factories\IAbstractBufferFactory.cs" />
-    <Compile Include="Packet Sniffing\Factories\IAbstractPacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Factories\IAbstractFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\InternetFactories\IcmpPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\InternetFactories\Ip4PacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\InternetFactories\Ip6PacketFactory.cs" />

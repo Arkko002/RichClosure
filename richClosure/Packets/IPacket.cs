@@ -21,14 +21,14 @@ namespace richClosure
 
     interface IPacket
     {
-        byte IpVersion { get; set; }
-        string PacketData { get; set; }
-        ushort IpTotalLength { get; set; }
-        ulong PacketId { get; set; }
-        string TimeDateCaptured { get; set; }
-        IpProtocolEnum IpProtocol { get; set; }
-        AppProtocolEnum IpAppProtocol { get; set; }
-        string PacketDisplayedProtocol { get; set; }
-        string PacketComment { get; set; }
+        byte IpVersion { get; }
+        string PacketData { get; }
+        ushort IpTotalLength { get; }
+        ulong PacketId { get; }
+        string TimeDateCaptured { get; }
+        IpProtocolEnum IpProtocol { get; }
+        AppProtocolEnum IpAppProtocol { get; }
+        string PacketDisplayedProtocol { get; }
+        string PacketComment { get; }
     }
 }

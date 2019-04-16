@@ -2,82 +2,51 @@
 using richClosure.Packet_Sniffing.Factories.TransportFactories;
 using richClosure.Packets.InternetLayer;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
 namespace richClosure.Packet_Sniffing.Factories
 {
-    //TODO Break down methods
-
-    class PacketFactory : IAbstractBufferFactory
+    class PacketFactory : IAbstractFactory
     {
-        ulong packetId;
-        private Ip4PacketFactory ip4Factory = new Ip4PacketFactory();
-        private Ip6PacketFactory ip6Factory = new Ip6PacketFactory();
-        private IcmpPacketFactory icmpFactory = new IcmpPacketFactory();
-        private TcpPacketFactory tcpFactory = new TcpPacketFactory();
-        private UdpPacketFactory udpFactory = new UdpPacketFactory();
+        private ulong packetId;
+        private BinaryReader _binaryReader;
 
-        public PacketFactory()
+
+        //TODO PacketFactory checks only ip version, rest is performed in other factories
+        public PacketFactory(BinaryReader binaryReader)
         {
+            _binaryReader = binaryReader;
             packetId = 0;
         }
 
-        public IPacket CreatePacket(byte[] buffer, BinaryReader binaryReader)
+        public IPacket CreatePacket(byte[] buffer)
         {
-
             packetId++;
 
-            string timeDateCaptured = DateTime.Now.ToString("yyyy-MM-dd / HH:mm:ss.fff",
-                                                                CultureInfo.InvariantCulture);
-            byte ipVersionAndHeaderLength = binaryReader.ReadByte();
+            byte ipVersionAndHeaderLength = _binaryReader.ReadByte();
 
             byte ipVersion = ipVersionAndHeaderLength;
             ipVersion >>= 4;
 
-            byte ipHeaderLength = ipVersionAndHeaderLength;
-            ipHeaderLength <<= 4;
-            ipHeaderLength >>= 4;
-            ipHeaderLength *= 4;
-
-
-            IPacket ipPacket;
-
-            switch (ipVersion)
-            {
-                case 4:
-                    ipPacket = ip4Factory.CreatePacket(buffer, binaryReader);
-                    IpPacket ip4Pac = ipPacket as IpPacket;
-                    ip4Pac.PacketId = packetId;
-                    ip4Pac.TimeDateCaptured = timeDateCaptured;
-                    ip4Pac.IpVersion = ipVersion;
-                    ip4Pac.Ip4HeaderLength = ipHeaderLength;
-                    break;
-
-                case 6:
-                    ipPacket = ip6Factory.CreatePacket(buffer, binaryReader);
-                    ipPacket.PacketId = packetId;
-                    ipPacket.TimeDateCaptured = timeDateCaptured;
-                    break;
-
-                default:
-                    ErrorLoger.LogError(DateTime.Now.ToString(), "Unsuported IP Version(" + ipVersion.ToString() + ")", GetType(),
-                                ErrorLoger.ErrorSeverity.low, string.Empty);
-                    return new IpPacket();
-            }
-
+            _binaryReader.BaseStream.Position = 0;
+           
+            IAbstractFactory ipFactory = CreateIpFactory(ipVersion);
+            IpPacket ipPacket = ipFactory.CreatePacket(buffer, _binaryReader) as IpPacket;
+            
             switch (ipPacket.IpProtocol)
             {
                 case IpProtocolEnum.ICMP:
-                    IPacket icmpPacket = icmpFactory.CreatePacket(ipPacket, binaryReader);
+                    IPacket icmpPacket = icmpFactory.CreatePacket(ipPacket, _binaryReader);
                     return icmpPacket;
 
                 case IpProtocolEnum.TCP:
-                    IPacket tcpPacket = tcpFactory.CreatePacket(ipPacket, binaryReader);
+                    IPacket tcpPacket = tcpFactory.CreatePacket(ipPacket, _binaryReader);
                     return tcpPacket;
 
                 case IpProtocolEnum.UDP:
-                    IPacket udpPacket = udpFactory.CreatePacket(ipPacket, binaryReader);
+                    IPacket udpPacket = udpFactory.CreatePacket(ipPacket, _binaryReader);
                     return udpPacket;
 
                 default:
@@ -87,9 +56,23 @@ namespace richClosure.Packet_Sniffing.Factories
             }
         }
 
-        private IP SetIp4PacketHeaders(IPacket packet)
+        //TODO
+        private IAbstractFactory CreateIpFactory(byte ipVersion)
         {
+            switch (ipVersion)
+            {
+                case 4:
+                    return new Ip4PacketFactory();
 
+
+                case 6:
+                    return new Ip6PacketFactory();
+
+                default:
+                    ErrorLoger.LogError(DateTime.Now.ToString(), "Unsuported IP Version(" + ipVersion.ToString() + ")", GetType(),
+                        ErrorLoger.ErrorSeverity.low, string.Empty);
+                    return null;
+            }
         }
     }
 }
