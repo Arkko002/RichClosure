@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/Arkko002/RichClosure.svg?branch=master)](https://travis-ci.com/Arkko002/RichClosure)
+
 # RichClosure
 
 
