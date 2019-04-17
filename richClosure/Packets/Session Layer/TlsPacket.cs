@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using richClosure.Packets.TransportLayer;
 
 namespace richClosure.Packets.SessionLayer
@@ -77,23 +78,24 @@ namespace richClosure.Packets.SessionLayer
 
     class TlsPacket : TcpPacket
     {
-        public TlsContentTypeEnum TlsType { get; set; }
-        public string TlsVersion { get; set; }
-        public ushort TlsDataLength { get; set; }
-        public string TlsEncryptedData { get; set; }
+        public TlsContentTypeEnum TlsType { get; private set; }
+        public string TlsVersion { get; private set; }
+        public ushort TlsDataLength { get; private set; }
+        public string TlsEncryptedData { get; private set; }
 
 
-        public TlsPacket(TcpPacket packet) : base (packet)
+        public TlsPacket(Dictionary<string, object> valuesDictionary) : base(valuesDictionary)
         {
-            TcpAckNumber = packet.TcpAckNumber;
-            TcpChecksum = packet.TcpChecksum;
-            TcpDataOffset = packet.TcpDataOffset;
-            TcpPorts = packet.TcpPorts;
-            TcpFlags = packet.TcpFlags;
-            TcpSequenceNumber = packet.TcpSequenceNumber;
-            TcpUrgentPointer = packet.TcpUrgentPointer;
-            TcpWindowSize = packet.TcpWindowSize;
-            IpAppProtocol = AppProtocolEnum.TLS;
+            SetTlsPacketValues(valuesDictionary);
+            SetDisplayedProtocol("TLS " + TlsVersion);
+        }
+
+        private void SetTlsPacketValues(Dictionary<string, object> valuesDictionary)
+        {
+            TlsType = (TlsContentTypeEnum)valuesDictionary["TlsType"];
+            TlsVersion = (string)valuesDictionary["TlsVersion"];
+            TlsDataLength = (ushort)valuesDictionary["TlsDataLength"];
+            TlsEncryptedData = (string)valuesDictionary["TlsEncryptedData"];
         }
     }
 }

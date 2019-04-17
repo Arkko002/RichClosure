@@ -10,9 +10,6 @@ namespace richClosure.Packet_Sniffing.Factories
 {
     class UdpPacketFactory : IAbstractPacketFactory
     {
-        private DnsPacketFactory dnsFactory = new DnsPacketFactory();
-        private DhcpPacketFactory dhcpFactory = new DhcpPacketFactory();
-
         public IPacket CreatePacket(IPacket packet, BinaryReader binaryReader)
         {
             UInt16 udpSourcePort = (UInt16)IPAddress.NetworkToHostOrder(

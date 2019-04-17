@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Runtime.Intrinsics.Arm.Arm64;
+using System.Collections.Generic;
+using System;
 using richClosure.Packets.TransportLayer;
 
 namespace richClosure.Packets.ApplicationLayer
@@ -43,7 +45,7 @@ namespace richClosure.Packets.ApplicationLayer
         Infiniband = 32,
         CAI = 33,
         Wiegand_Interface = 34,
-        Pure_IP = 35        
+        Pure_IP = 35
     };
 
     public enum DhcpOptionsTagEnum
@@ -93,29 +95,42 @@ namespace richClosure.Packets.ApplicationLayer
 
     class DhcpPacket : UdpPacket
     {
-        public DhcpOpcodeEnum DhcpOpcode { get; set; }
-        public DhcpHardwareTypeEnum DhcpHardType { get; set; }
-        public byte DhcpHardAdrLength { get; set; }
-        public byte DhcpHopCount { get; set; }
-        public uint DhcpTransactionId { get; set; }
-        public ushort DhcpNumOfSeconds { get; set; }
-        public string DhcpFlags { get; set; }
-        public string DhcpClientIpAdr { get; set; }
-        public string DhcpYourIpAdr { get; set; }
-        public string DhcpServerIpAdr { get; set; }
-        public string DhcpGatewayIpAdr { get; set; }
-        public string DhcpClientHardAdr { get; set; }
-        public string DhcpServerName { get; set; }
-        public string DhcpBootFilename { get; set; }
+        public DhcpOpcodeEnum DhcpOpcode { get; private set; }
+        public DhcpHardwareTypeEnum DhcpHardType { get; private set; }
+        public byte DhcpHardAdrLength { get; private set; }
+        public byte DhcpHopCount { get; private set; }
+        public uint DhcpTransactionId { get; private set; }
+        public ushort DhcpNumOfSeconds { get; private set; }
+        public string DhcpFlags { get; private set; }
+        public string DhcpClientIpAdr { get; private set; }
+        public string DhcpYourIpAdr { get; private set; }
+        public string DhcpServerIpAdr { get; private set; }
+        public string DhcpGatewayIpAdr { get; private set; }
+        public string DhcpClientHardAdr { get; private set; }
+        public string DhcpServerName { get; private set; }
+        public string DhcpBootFilename { get; private set; }
 
-        public DhcpPacket(UdpPacket packet) : base (packet)
+        public DhcpPacket(Dictionary<string, object> valuesDictionary) : base(valuesDictionary)
         {
-            UdpLength = packet.UdpLength;
-            UdpPorts = packet.UdpPorts;
-            UdpChecksum = packet.UdpChecksum;
-            IpAppProtocol = AppProtocolEnum.DHCP;
-            PacketDisplayedProtocol = "DHCP";
-
+            SetDhcpPacketValues(valuesDictionary);
+            SetDisplayedProtocol("DHCP");
         }
-    }    
+
+        private void SetDhcpPacketValues(Dictionary<string, object> valuesDictionary)
+        {
+            DhcpOpcode = (DhcpOpcodeEnum)valuesDictionary["DhcpOpcode"];
+            DhcpHardType = (DhcpHardwareTypeEnum)valuesDictionary["DhcpHardType"];
+            DhcpHopCount = (byte)valuesDictionary["DhcpHopCount"];
+            DhcpTransactionId = (uint)valuesDictionary["DhcpTransactionId"];
+            DhcpNumOfSeconds = (ushort)valuesDictionary["DhcpNumOfSeconds"];
+            DhcpFlags = (string)valuesDictionary["DhcpFLags"];
+            DhcpClientIpAdr = (string)valuesDictionary["DhcpClientIpAdr"];
+            DhcpYourIpAdr = (string)valuesDictionary["DhcpYourIpAdr"];
+            DhcpServerIpAdr = (string)valuesDictionary["DhcpServerIpAdr"];
+            DhcpGatewayIpAdr = (string)valuesDictionary["DhcpGatewayIpAdr"];
+            DhcpClientHardAdr = (string)valuesDictionary["DhcpClientHardAdr"];
+            DhcpServerName = (string)valuesDictionary["DhcpServerName"];
+            DhcpBootFilename = (string)valuesDictionary["DhcpBootFilename"];
+        }
+    }
 }

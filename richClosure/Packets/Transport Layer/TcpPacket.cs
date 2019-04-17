@@ -20,53 +20,32 @@ namespace richClosure.Packets.TransportLayer
     class TcpPacket : IpPacket
     {
 
-        public uint TcpSequenceNumber { get; set; }
-        public uint TcpAckNumber { get; set; }
-        public byte TcpDataOffset { get; set; }
-        public ushort TcpUrgentPointer { get; set; }
-        public ushort TcpWindowSize { get; set; }
-        public ushort TcpChecksum { get; set; }
-        public Dictionary<string, string> TcpPorts { get; set; }
-        public TcpFlags TcpFlags { get; set; }
+        public uint TcpSequenceNumber { get; private set; }
+        public uint TcpAckNumber { get; private set; }
+        public byte TcpDataOffset { get; private set; }
+        public ushort TcpUrgentPointer { get; private set; }
+        public ushort TcpWindowSize { get; private set; }
+        public ushort TcpChecksum { get; private set; }
+        public Dictionary<string, string> TcpPorts { get; private set; }
+        public TcpFlags TcpFlags { get; private set; }
 
 
-        public TcpPacket(IPacket packet)
+        public TcpPacket(Dictionary<string, object> valuesDictionary) : base(valuesDictionary)
         {
-            IpPacket pac = packet as IpPacket;
+            SetTcpPacketValues(valuesDictionary);
+            SetDisplayedProtocol("TCP");
+        }
 
-            PacketId = pac.PacketId;
-            PacketData = pac.PacketData;
-            TimeDateCaptured = pac.TimeDateCaptured;
-            IpProtocol = pac.IpProtocol;
-            IpAppProtocol = pac.IpAppProtocol;
-            PacketDisplayedProtocol = "TCP";
-            IpVersion = pac.IpVersion;
-            EthDestinationMacAdr = pac.EthDestinationMacAdr;
-            EthSourceMacAdr = pac.EthSourceMacAdr;
-            EthProtocol = pac.EthProtocol;
-            IpVersion = pac.IpVersion;
-            IpTotalLength = pac.IpTotalLength;
-            IpProtocol = pac.IpProtocol;
-
-            if (pac.IpVersion == 4)
-            {
-                Ip4HeaderLength = pac.Ip4HeaderLength;
-                Ip4Adrs = pac.Ip4Adrs;
-                Ip4Dscp = pac.Ip4Dscp;
-                Ip4TimeToLive = pac.Ip4TimeToLive;
-                IpTotalLength = pac.IpTotalLength;
-                Ip4Identification = pac.Ip4Identification;
-                Ip4Offset = pac.Ip4Offset;
-                Ip4Flags = pac.Ip4Flags;
-                Ip4HeaderChecksum = pac.Ip4HeaderChecksum;
-            }
-            else
-            {
-                Ip6TrafficClass = pac.Ip6TrafficClass;
-                Ip6FlowLabel = pac.Ip6FlowLabel;
-                Ip6HopLimit = pac.Ip6HopLimit;
-                Ip6Adrs = pac.Ip6Adrs;
-            }
+        private void SetTcpPacketValues(Dictionary<string, object> valuesDictionary)
+        {
+            TcpSequenceNumber = (uint)valuesDictionary["TcpSequenceNumber"];
+            TcpAckNumber = (uint)valuesDictionary["TcpAckNumber"];
+            TcpDataOffset = (byte)valuesDictionary["TcpDataOffset"];
+            TcpUrgentPointer = (ushort)valuesDictionary["TcpUrgentPointer"];
+            TcpWindowSize = (ushort)valuesDictionary["TcpWindowSize"];
+            TcpChecksum = (ushort)valuesDictionary["TcpChecksum"];
+            TcpPorts = (Dictionary<string, string>)valuesDictionary["TcpPorts"];
+            TcpFlags = (TcpFlags)valuesDictionary["TcpFlags"];
         }
     }
 }

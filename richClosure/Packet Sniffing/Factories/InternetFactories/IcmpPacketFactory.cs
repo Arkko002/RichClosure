@@ -1,25 +1,25 @@
-﻿using richClosure.Packets.InternetLayer;
+﻿using System.Collections.Generic;
+using richClosure.Packets.InternetLayer;
 using System;
 using System.IO;
 using System.Net;
 
 namespace richClosure.Packet_Sniffing.Factories
 {
-    class IcmpPacketFactory : IAbstractPacketFactory
+    class IcmpPacketFactory : IAbstractFactory
     {
-        public IPacket CreatePacket(IPacket packet, BinaryReader binaryReader)
+        private BinaryReader _binaryReader;
+        private IPacket _basePacket;
+
+        public Ip4PacketFactory(BinaryReader binaryReader, IPacket basePacket)
         {
-            byte icmpType = binaryReader.ReadByte();
-            byte icmpCode = binaryReader.ReadByte();
+            _binaryReader = binaryReader;
+            _basePacket = basePacket;
+        }
 
-            UInt16 icmpChecksum = (UInt16)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt16());
-            UInt32 icmpRest = (UInt32)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt32());
-
-            IpPacket pac = packet as IpPacket;
-
-            IPacket icmpPacket = new IcmpPacket(pac)
+        public IPacket CreatePacket()
+        {
+            IPacket icmpPacket = new IcmpPacket(_basePacket)
             {
                 IcmpType = icmpType,
                 IcmpCode = icmpCode,
@@ -28,8 +28,22 @@ namespace richClosure.Packet_Sniffing.Factories
                 PacketDisplayedProtocol = "ICMP"
             };
 
-            return icmpPacket;
-            
+            return icmpPacket;           
+        }
+
+        private Dictionary<string, object> ReadPacketDataFromStream()
+        {
+            var valueDictionary = new Dictionary<string, object>();
+
+            valueDictionary["IcmpType"] = _binaryReader.ReadByte();
+            valueDictionary["IcmpCode"] = _binaryReader.ReadByte();
+
+            valueDictionary["IcmpChecksum"] = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadInt16());
+            valueDictionary["icmpRest"] = (UInt32)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadInt32());
+
+            return valueDictionary;
         }
     }
 }

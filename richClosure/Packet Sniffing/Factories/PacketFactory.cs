@@ -10,20 +10,22 @@ namespace richClosure.Packet_Sniffing.Factories
 {
     class PacketFactory : IAbstractFactory
     {
-        private ulong packetId;
+        private ulong _packetId;
         private BinaryReader _binaryReader;
+        private byte[] _buffer;
 
 
         //TODO PacketFactory checks only ip version, rest is performed in other factories
-        public PacketFactory(BinaryReader binaryReader)
+        public PacketFactory(BinaryReader binaryReader, byte[] buffer)
         {
             _binaryReader = binaryReader;
-            packetId = 0;
+            _packetId = 0;
+            _buffer = buffer;
         }
 
-        public IPacket CreatePacket(byte[] buffer)
+        public IPacket CreatePacket()
         {
-            packetId++;
+            _packetId++;
 
             byte ipVersionAndHeaderLength = _binaryReader.ReadByte();
 
@@ -31,29 +33,13 @@ namespace richClosure.Packet_Sniffing.Factories
             ipVersion >>= 4;
 
             _binaryReader.BaseStream.Position = 0;
-           
+
             IAbstractFactory ipFactory = CreateIpFactory(ipVersion);
-            IpPacket ipPacket = ipFactory.CreatePacket(buffer, _binaryReader) as IpPacket;
+            IpPacket ipPacket = ipFactory.CreatePacket() as IpPacket;
+
+            IAbstractFactory protocolFactory = CreateProtocolFactory(ipPacket);
             
-            switch (ipPacket.IpProtocol)
-            {
-                case IpProtocolEnum.ICMP:
-                    IPacket icmpPacket = icmpFactory.CreatePacket(ipPacket, _binaryReader);
-                    return icmpPacket;
 
-                case IpProtocolEnum.TCP:
-                    IPacket tcpPacket = tcpFactory.CreatePacket(ipPacket, _binaryReader);
-                    return tcpPacket;
-
-                case IpProtocolEnum.UDP:
-                    IPacket udpPacket = udpFactory.CreatePacket(ipPacket, _binaryReader);
-                    return udpPacket;
-
-                default:
-                    ErrorLoger.LogError(DateTime.Now.ToString(), "Unsuported IP protocol (" + ipPacket.IpProtocol.ToString() + ")", GetType(),
-                        ErrorLoger.ErrorSeverity.low, string.Empty);
-                    return ipPacket;
-            }
         }
 
         //TODO
@@ -62,16 +48,37 @@ namespace richClosure.Packet_Sniffing.Factories
             switch (ipVersion)
             {
                 case 4:
-                    return new Ip4PacketFactory();
+                    return new Ip4PacketFactory(_binaryReader, _buffer, _packetId);
 
 
                 case 6:
-                    return new Ip6PacketFactory();
+                    return new Ip6PacketFactory(_binaryReader, _buffer, _packetId);
 
                 default:
                     ErrorLoger.LogError(DateTime.Now.ToString(), "Unsuported IP Version(" + ipVersion.ToString() + ")", GetType(),
                         ErrorLoger.ErrorSeverity.low, string.Empty);
-                    return null;
+                    throw new ArgumentException();
+            }
+        }
+
+        private IAbstractFactory CreateProtocolFactory(IPacket basePacket)
+        {
+
+            switch (basePacket.IpProtocol)
+            {
+                case IpProtocolEnum.ICMP:
+                    return new IcmpPacketFactory(_binaryReader, basePacket);
+
+                case IpProtocolEnum.TCP:
+                    return new TcpPacketFactory(_binaryReader, basePacket);
+
+                case IpProtocolEnum.UDP:
+                    return new UdpPacketFactory(_binaryReader, basePacket);
+
+                default:
+                    ErrorLoger.LogError(DateTime.Now.ToString(), "Unsuported IP protocol (" + ipPacket.IpProtocol.ToString() + ")", GetType(),
+                        ErrorLoger.ErrorSeverity.low, string.Empty);
+                    throw new ArgumentException();
             }
         }
     }

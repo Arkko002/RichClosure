@@ -44,7 +44,17 @@ namespace richClosure.Packets.InternetLayer
         public byte Ip6HopLimit { get; private set; }
         public Dictionary<string, string> Ip6Adrs { get; private set; }
 
-        public void SetIpProperties(Dictionary<string, object> valuesDictionary)
+        public IpPacket(Dictionary<string, object> valuesDictionary)
+        {
+            SetPacketValues(valuesDictionary);
+        }
+
+        public void SetDisplayedProtocol(string protocol)
+        {
+            PacketDisplayedProtocol = protocol;
+        }
+
+        public void SetPacketValues(Dictionary<string, object> valuesDictionary)
         {
             if (!valuesDictionary.ContainsKey("IpVersion"))
             {

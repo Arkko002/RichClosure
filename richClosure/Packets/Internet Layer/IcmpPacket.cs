@@ -1,4 +1,5 @@
-﻿namespace richClosure.Packets.InternetLayer
+﻿using System.Collections.Generic;
+namespace richClosure.Packets.InternetLayer
 {
 
     public enum IcmpTypeEnum
@@ -63,53 +64,23 @@
 
     class IcmpPacket : IpPacket
     {      
-        public byte IcmpType { get; set; }
-        public byte IcmpCode { get; set; }
-        public uint IcmpChecksum { get; set; }
-        public string IcmpRest { get; set; }
+        public byte IcmpType { get; private set; }
+        public byte IcmpCode { get; private set; }
+        public uint IcmpChecksum { get; private set; }
+        public string IcmpRest { get; private set; }
 
-        public IcmpPacket(IPacket packet)
+        public IcmpPacket(Dictionary<string, object> valueDictionary) : base(valueDictionary) 
         {
-            IpPacket pac = packet as IpPacket;
+            SetIcmpPacketValues(valueDictionary);
+            SetDisplayedProtocol("ICMP");
+        }
 
-            PacketDisplayedProtocol = "ICMP";
-            IpAppProtocol = pac.IpAppProtocol;
-            PacketData = pac.PacketData;
-            PacketId = pac.PacketId;
-            TimeDateCaptured = pac.TimeDateCaptured;
-            EthDestinationMacAdr = pac.EthDestinationMacAdr;
-            EthSourceMacAdr = pac.EthSourceMacAdr;
-            EthProtocol = pac.EthProtocol;
-            IpProtocol = pac.IpProtocol;
-
-            if (packet.IpVersion == 4)
-            {
-
-                IpVersion = pac.IpVersion;
-                Ip4HeaderLength = pac.Ip4HeaderLength;
-                Ip4Adrs = pac.Ip4Adrs;              
-                Ip4Dscp = pac.Ip4Dscp;
-                IpTotalLength = pac.IpTotalLength;
-                Ip4Identification = pac.Ip4Identification;
-                Ip4Offset = pac.Ip4Offset;
-                Ip4Flags = pac.Ip4Flags;
-                Ip4TimeToLive = pac.Ip4TimeToLive;
-
-                Ip4HeaderChecksum = pac.Ip4HeaderChecksum;                             
-            }
-            else
-            {
-                PacketData = pac.PacketData;
-                PacketId = pac.PacketId;
-                IpVersion = pac.IpVersion;
-                Ip6TrafficClass = pac.Ip6TrafficClass;
-                Ip6FlowLabel = pac.Ip6FlowLabel;
-                IpTotalLength = pac.IpTotalLength;
-                IpProtocol = pac.IpProtocol;
-                Ip6HopLimit = pac.Ip6HopLimit;
-                Ip6Adrs = pac.Ip6Adrs;
-                PacketDisplayedProtocol = "ICMP";
-            }
+        private void SetIcmpPacketValues(Dictionary<string, object> valuesDictionary)
+        {
+            IcmpType = (byte)valuesDictionary["IcmpType"];
+            IcmpCode = (byte)valuesDictionary["IcmpCode"];
+            IcmpChecksum = (uint)valuesDictionary["IcmpChecksum"];
+            IcmpRest = (string)valuesDictionary["IcmpRest"];
         }
     }
 }

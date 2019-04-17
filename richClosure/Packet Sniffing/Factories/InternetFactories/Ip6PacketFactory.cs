@@ -1,4 +1,5 @@
-﻿using richClosure.Packets.InternetLayer;
+﻿using System.Collections.Generic;
+using richClosure.Packets.InternetLayer;
 using System;
 using System.IO;
 using System.Net;
@@ -7,39 +8,47 @@ namespace richClosure.Packet_Sniffing.Factories
 {
     class Ip6PacketFactory : IAbstractFactory
     {
-        public IPacket CreatePacket(byte[] buffer, BinaryReader binaryReader)
+
+        private BinaryReader _binaryReader;
+        private byte[] _buffer;
+        private ulong _packetId;
+
+        public Ip6PacketFactory(BinaryReader binaryReader, byte[] buffer, ulong packetId)
         {
-            UInt32 dataBatch = (UInt32)IPAddress.NetworkToHostOrder(
-                                           binaryReader.ReadInt32());
+            _binaryReader = binaryReader;
+            _buffer = buffer;
+            _packetId = packetId;
+        }
+        public IPacket CreatePacket()
+        {
+            var valueDictionary = ReadPacketDataFromStream();
+            IpPacket ip6Packet = new IpPacket();
+            ip6Packet.SetIpProperties(valueDictionary);
+
+            return ip6Packet;
+        }
+
+        private Dictionary<string, object> ReadPacketDataFromStream()
+        {
+            var valueDictionary = new Dictionary<string, object>();
+
+            UInt32 dataBatch = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
 
             string dataBatchBin = Convert.ToString(dataBatch, 2);
 
-            byte ip6Version = Convert.ToByte(dataBatchBin.Substring(0, 4), 10);
-            byte ip6TrafficClass = Convert.ToByte(dataBatchBin.Substring(4, 8), 10);
-            UInt32 ip6FlowLabel = Convert.ToUInt32(dataBatchBin.Substring(12, 20), 10);
+            valueDictionary["Ip6Version"] = Convert.ToByte(dataBatchBin.Substring(0, 4), 10);
+            valueDictionary["Ip6TrafficClass"]  = Convert.ToByte(dataBatchBin.Substring(4, 8), 10);
+            valueDictionary["Ip6FlowLabel"]  = Convert.ToUInt32(dataBatchBin.Substring(12, 20), 10);
 
-            UInt16 ip6PayloadLength = (UInt16)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt16());
-            byte ip6NextHeader = binaryReader.ReadByte();
-            byte ip6HopLimit = binaryReader.ReadByte();
+            valueDictionary["Ip6PayloadLength"]  = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadInt16());
+            valueDictionary["Ip6NextHeader"]  = _binaryReader.ReadByte();
+            valueDictionary["Ip6HopLimit"]  = _binaryReader.ReadByte();
 
-            IPAddress IP6SourceAdr = new IPAddress(binaryReader.ReadBytes(16));
-            IPAddress IP6DestinationAdr = new IPAddress(binaryReader.ReadBytes(16));
+            valueDictionary["Ip6SourceAdr"]  = new IPAddress(_binaryReader.ReadBytes(16));
+            valueDictionary["Ip6DestinationAdr"]  = new IPAddress(_binaryReader.ReadBytes(16));           
 
-            IpPacket ip6Packet = new IpPacket()
-            {
-                IpVersion = ip6Version,
-                Ip6TrafficClass = ip6TrafficClass,
-                Ip6FlowLabel = ip6FlowLabel,
-                IpTotalLength = ip6PayloadLength,
-                IpProtocol = (IpProtocolEnum)ip6NextHeader,
-                Ip6HopLimit = ip6HopLimit,               
-            };
-
-            ip6Packet.Ip6Adrs["src"] = IP6SourceAdr.ToString();
-            ip6Packet.Ip6Adrs["dst"] = IP6DestinationAdr.ToString();
-
-            return ip6Packet;
+            return valueDictionary;
         }
     }
 }

@@ -109,7 +109,7 @@ namespace richClosure.Packets.ApplicationLayer
         URI = 256,
         CAA = 257,
         DNSSEC_Trust = 32768,
-        DNSSEC_Val = 32769      
+        DNSSEC_Val = 32769
     };
 
     enum DnsClassEnum
@@ -135,58 +135,81 @@ namespace richClosure.Packets.ApplicationLayer
 
     class DnsTcpPacket : TcpPacket
     {
-        public ushort DnsIdentification { get; set; }
-        public string DnsQR { get; set; }
-        public DnsOpcodeEnum DnsOpcode { get; set; }
-        public DnsFlags DnsFlags { get; set; }
-        public DnsRcodeEnum DnsRcode { get; set; }
-        public ushort DnsQuestions { get; set; }
-        public ushort DnsAnswersRR { get; set; }
-        public ushort DnsAuthRR { get; set; }
-        public ushort DnsAdditionalRR { get; set; }
-        public List<DnsQuery> DnsQuerryList { get; set; }
-        public List<DnsRecord> DnsAnswerList { get; set; }
-        public List<DnsRecord> DnsAuthList { get; set; }
-        public List<DnsRecord> DnsAdditionalList { get; set; }
+        public ushort DnsIdentification { get; private set; }
+        public string DnsQR { get; private set; }
+        public DnsOpcodeEnum DnsOpcode { get; private set; }
+        public DnsFlags DnsFlags { get; private set; }
+        public DnsRcodeEnum DnsRcode { get; private set; }
+        public ushort DnsQuestions { get; private set; }
+        public ushort DnsAnswersRR { get; private set; }
+        public ushort DnsAuthRR { get; private set; }
+        public ushort DnsAdditionalRR { get; private set; }
+        public List<DnsQuery> DnsQuerryList { get; private set; }
+        public List<DnsRecord> DnsAnswerList { get; private set; }
+        public List<DnsRecord> DnsAuthList { get; private set; }
+        public List<DnsRecord> DnsAdditionalList { get; private set; }
 
-        public DnsTcpPacket(TcpPacket packet) : base(packet)
+        public DnsTcpPacket(Dictionary<string, object> valuesDictionary) : base(valuesDictionary)
         {
-            TcpAckNumber = packet.TcpAckNumber;
-            TcpChecksum = packet.TcpChecksum;
-            TcpDataOffset = packet.TcpDataOffset;
-            TcpPorts = packet.TcpPorts;
-            TcpFlags = packet.TcpFlags;
-            TcpSequenceNumber = packet.TcpSequenceNumber;          
-            TcpUrgentPointer = packet.TcpUrgentPointer;
-            TcpWindowSize = packet.TcpWindowSize;
-            IpAppProtocol = AppProtocolEnum.DNS;
-            PacketDisplayedProtocol = "DNS";
+            SetDnsPacketValues(valuesDictionary);
+            SetDisplayedProtocol("DNS");
+        }
+
+        private void SetDnsPacketValues(Dictionary<string, object> valuesDictionary)
+        {
+            DnsIdentification = (ushort)valuesDictionary["DnsIdentification"];
+            DnsQR = (string)valuesDictionary["DnsQR"];
+            DnsOpcode = (DnsOpcodeEnum)valuesDictionary["DnsOpcode"];
+            DnsFlags = (DnsFlags)valuesDictionary["DnsFlags"];
+            DnsRcode = (DnsRcodeEnum)valuesDictionary["DnsRcode"];
+            DnsQuestions = (ushort)valuesDictionary["DnsQuestions"];
+            DnsAnswersRR = (ushort)valuesDictionary["DnsAnswersRR"];
+            DnsAuthRR = (ushort)valuesDictionary["DnsAuthRR"];
+            DnsAdditionalRR = (ushort)valuesDictionary["DnsAdditionalRR"];
+            DnsQuerryList = (List<DnsQuery>)valuesDictionary["DnsQuerryList"];
+            DnsAnswerList = (List<DnsRecord>)valuesDictionary["DnsAnswerLIst"];
+            DnsAuthList = (List<DnsRecord>)valuesDictionary["DnsAuthList"];
+            DnsAdditionalList = (List<DnsRecord>)valuesDictionary["DnsAdditionalList"];
         }
     }
 
     class DnsUdpPacket : UdpPacket
     {
-        public UInt16 DnsIdentification { get; set; }
-        public string DnsQR { get; set; }
-        public DnsOpcodeEnum DnsOpcode { get; set; }
-        public DnsFlags DnsFlags { get; set; }
-        public DnsRcodeEnum DnsRcode { get; set; }
-        public UInt16 DnsQuestions { get; set; }
-        public UInt16 DnsAnswersRR { get; set; }
-        public UInt16 DnsAuthRR { get; set; }
-        public UInt16 DnsAdditionalRR { get; set; }
-        public List<DnsQuery> DnsQuerryList { get; set; }
-        public List<DnsRecord> DnsAnswerList { get; set; }
-        public List<DnsRecord> DnsAuthList { get; set; }
-        public List<DnsRecord> DnsAdditionalList { get; set; }
+        public ushort DnsIdentification { get; private set; }
+        public string DnsQR { get; private set; }
+        public DnsOpcodeEnum DnsOpcode { get; private set; }
+        public DnsFlags DnsFlags { get; private set; }
+        public DnsRcodeEnum DnsRcode { get; private set; }
+        public ushort DnsQuestions { get; private set; }
+        public ushort DnsAnswersRR { get; private set; }
+        public ushort DnsAuthRR { get; private set; }
+        public ushort DnsAdditionalRR { get; private set; }
+        public List<DnsQuery> DnsQuerryList { get; private set; }
+        public List<DnsRecord> DnsAnswerList { get; private set; }
+        public List<DnsRecord> DnsAuthList { get; private set; }
+        public List<DnsRecord> DnsAdditionalList { get; private set; }
 
-        public DnsUdpPacket(UdpPacket packet) : base(packet)
+        public DnsUdpPacket(Dictionary<string, object> valuesDictionary) : base(valuesDictionary)
         {
-            UdpLength = packet.UdpLength;
-            UdpPorts = packet.UdpPorts;
-            UdpChecksum = packet.UdpChecksum;
-            IpAppProtocol = AppProtocolEnum.DNS;
-            PacketDisplayedProtocol = "DNS";
+            SetDnsPacketValues(valuesDictionary);
+            SetDisplayedProtocol("DNS");
+        }
+
+        private void SetDnsPacketValues(Dictionary<string, object> valuesDictionary)
+        {
+            DnsIdentification = (ushort)valuesDictionary["DnsIdentification"];
+            DnsQR = (string)valuesDictionary["DnsQR"];
+            DnsOpcode = (DnsOpcodeEnum)valuesDictionary["DnsOpcode"];
+            DnsFlags = (DnsFlags)valuesDictionary["DnsFlags"];
+            DnsRcode = (DnsRcodeEnum)valuesDictionary["DnsRcode"];
+            DnsQuestions = (ushort)valuesDictionary["DnsQuestions"];
+            DnsAnswersRR = (ushort)valuesDictionary["DnsAnswersRR"];
+            DnsAuthRR = (ushort)valuesDictionary["DnsAuthRR"];
+            DnsAdditionalRR = (ushort)valuesDictionary["DnsAdditionalRR"];
+            DnsQuerryList = (List<DnsQuery>)valuesDictionary["DnsQuerryList"];
+            DnsAnswerList = (List<DnsRecord>)valuesDictionary["DnsAnswerLIst"];
+            DnsAuthList = (List<DnsRecord>)valuesDictionary["DnsAuthList"];
+            DnsAdditionalList = (List<DnsRecord>)valuesDictionary["DnsAdditionalList"];
         }
     }
 

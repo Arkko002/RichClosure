@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System;
 using System.Windows.Controls;
 
 namespace richClosure
@@ -30,5 +31,7 @@ namespace richClosure
         AppProtocolEnum IpAppProtocol { get; }
         string PacketDisplayedProtocol { get; }
         string PacketComment { get; }
+
+        void SetPacketValues(Dictionary<string, object> valuesDictionary);
     }
 }
