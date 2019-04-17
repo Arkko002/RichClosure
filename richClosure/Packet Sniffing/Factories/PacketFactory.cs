@@ -16,7 +16,6 @@ namespace richClosure.Packet_Sniffing.Factories
         private byte[] _buffer;
         private Dictionary<string, object> _valueDictionary = new Dictionary<string, object>();
 
-        //TODO PacketFactory checks only ip version, rest is performed in other factories
         public PacketFactory(BinaryReader binaryReader, byte[] buffer)
         {
             _binaryReader = binaryReader;
@@ -29,12 +28,7 @@ namespace richClosure.Packet_Sniffing.Factories
             Dictionary<string, object> valueDict = new Dictionary<string, object>();
             _packetId++;
 
-            byte ipVersionAndHeaderLength = _binaryReader.ReadByte();
-
-            byte ipVersion = ipVersionAndHeaderLength;
-            ipVersion >>= 4;
-
-            _binaryReader.BaseStream.Position = 0;
+            byte ipVersion = GetPacketIpVersionAndResetStreamPosition();
 
             IAbstractFactory ipFactory = CreateIpFactory(ipVersion);
             IpPacket ipPacket = ipFactory.CreatePacket() as IpPacket;
@@ -42,24 +36,27 @@ namespace richClosure.Packet_Sniffing.Factories
             IAbstractFactory protocolFactory = CreateProtocolFactory(ipPacket);
             IPacket protocolPacket = protocolFactory.CreatePacket();
 
-            IAbstractFactory applicationFactory;
-            switch (protocolPacket.PacketDisplayedProtocol)
+            IAbstractFactory applicationFactory = CreateApplicationFactory(protocolPacket);
+
+            if (applicationFactory is null)
             {
-                case "UDP":
-                    applicationFactory = CreateUdpApplicationFactory(protocolPacket, protocolFactory as UdpPacketFactory);
-                    break;
-
-                case "TCP":
-                    applicationFactory = CreateTcpApplicationFactory(protocolPacket, protocolFactory as TcpPacketFactory);
-                    break;
-
-                default:
-                    ErrorLoger.LogError(DateTime.Now.ToString(), "Unknown Error in PacketFactory", GetType(),
-                        ErrorLoger.ErrorSeverity.medium, string.Empty);
-                    return null;
+                return protocolPacket;
             }
 
             IPacket applicationPacket = applicationFactory.CreatePacket();
+            return applicationPacket;
+        }
+
+        private byte GetPacketIpVersionAndResetStreamPosition()
+        {
+            byte ipVersionAndHeaderLength = _binaryReader.ReadByte();
+
+            byte ipVersion = ipVersionAndHeaderLength;
+            ipVersion >>= 4;
+
+            _binaryReader.BaseStream.Position = 0;
+
+            return ipVersion;
         }
 
         private IAbstractFactory CreateIpFactory(byte ipVersion)
@@ -101,18 +98,36 @@ namespace richClosure.Packet_Sniffing.Factories
             }
         }
 
-        private IAbstractFactory CreateTcpApplicationFactory(IPacket basePacket, TcpPacketFactory tcpFactory)
+        private IAbstractFactory CreateApplicationFactory(IPacket basePacket)
         {
+            switch (basePacket.PacketDisplayedProtocol)
+            {
+                case "UDP":
+                    return CreateUdpApplicationFactory(basePacket);
+
+                case "TCP":
+                    return CreateTcpApplicationFactory(basePacket);
+
+                default:
+                    ErrorLoger.LogError(DateTime.Now.ToString(), "Unknown Error in PacketFactory", GetType(),
+                        ErrorLoger.ErrorSeverity.medium, string.Empty);
+                    return null;
+            }
+        }
+
+        private IAbstractFactory CreateTcpApplicationFactory(IPacket basePacket)
+        {
+            TcpPacketFactory tcpFactory = new TcpPacketFactory(_binaryReader, _valueDictionary);
             switch (tcpFactory.CheckForAppLayerPorts(basePacket))
             {
                 case AppProtocolEnum.DNS:
-                    return new DnsPacketFactory();
+                    return new DnsPacketFactory(_binaryReader, _valueDictionary);
 
                 case AppProtocolEnum.HTTP:
-                    return new HttpPacketFactory();
+                    return new HttpPacketFactory(_binaryReader, _valueDictionary);
 
                 case AppProtocolEnum.TLS:
-                    return new TlsPacketFactory();
+                    return new TlsPacketFactory(_binaryReader, _valueDictionary);
 
                 case AppProtocolEnum.NoAppProtocol:
                     return null;
@@ -122,15 +137,16 @@ namespace richClosure.Packet_Sniffing.Factories
             }
         }
 
-        private IAbstractFactory CreateUdpApplicationFactory(IPacket basePacket, UdpPacketFactory udpFactory)
+        private IAbstractFactory CreateUdpApplicationFactory(IPacket basePacket)
         {
+            UdpPacketFactory udpFactory = new UdpPacketFactory(_binaryReader, _valueDictionary);
             switch (udpFactory.CheckForAppLayerPorts(basePacket))
             {
                 case AppProtocolEnum.DNS:
-                    return new DnsPacketFactory();
+                    return new DnsPacketFactory(_binaryReader, _valueDictionary);
 
                 case AppProtocolEnum.DHCP:
-                    return new DhcpPacketFactory();
+                    return new DhcpPacketFactory(_binaryReader, _valueDictionary);
 
                 case AppProtocolEnum.NoAppProtocol:
                     return null;

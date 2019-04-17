@@ -6,16 +6,34 @@ using System.Text;
 
 namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 {
-    class HttpPacketFactory : IAbstractPacketFactory
+    class HttpPacketFactory : IAbstractFactory
     {
-        public IPacket CreatePacket(IPacket packet, BinaryReader binaryReader)
+        private BinaryReader _binaryReader;
+        private Dictionary<string, object> _valueDictionary;
+
+        public HttpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
+        {
+            _binaryReader = binaryReader;
+            _valueDictionary = valueDictionary;
+        }
+
+        public IPacket CreatePacket()
+        {
+            ReadPacketDataFromStream();
+
+            IPacket httpPacket = new HttpPacket(_valueDictionary);
+
+            return httpPacket;
+        }
+
+        private void ReadPacketDataFromStream()
         {
             Dictionary<string, string> fields = new Dictionary<string, string>();
             List<byte> byteList = new List<byte>();
 
-            while (binaryReader.BaseStream.Position < packet.IpTotalLength)
+            while (_binaryReader.BaseStream.Position < (uint)_valueDictionary["IpTotalLength"])
             {
-                byteList.Add(binaryReader.ReadByte());
+                byteList.Add(_binaryReader.ReadByte());
             }
 
             for (int i = 0; i < byteList.Count; i++)
@@ -61,19 +79,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                 }
             }
 
-            if (fields.Count == 0)
-            {
-                return packet;
-            }
-
-            TcpPacket pac = packet as TcpPacket;
-            HttpPacket httpPacket = new HttpPacket(pac)
-            {
-                HttpFieldsDict = fields,
-            };
-
-            return httpPacket;
-            
+            _valueDictionary["HttpFieldsDict"] = fields;
         }
     }
 }

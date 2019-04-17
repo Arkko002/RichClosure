@@ -8,7 +8,6 @@ using System.Text;
 
 namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 {
-    //TODO
     class DnsPacketFactory : IAbstractFactory
     {
         private BinaryReader _binaryReader;
@@ -19,27 +18,25 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             _binaryReader = binaryReader;
             _valueDictionary = valueDictionary;
         }
+
         public IPacket CreatePacket()
         {
+            ReadPacketDataFromStream();
 
-            UdpPacket pac = packet as UdpPacket;
-            IPacket dnsPacket = new DnsUdpPacket(pac)
+            IPacket dnsPacket;
+            switch ((IpProtocolEnum)_valueDictionary["IpProtocl"])
             {
-                DnsIdentification = dnsIdentification,
-                DnsFlags = dnsFlagsObj,
-                DnsOpcode = (DnsOpcodeEnum)dnsOpcode,
-                DnsQR = dnsQR,
-                DnsRcode = (DnsRcodeEnum)dnsRcode,
-                DnsQuestions = dnsQuestions,
-                DnsAnswersRR = dnsAnswersRR,
-                DnsAuthRR = dnsAuthRR,
-                DnsAdditionalRR = dnsAdditionalRR,
-                DnsQuerryList = dnsQueries,
-                DnsAnswerList = dnsAnswers,
-                DnsAuthList = dnsAuths,
-                DnsAdditionalList = dnsAdditionals,
-            };
+                case IpProtocolEnum.TCP:
+                    dnsPacket = new DnsTcpPacket(_valueDictionary);
+                    break;
 
+                case IpProtocolEnum.UDP:
+                    dnsPacket = new DnsUdpPacket(_valueDictionary);
+                    break;
+
+                default:
+                    throw new ArgumentException();
+            }
 
             return dnsPacket;
         }
@@ -49,10 +46,10 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             _valueDictionary["DnsIdentification"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
             UInt16 dnsFlagsAndCodes = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
 
-            UInt16 dnsQuestions = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-            UInt16 dnsAnswersRR = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-            UInt16 dnsAuthRR = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-            UInt16 dnsAdditionalRR = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            _valueDictionary["DnsQuestions"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            _valueDictionary["DnsAnswersRR"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            _valueDictionary["DnsAuthRR"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            _valueDictionary["DnsAdditionalRR"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
 
             string dnsFlagsBinStr = Convert.ToString(dnsFlagsAndCodes, 2);
 
@@ -82,7 +79,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
             List<DnsQuery> dnsQueries = new List<DnsQuery>();
 
-            for (int i = 1; i <= dnsQuestions; i++)
+            for (int i = 1; i <= (int)_valueDictionary["DnsQuestions"]; i++)
             {
                 StringBuilder stringBuilder = new StringBuilder();
                 bool reading = true;
@@ -118,15 +115,17 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             }
 
             List<DnsRecord> dnsAnswers = new List<DnsRecord>();
-            ParseDnsRecordHeader(dnsAnswers, dnsAnswersRR, dnsQueries[dnsQueries.Count - 1].DnsQueryName);
+            ParseDnsRecordHeader(dnsAnswers, (int)_valueDictionary["DnsAnswersRR"], dnsQueries[dnsQueries.Count - 1].DnsQueryName);
 
             List<DnsRecord> dnsAuths = new List<DnsRecord>();
-            ParseDnsRecordHeader(dnsAuths, dnsAuthRR, dnsQueries[dnsQueries.Count - 1].DnsQueryName);
+            ParseDnsRecordHeader(dnsAuths, (int)_valueDictionary["DnsAuthRR"], dnsQueries[dnsQueries.Count - 1].DnsQueryName);
 
             List<DnsRecord> dnsAdditionals = new List<DnsRecord>();
-            ParseDnsRecordHeader(dnsAdditionals, dnsAdditionalRR, dnsQueries[dnsQueries.Count - 1].DnsQueryName);
+            ParseDnsRecordHeader(dnsAdditionals, (int)_valueDictionary["DnsAdditionalRR"], dnsQueries[dnsQueries.Count - 1].DnsQueryName);
 
-
+            _valueDictionary["DnsAnswers"] = dnsAnswers;
+            _valueDictionary["DnsAuth"] = dnsAuths;
+            _valueDictionary["DnsAdditionals"] = dnsAdditionals;
         }
 
         private DnsFlags GetDnsFlags(string flagsBinStr)
@@ -192,10 +191,10 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                     }
                 }
 
-                DnsTypeEnum dnsRecordType = (DnsTypeEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-                DnsClassEnum dnsRecordClass = (DnsClassEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-                UInt32 dnsRecordTTL = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
-                UInt16 dnsRDataLength = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+                DnsTypeEnum dnsRecordType = (DnsTypeEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+                DnsClassEnum dnsRecordClass = (DnsClassEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+                UInt32 dnsRecordTTL = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
+                UInt16 dnsRDataLength = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
 
                 byte[] byteData = _binaryReader.ReadBytes(dnsRDataLength);
                 StringBuilder dataBuilder = new StringBuilder();
