@@ -9,41 +9,30 @@ namespace richClosure.Packet_Sniffing.Factories
     class IcmpPacketFactory : IAbstractFactory
     {
         private BinaryReader _binaryReader;
-        private IPacket _basePacket;
+        private Dictionary<string, object> _valueDictionary;
 
-        public Ip4PacketFactory(BinaryReader binaryReader, IPacket basePacket)
+        public Ip4PacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
             _binaryReader = binaryReader;
-            _basePacket = basePacket;
+            _valueDictionary = valueDictionary;
         }
 
         public IPacket CreatePacket()
         {
-            IPacket icmpPacket = new IcmpPacket(_basePacket)
-            {
-                IcmpType = icmpType,
-                IcmpCode = icmpCode,
-                IcmpChecksum = icmpChecksum,
-                IcmpRest = icmpRest.ToString(),
-                PacketDisplayedProtocol = "ICMP"
-            };
-
-            return icmpPacket;           
+            ReadPacketDataFromStream();
+            IPacket icmpPacket = new IcmpPacket(_valueDictionary)
+            return icmpPacket;
         }
 
         private Dictionary<string, object> ReadPacketDataFromStream()
         {
-            var valueDictionary = new Dictionary<string, object>();
+            _valueDictionary["IcmpType"] = _binaryReader.ReadByte();
+            _valueDictionary["IcmpCode"] = _binaryReader.ReadByte();
 
-            valueDictionary["IcmpType"] = _binaryReader.ReadByte();
-            valueDictionary["IcmpCode"] = _binaryReader.ReadByte();
-
-            valueDictionary["IcmpChecksum"] = (UInt16)IPAddress.NetworkToHostOrder(
+            _valueDictionary["IcmpChecksum"] = (UInt16)IPAddress.NetworkToHostOrder(
                                             _binaryReader.ReadInt16());
-            valueDictionary["icmpRest"] = (UInt32)IPAddress.NetworkToHostOrder(
+            _valueDictionary["icmpRest"] = (UInt32)IPAddress.NetworkToHostOrder(
                                             _binaryReader.ReadInt32());
-
-            return valueDictionary;
         }
     }
 }

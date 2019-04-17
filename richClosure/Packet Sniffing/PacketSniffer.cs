@@ -26,9 +26,9 @@ namespace richClosure
             IPInterfaceProperties AdapterProperties = Adapter.GetIPProperties();
             UnicastIPAddressInformationCollection unicastIPs = AdapterProperties.UnicastAddresses;
             _packetCollection = packetCollection;
-            
+
             GetAdapterEndpoint(unicastIPs);
-       
+
         }
 
         private void GetAdapterEndpoint(UnicastIPAddressInformationCollection unicastIps)
@@ -90,13 +90,13 @@ namespace richClosure
 
         private void CreatePacketFromBuffer(byte[] buffer)
         {
-            IAbstractFactory packetFactory = new PacketFactory();
-
             MemoryStream memoryStream = new MemoryStream(buffer);
             BinaryReader binaryReader = new BinaryReader(memoryStream);
 
-            IPacket packet = packetFactory.CreatePacket(buffer, binaryReader);
-            _packetCollection.Add(packet);          
+            IAbstractFactory packetFactory = new PacketFactory(binaryReader, buffer);
+
+            IPacket packet = packetFactory.CreatePacket();
+            _packetCollection.Add(packet);
         }
 
         public void StopWorking()

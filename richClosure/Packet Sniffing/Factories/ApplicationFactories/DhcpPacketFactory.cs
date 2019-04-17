@@ -1,24 +1,42 @@
 ﻿using richClosure.Packets.ApplicationLayer;
 using richClosure.Packets.TransportLayer;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 
 namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 {
-    class DhcpPacketFactory : IAbstractPacketFactory
+    class DhcpPacketFactory : IAbstractFactory
     {
-        public IPacket CreatePacket(IPacket packet, BinaryReader binaryReader)
-        {
-            byte dhcpOpcode = binaryReader.ReadByte();
-            byte dhcpHardType = binaryReader.ReadByte();
-            byte dhcpHardAdrLength = binaryReader.ReadByte();
-            byte dhcpHops = binaryReader.ReadByte();
+        private BinaryReader _binaryReader;
+        private Dictionary<string, object> _valueDictionary;
 
-            UInt32 dhcpTransId = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
-            UInt16 dhcpSeconds = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
-            UInt16 dhcpFlags = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+        public DhcpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
+        {
+            _binaryReader = binaryReader;
+            _valueDictionary = valueDictionary;
+        }
+
+        public IPacket CreatePacket()
+        {
+            ReadPacketDataFromStream();
+            IPacket dhcpPacket = new DhcpPacket(_valueDictionary);
+
+            return dhcpPacket;
+        }
+
+        private void ReadPacketDataFromStream()
+        {
+            _valueDictionary["DhcpOpcode"] = _binaryReader.ReadByte();
+            _valueDictionary["DhcpHardType"] = _binaryReader.ReadByte();
+            _valueDictionary["dhcpHardAdrLength"] = _binaryReader.ReadByte();
+            _valueDictionary["dhcpHops"] = _binaryReader.ReadByte();
+
+            _valueDictionary["dhcpTransId"] = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
+            _valueDictionary["dhcpSeconds"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            UInt16 dhcpFlags = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
 
             string flagsFinal;
             if (dhcpFlags > 0)
@@ -30,21 +48,35 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                 flagsFinal = "No Flags";
             }
 
-            UInt32 dhcpClientIp = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
-            UInt32 dhcpYourIp = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
-            UInt32 dhcpServerIp = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
-            UInt32 dhcpGatewayIp = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
+            _valueDictionary["DhcpFlags"] = flagsFinal;
 
-            IPAddress clientIp = new IPAddress(dhcpClientIp);
-            IPAddress yourIp = new IPAddress(dhcpYourIp);
-            IPAddress serverIp = new IPAddress(dhcpServerIp);
-            IPAddress gatewayIp = new IPAddress(dhcpGatewayIp);
+            UInt32 dhcpClientIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
+            UInt32 dhcpYourIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
+            UInt32 dhcpServerIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
+            UInt32 dhcpGatewayIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
 
-            byte[] dhcpClientHardAdr = binaryReader.ReadBytes(dhcpHardAdrLength);
-            string clientHardAdr = BitConverter.ToString(dhcpClientHardAdr);
+            _valueDictionary["DhcpClientIp"] = new IPAddress(dhcpClientIp).ToString();
+            _valueDictionary["DhcpYourIp"] = new IPAddress(dhcpYourIp).ToString();
+            _valueDictionary["DhcpServerIp"] = new IPAddress(dhcpServerIp).ToString();
+            _valueDictionary["DhcpGatewayIp"] = new IPAddress(dhcpGatewayIp).ToString(); ;
 
-            byte[] dhcpServerName = binaryReader.ReadBytes(64);
+            byte[] dhcpClientHardAdr = _binaryReader.ReadBytes((int)_valueDictionary["dhcpHardAdrLength"]);
+            _valueDictionary["DhcpClientHardAdr"] = BitConverter.ToString(dhcpClientHardAdr);
 
+            byte[] dhcpServerName = _binaryReader.ReadBytes(64);
+            _valueDictionary["DhcpServerName"] = ConvertNameToString(dhcpServerName);
+
+            byte[] padding = _binaryReader.ReadBytes(16 - (int)_valueDictionary["dhcpHardAdrLength"]);
+
+            byte[] dhcpBootFilename = _binaryReader.ReadBytes(128);
+            _valueDictionary["DhcpBootFilename"] = ConvertNameToString(dhcpBootFilename);
+
+            //TODO
+            string dhcpOptions;
+        }
+
+        private string ConvertNameToString(byte[] dhcpServerName)
+        {
             StringBuilder serverNameStrBld = new StringBuilder();
             foreach (byte b in dhcpServerName)
             {
@@ -59,47 +91,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                 }
             }
 
-            byte[] padding = binaryReader.ReadBytes(16 - dhcpHardAdrLength);
-
-            byte[] dhcpBootFilename = binaryReader.ReadBytes(128);
-            string bootFilename = Encoding.Default.GetString(dhcpBootFilename);
-
-            StringBuilder bootFilenameStrBld = new StringBuilder();
-            foreach (byte b in dhcpBootFilename)
-            {
-                if (b >= 33 && b <= 126)
-                {
-                    char ch = Convert.ToChar(b);
-                    bootFilenameStrBld.Append(ch);
-                }
-                else
-                {
-                    bootFilenameStrBld.Append(".");
-                }
-            }
-
-            string dhcpOptions;
-
-            UdpPacket pac = packet as UdpPacket;
-            DhcpPacket dhcpPacket = new DhcpPacket(pac)
-            {
-                DhcpOpcode = (DhcpOpcodeEnum)dhcpOpcode,
-                DhcpHardType = (DhcpHardwareTypeEnum)dhcpHardType,
-                DhcpHardAdrLength = dhcpHardAdrLength,
-                DhcpHopCount = dhcpHops,
-                DhcpTransactionId = dhcpTransId,
-                DhcpNumOfSeconds = dhcpSeconds,
-                DhcpFlags = flagsFinal,
-                DhcpClientIpAdr = clientIp.ToString(),
-                DhcpYourIpAdr = yourIp.ToString(),
-                DhcpServerIpAdr = serverIp.ToString(),
-                DhcpGatewayIpAdr = gatewayIp.ToString(),
-                DhcpClientHardAdr = clientHardAdr,
-                DhcpServerName = serverNameStrBld.ToString(),
-                DhcpBootFilename = bootFilenameStrBld.ToString(),
-            };
-
-            return dhcpPacket;
+            return serverNameStrBld.ToString();
         }
     }
 }

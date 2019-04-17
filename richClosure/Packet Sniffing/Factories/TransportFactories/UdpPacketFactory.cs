@@ -1,4 +1,5 @@
-﻿using richClosure.Packet_Sniffing.Factories.ApplicationFactories;
+﻿using System.Collections.Generic;
+using richClosure.Packet_Sniffing.Factories.ApplicationFactories;
 using richClosure.Packets.InternetLayer;
 using richClosure.Packets.TransportLayer;
 using System;
@@ -8,53 +9,45 @@ using System.Net;
 
 namespace richClosure.Packet_Sniffing.Factories
 {
-    class UdpPacketFactory : IAbstractPacketFactory
+    class UdpPacketFactory : IAbstractFactory
     {
-        public IPacket CreatePacket(IPacket packet, BinaryReader binaryReader)
+        private BinaryReader _binaryReader;
+        private Dictionary<string, object> _valueDictionary;
+
+        public UdpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
-            UInt16 udpSourcePort = (UInt16)IPAddress.NetworkToHostOrder(
-                                binaryReader.ReadInt16());
-            UInt16 udpDestinationPort = (UInt16)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt16());
-            UInt16 udpLength = (UInt16)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt16());
-            UInt16 udpChecksum = (UInt16)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt16());
-
-            IPacket udpPacket;
-
-            IpPacket pac = packet as IpPacket;
-            udpPacket = new UdpPacket(pac)
-            {
-                UdpChecksum = udpChecksum,
-                UdpLength = udpLength,
-                UdpPorts = new System.Collections.Generic.Dictionary<string, string>(),
-                PacketDisplayedProtocol = "UDP"
-            };
-
-            UdpPacket udpPac = udpPacket as UdpPacket;
-            udpPac.UdpPorts.Add("dst", udpDestinationPort.ToString());
-            udpPac.UdpPorts.Add("src", udpSourcePort.ToString());
-
-            switch (CheckForAppLayerPorts(udpPacket))
-            {
-                case AppProtocolEnum.DNS:
-                    IPacket dnsPacket = dnsFactory.CreatePacket(udpPac, binaryReader);
-                    return dnsPacket;
-
-                case AppProtocolEnum.DHCP:
-                    IPacket dhcpPacket = dhcpFactory.CreatePacket(udpPac, binaryReader);
-                    return dhcpPacket;
-
-                case AppProtocolEnum.NoAppProtocol:
-                    return udpPacket;
-
-                default:
-                    return udpPacket;
-            }
+            _binaryReader = binaryReader;
+            _valueDictionary = valueDictionary;
         }
 
-        private AppProtocolEnum CheckForAppLayerPorts(IPacket packet)
+        public IPacket CreatePacket()
+        {
+            ReadPacketDataFromStream();
+            IPacket packet = new UdpPacket(_valueDictionary);
+
+            return packet;
+        }
+
+        private void ReadPacketDataFromStream()
+        {
+            UInt16 udpSourcePort = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadUInt16());
+            UInt16 udpDestinationPort = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadUInt16());
+
+            _valueDictionary["UdpPorts"] = new Dictionary<string, string>()
+            {
+                {"dst", udpDestinationPort.ToString()},
+                {"src", udpSourcePort.ToString()}
+            };
+
+            _valueDictionary["UdpLength"] = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadUInt16());
+            _valueDictionary["UdpChecksum"] = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadUInt16());
+        }
+
+        public AppProtocolEnum CheckForAppLayerPorts(IPacket packet)
         {
 
             UdpPacket udpPac = packet as UdpPacket;

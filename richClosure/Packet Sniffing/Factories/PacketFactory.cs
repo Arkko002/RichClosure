@@ -1,5 +1,6 @@
 ﻿using richClosure.Packet_Sniffing.Factories.InternetFactories;
 using richClosure.Packet_Sniffing.Factories.TransportFactories;
+using richClosure.Packet_Sniffing.Factories.ApplicationFactories;
 using richClosure.Packets.InternetLayer;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace richClosure.Packet_Sniffing.Factories
         private ulong _packetId;
         private BinaryReader _binaryReader;
         private byte[] _buffer;
-
+        private Dictionary<string, object> _valueDictionary = new Dictionary<string, object>();
 
         //TODO PacketFactory checks only ip version, rest is performed in other factories
         public PacketFactory(BinaryReader binaryReader, byte[] buffer)
@@ -25,6 +26,7 @@ namespace richClosure.Packet_Sniffing.Factories
 
         public IPacket CreatePacket()
         {
+            Dictionary<string, object> valueDict = new Dictionary<string, object>();
             _packetId++;
 
             byte ipVersionAndHeaderLength = _binaryReader.ReadByte();
@@ -38,21 +40,38 @@ namespace richClosure.Packet_Sniffing.Factories
             IpPacket ipPacket = ipFactory.CreatePacket() as IpPacket;
 
             IAbstractFactory protocolFactory = CreateProtocolFactory(ipPacket);
-            
+            IPacket protocolPacket = protocolFactory.CreatePacket();
 
+            IAbstractFactory applicationFactory;
+            switch (protocolPacket.PacketDisplayedProtocol)
+            {
+                case "UDP":
+                    applicationFactory = CreateUdpApplicationFactory(protocolPacket, protocolFactory as UdpPacketFactory);
+                    break;
+
+                case "TCP":
+                    applicationFactory = CreateTcpApplicationFactory(protocolPacket, protocolFactory as TcpPacketFactory);
+                    break;
+
+                default:
+                    ErrorLoger.LogError(DateTime.Now.ToString(), "Unknown Error in PacketFactory", GetType(),
+                        ErrorLoger.ErrorSeverity.medium, string.Empty);
+                    return null;
+            }
+
+            IPacket applicationPacket = applicationFactory.CreatePacket();
         }
 
-        //TODO
         private IAbstractFactory CreateIpFactory(byte ipVersion)
         {
             switch (ipVersion)
             {
                 case 4:
-                    return new Ip4PacketFactory(_binaryReader, _buffer, _packetId);
+                    return new Ip4PacketFactory(_binaryReader, _buffer, _packetId, _valueDictionary);
 
 
                 case 6:
-                    return new Ip6PacketFactory(_binaryReader, _buffer, _packetId);
+                    return new Ip6PacketFactory(_binaryReader, _buffer, _packetId, _valueDictionary);
 
                 default:
                     ErrorLoger.LogError(DateTime.Now.ToString(), "Unsuported IP Version(" + ipVersion.ToString() + ")", GetType(),
@@ -67,18 +86,57 @@ namespace richClosure.Packet_Sniffing.Factories
             switch (basePacket.IpProtocol)
             {
                 case IpProtocolEnum.ICMP:
-                    return new IcmpPacketFactory(_binaryReader, basePacket);
+                    return new IcmpPacketFactory(_binaryReader, _valueDictionary);
 
                 case IpProtocolEnum.TCP:
-                    return new TcpPacketFactory(_binaryReader, basePacket);
+                    return new TcpPacketFactory(_binaryReader, _valueDictionary);
 
                 case IpProtocolEnum.UDP:
-                    return new UdpPacketFactory(_binaryReader, basePacket);
+                    return new UdpPacketFactory(_binaryReader, _valueDictionary);
 
                 default:
-                    ErrorLoger.LogError(DateTime.Now.ToString(), "Unsuported IP protocol (" + ipPacket.IpProtocol.ToString() + ")", GetType(),
+                    ErrorLoger.LogError(DateTime.Now.ToString(), "Unsuported IP protocol (" + basePacket.IpProtocol.ToString() + ")", GetType(),
                         ErrorLoger.ErrorSeverity.low, string.Empty);
                     throw new ArgumentException();
+            }
+        }
+
+        private IAbstractFactory CreateTcpApplicationFactory(IPacket basePacket, TcpPacketFactory tcpFactory)
+        {
+            switch (tcpFactory.CheckForAppLayerPorts(basePacket))
+            {
+                case AppProtocolEnum.DNS:
+                    return new DnsPacketFactory();
+
+                case AppProtocolEnum.HTTP:
+                    return new HttpPacketFactory();
+
+                case AppProtocolEnum.TLS:
+                    return new TlsPacketFactory();
+
+                case AppProtocolEnum.NoAppProtocol:
+                    return null;
+
+                default:
+                    return null;
+            }
+        }
+
+        private IAbstractFactory CreateUdpApplicationFactory(IPacket basePacket, UdpPacketFactory udpFactory)
+        {
+            switch (udpFactory.CheckForAppLayerPorts(basePacket))
+            {
+                case AppProtocolEnum.DNS:
+                    return new DnsPacketFactory();
+
+                case AppProtocolEnum.DHCP:
+                    return new DhcpPacketFactory();
+
+                case AppProtocolEnum.NoAppProtocol:
+                    return null;
+
+                default:
+                    return null;
             }
         }
     }

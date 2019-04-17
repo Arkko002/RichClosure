@@ -1,23 +1,40 @@
 ﻿using richClosure.Packets.SessionLayer;
 using richClosure.Packets.TransportLayer;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 
 namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 {
-    class TlsPacketFactory : IAbstractPacketFactory
+    class TlsPacketFactory : IAbstractFactory
     {
-        public IPacket CreatePacket(IPacket packet, BinaryReader binaryReader)
+        private BinaryReader _binaryReader;
+        private Dictionary<string, object> _valueDictionary;
+
+        public TlsPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
-            byte tlsType = binaryReader.ReadByte();
-            if (!Enum.IsDefined(typeof(TlsContentTypeEnum), (int)tlsType))
+            _binaryReader = binaryReader;
+            _valueDictionary = valueDictionary;
+        }
+        public IPacket CreatePacket()
+        {
+            ReadPacketDataFromStream();
+            IPacket tlsPacket = new TlsPacket(_valueDictionary);
+
+            return tlsPacket;
+        }
+
+        private void ReadPacketDataFromStream()
+        {
+            _valueDictionary["TlsType"] = _binaryReader.ReadByte();
+            if (!Enum.IsDefined(typeof(TlsContentTypeEnum), (int)_valueDictionary["TlsType"]))
             {
-                return packet;
+                return;
             }
 
-            UInt16 tlsVersion = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            UInt16 tlsVersion = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
 
             string tlsVersionFinal;
             if (tlsVersion == 0x0303)
@@ -33,22 +50,14 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                 tlsVersionFinal = "TLS 1.0";
             }
 
-            UInt16 tlsDataLength = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            _valueDictionary["TlsVersion"] = tlsVersionFinal;
+
+            _valueDictionary["TlsDataLength"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
 
             StringBuilder tlsData = new StringBuilder();
-            tlsData.Append(BitConverter.ToString(binaryReader.ReadBytes(tlsDataLength)));
+            tlsData.Append(BitConverter.ToString(_binaryReader.ReadBytes((int)_valueDictionary["TlsDataLength"])));
 
-            TcpPacket pac = packet as TcpPacket;
-            IPacket tlsPacket = new TlsPacket(pac)
-            {
-                TlsType = (TlsContentTypeEnum)tlsType,
-                TlsVersion = tlsVersionFinal,
-                TlsDataLength = tlsDataLength,
-                TlsEncryptedData = tlsData.ToString(),
-                PacketDisplayedProtocol = tlsVersionFinal
-            };
-
-            return tlsPacket;
+            _valueDictionary["TlsData"] = tlsData;
         }
     }
 }

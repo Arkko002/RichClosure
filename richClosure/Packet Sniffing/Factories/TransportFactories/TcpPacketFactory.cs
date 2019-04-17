@@ -1,4 +1,5 @@
-﻿using richClosure.Packet_Sniffing.Factories.ApplicationFactories;
+﻿using System.Collections.Generic;
+using richClosure.Packet_Sniffing.Factories.ApplicationFactories;
 using richClosure.Packets.InternetLayer;
 using richClosure.Packets.TransportLayer;
 using System;
@@ -9,39 +10,48 @@ using System.Text;
 
 namespace richClosure.Packet_Sniffing.Factories.TransportFactories
 {
-    class TcpPacketFactory : IAbstractPacketFactory
+    class TcpPacketFactory : IAbstractFactory
     {
-        private DnsPacketFactory dnsFactory = new DnsPacketFactory();
-        private HttpPacketFactory httpFactory = new HttpPacketFactory();
-        private TlsPacketFactory tlsFactory = new TlsPacketFactory();
+        private BinaryReader _binaryReader;
+        private Dictionary<string, object> _valueDictionary;
 
-        public IPacket CreatePacket(IPacket packet, BinaryReader binaryReader)
+        public TcpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
+        {
+            _binaryReader = binaryReader;
+            _valueDictionary = valueDictionary;
+        }
+
+        public IPacket CreatePacket()
+        {
+            ReadPacketDataFromStream();
+            IPacket packet = new TcpPacket(_valueDictionary);
+
+            ; return packet;
+        }
+
+        private void ReadPacketDataFromStream()
         {
             UInt16 tcpSourcePort = (UInt16)IPAddress.NetworkToHostOrder(
-                                           binaryReader.ReadInt16());
+                                            _binaryReader.ReadUInt16());
             UInt16 tcpDestinationPort = (UInt16)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt16());
+                                            _binaryReader.ReadUInt16());
 
-            UInt32 tcpSequenceNum = (UInt32)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt32());
-            UInt32 tcpAckNum = (UInt32)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt32());
+            _valueDictionary["TcpSequenceNum"] = (UInt32)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadUInt32());
+            _valueDictionary["TcpAckNum"] = (UInt32)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadUInt32());
 
-            byte tcpDataOffsetAndNs = binaryReader.ReadByte();
-            byte tcpFlags = binaryReader.ReadByte();
+            byte tcpDataOffsetAndNs = _binaryReader.ReadByte();
 
-            UInt16 tcpWindowSize = (UInt16)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt16());
-            UInt16 tcpChecksum = (UInt16)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt16());
-            UInt16 tcpUrgPtr = (UInt16)IPAddress.NetworkToHostOrder(
-                                            binaryReader.ReadInt16());
-
-            byte tcpDataOffset = tcpDataOffsetAndNs <<= 4;
+            _valueDictionary["TcpDataOffset"] = tcpDataOffsetAndNs <<= 4;
 
             byte tcpNs = tcpDataOffsetAndNs;
             tcpNs <<= 7;
             tcpNs >>= 7;
+            _valueDictionary["TcpNs"] = tcpNs;
+
+            byte tcpFlags = _binaryReader.ReadByte();
+
 
             StringBuilder tcpFlagsBinStr = new StringBuilder();
             tcpFlagsBinStr.Append(Convert.ToString(tcpFlags, 2));
@@ -54,92 +64,75 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
             tcpFlagsBinStr = tcpFlagsBinStr.Insert(0, tcpNs.ToString());
             int tcpFlagsInt = Convert.ToInt32(tcpFlagsBinStr.ToString());
 
+            var tcpFlagsObj = CreateTcpFlagsObject(tcpFlagsInt);
+
+            _valueDictionary["TcpFlags"] = tcpFlagsObj;
+
+            _valueDictionary["TcpWindowSize"] = (UInt16)IPAddress.NetworkToHostOrder(
+                                _binaryReader.ReadUInt16());
+            _valueDictionary["TcpChecksum"] = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadUInt16());
+            _valueDictionary["TcpUrgPtr"] = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadUInt16());
+
+            //TODO
+            if ((int)_valueDictionary["TcpDataOffset"] > 5)
+            {
+
+            }
+
+            _valueDictionary["TcpPorts"] = new Dictionary<string, string>()
+            {
+                {"dst", tcpDestinationPort.ToString()},
+                {"src", tcpSourcePort.ToString()}
+            };
+        }
+
+        private TcpFlags CreateTcpFlagsObject(int tcpFlagsInt)
+        {
             TcpFlags tcpFlagsObj = new TcpFlags();
-            
-            if((tcpFlagsInt & 1) != 0)
+
+            if ((tcpFlagsInt & 1) != 0)
             {
                 tcpFlagsObj.FIN.IsSet = true;
             }
-            if((tcpFlagsInt & 2) != 0)
+            if ((tcpFlagsInt & 2) != 0)
             {
                 tcpFlagsObj.SYN.IsSet = true;
             }
-            if((tcpFlagsInt & 4) != 0)
+            if ((tcpFlagsInt & 4) != 0)
             {
                 tcpFlagsObj.RST.IsSet = true;
             }
-            if((tcpFlagsInt & 8) != 0)
+            if ((tcpFlagsInt & 8) != 0)
             {
                 tcpFlagsObj.PSH.IsSet = true;
             }
-            if((tcpFlagsInt & 16) != 0)
+            if ((tcpFlagsInt & 16) != 0)
             {
                 tcpFlagsObj.ACK.IsSet = true;
             }
-            if((tcpFlagsInt & 32) != 0)
+            if ((tcpFlagsInt & 32) != 0)
             {
                 tcpFlagsObj.URG.IsSet = true;
             }
-            if((tcpFlagsInt & 64) != 0)
+            if ((tcpFlagsInt & 64) != 0)
             {
                 tcpFlagsObj.ECE.IsSet = true;
             }
-            if((tcpFlagsInt & 128) != 0)
+            if ((tcpFlagsInt & 128) != 0)
             {
                 tcpFlagsObj.CWR.IsSet = true;
             }
-            if((tcpFlagsInt & 256) != 0)
+            if ((tcpFlagsInt & 256) != 0)
             {
                 tcpFlagsObj.NS.IsSet = true;
             }
 
-            if (tcpDataOffset > 5)
-            {
-
-            }
-
-            IpPacket pac = packet as IpPacket;
-            IPacket tcpPacket = new TcpPacket(pac)
-            {
-                TcpSequenceNumber = tcpSequenceNum,
-                TcpAckNumber = tcpAckNum,
-                TcpDataOffset = tcpDataOffset,
-                TcpWindowSize = tcpWindowSize,
-                TcpPorts = new System.Collections.Generic.Dictionary<string, string>(),
-                TcpUrgentPointer = tcpUrgPtr,
-                TcpChecksum = tcpChecksum,
-                TcpFlags = tcpFlagsObj,
-                PacketDisplayedProtocol = "TCP"
-            };
-
-            TcpPacket tcpPac = tcpPacket as TcpPacket;
-
-            tcpPac.TcpPorts.Add("dst", tcpDestinationPort.ToString());
-            tcpPac.TcpPorts.Add("src", tcpSourcePort.ToString());
-
-            switch (CheckForAppLayerPorts(tcpPacket))
-            {
-                case AppProtocolEnum.DNS:
-                    IPacket dnsPacket = dnsFactory.CreatePacket(tcpPac, binaryReader);
-                    return dnsPacket;
-
-                case AppProtocolEnum.HTTP:
-                    IPacket httpPacket = httpFactory.CreatePacket(tcpPac, binaryReader);
-                    return httpPacket;
-
-                case AppProtocolEnum.TLS:
-                    IPacket tlsPacket = tlsFactory.CreatePacket(tcpPac, binaryReader);
-                    return tlsPacket;
-
-                case AppProtocolEnum.NoAppProtocol:
-                    return tcpPac;
-
-                default:
-                    return tcpPac;
-            }
+            return tcpFlagsObj;
         }
 
-        private AppProtocolEnum CheckForAppLayerPorts(IPacket packet)
+        public AppProtocolEnum CheckForAppLayerPorts(IPacket packet)
         {
 
             TcpPacket tcpPac = packet as TcpPacket;
