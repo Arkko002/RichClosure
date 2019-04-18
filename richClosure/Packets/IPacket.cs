@@ -20,7 +20,7 @@ namespace richClosure
         TLS
     };
 
-    interface IPacket
+    public interface IPacket
     {
         byte IpVersion { get; }
         string PacketData { get; }

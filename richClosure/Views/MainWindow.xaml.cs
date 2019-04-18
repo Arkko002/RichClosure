@@ -13,6 +13,7 @@ using richClosure.Packets.InternetLayer;
 using richClosure.Packets.TransportLayer;
 using richClosure.Packets.ApplicationLayer;
 using richClosure.Packets.SessionLayer;
+using richClosure.ViewModels;
 
 namespace richClosure
 {
@@ -22,7 +23,7 @@ namespace richClosure
     public partial class MainWindow : Window
     {
         private readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
-        PacketListViewModel packetListViewModel = new PacketListViewModel();
+        PacketCollectionViewModel packetCollectionViewModel = new PacketCollectionViewModel();
         
         object _packetListLockObject = new object();
         
@@ -32,14 +33,11 @@ namespace richClosure
             InitializeComponent();
             Closed += (s, e) => tokenSource.Cancel();
 
-            BindingOperations.EnableCollectionSynchronization(packetListViewModel.PacketList, _packetListLockObject);
+            BindingOperations.EnableCollectionSynchronization(packetCollectionViewModel.PacketObservableCollection, _packetListLockObject);
 
-            packetDataGrid.ItemsSource = packetListViewModel.PacketList;
-
-            packetListViewModel.PacketList.CollectionChanged += PacketList_totalPacketsCountUpdate;
+            packetCollectionViewModel.PacketObservableCollection.CollectionChanged += PacketList_totalPacketsCountUpdate;
 
             stopButton.IsEnabled = false;
-            saveButton.IsEnabled = false;
         }
 
         private void PacketList_totalPacketsCountUpdate(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -48,7 +46,7 @@ namespace richClosure
             {
                 Dispatcher.Invoke(() =>
                 {
-                    totalPacketsLabel.Content = "Total packets: " + packetListViewModel.PacketList.Count;
+                    totalPacketsLabel.Content = "Total packets: " + packetCollectionViewModel.PacketObservableCollection.Count;
                 });
             }
         }
@@ -56,30 +54,13 @@ namespace richClosure
         private void AdapterSelection_adapterSelected(object sender, AdapterSelectedEventArgs e)
         {
             NetworkInterface selectedInterface = e.Adapter;
-            packetListViewModel.StartSniffingPackets(selectedInterface);       
+            //packetCollectionViewModel.StartSniffingPackets(selectedInterface);       
         }
 
-
-        private void PacketDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            packetHexTextBox.Clear();
-            packetAsciiTextBox.Clear();
-
-            if (packetDataGrid.SelectedItem != null)
-            {
-                var dataGridPacket = packetDataGrid.SelectedItem as IpPacket;
-
-                packetListViewModel.ChangeSelectedPacket(dataGridPacket.PacketId);
-                packetTreeView.ItemsSource = packetListViewModel.SelectedPacket.TreeViewItems;
-
-                packetAsciiTextBox.Text = packetListViewModel.SelectedPacket.AsciiData;
-                packetHexTextBox.Text = packetListViewModel.SelectedPacket.HexData;
-            }
-        }
 
         private void Button_StartClick(object sender, RoutedEventArgs e)
         {
-            packetListViewModel.PacketList.Clear();
+            packetCollectionViewModel.PacketObservableCollection.Clear();
 
             AdapterSelectionWindow adapterSelection = new AdapterSelectionWindow();
             adapterSelection.AdapterSelected += AdapterSelection_adapterSelected;
@@ -88,58 +69,6 @@ namespace richClosure
             {
                 startButton.IsEnabled = false;
                 stopButton.IsEnabled = true;
-                saveButton.IsEnabled = true;
-                loadButton.IsEnabled = false;
-            }
-        }
-
-        private void Button_StopClick(object sender, RoutedEventArgs e)
-        {
-            packetListViewModel.StopSniffingPackets();
-
-            startButton.IsEnabled = true;
-            stopButton.IsEnabled = false;
-            saveButton.IsEnabled = true;
-            loadButton.IsEnabled = true;
-        }
-
-        private void Button_SaveClick(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog saveDialog = new SaveFileDialog();
-            saveDialog.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            saveDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            saveDialog.FilterIndex = 1;
-            
-            if(saveDialog.ShowDialog() == true)
-            {
-                //PacketLogWriter logWriter = new PacketLogWriter();
-                //logWriter.WritePacketListLog(packetListViewModel.PacketList.ToList(), saveDialog.FileName);
-            }
-
-        }
-
-        private void Button_LoadClick(object sender, RoutedEventArgs e)
-        {
-            packetListViewModel.PacketList.Clear();
-
-            OpenFileDialog openDialog = new OpenFileDialog();
-            openDialog.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            openDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            openDialog.FilterIndex = 1;
-
-            if(openDialog.ShowDialog() == true)
-            {
-                List<Dictionary<string, string>> tempPacketListDict = new List<Dictionary<string, string>>();
-                //PacketLogParser logParser = new PacketLogParser();
-                //logParser.ReadLogFile(openDialog.FileName, ref tempPacketListDict);
-
-                //LogPacketFactory packetFactory = new LogPacketFactory();
-
-                foreach (var packetDict in tempPacketListDict)
-                {
-                    //IPacket packet = packetFactory.CreatePacket(packetDict);
-                    //packetListViewModel.PacketList.Add(packet);
-                }          
             }
         }
 
@@ -148,8 +77,8 @@ namespace richClosure
             switch (e.Key)
             {
                 case Key.Enter:
-                    packetListViewModel.SearchPacketList(searchTextBox.Text);
-                    packetDataGrid.ItemsSource = packetListViewModel.SearchResultList;
+                    packetCollectionViewModel.SearchPacketList(searchTextBox.Text);
+                    packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
                     break;
 
                 case Key.Escape:
@@ -160,9 +89,9 @@ namespace richClosure
 
         private void Button_SearchClearClick(object sender, RoutedEventArgs e)
         {
-            if (packetDataGrid.ItemsSource != packetListViewModel.PacketList)
+            if (packetDataGrid.ItemsSource != packetCollectionViewModel.PacketObservableCollection)
             {
-                packetDataGrid.ItemsSource = packetListViewModel.PacketList;
+                packetDataGrid.ItemsSource = packetCollectionViewModel.PacketObservableCollection;
                 shownPacketsLabel.Content = "Shown Packets: ";
             }
         }
@@ -216,8 +145,8 @@ namespace richClosure
                 "&" + "udpPorts = " + dataGridPacket.UdpPorts["dst"] +
                 "&" + "udpPorts = " + dataGridPacket.UdpPorts["src"];
 
-            packetListViewModel.SearchPacketList(filterString);
-            packetDataGrid.ItemsSource = packetListViewModel.SearchResultList;
+            packetCollectionViewModel.SearchPacketList(filterString);
+            packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
 
             searchTextBox.Text = filterString;
 
@@ -232,8 +161,8 @@ namespace richClosure
                 "&" + "tcpPorts = " + dataGridPacket.TcpPorts["dst"] +
                 "&" + "tcpPorts = " + dataGridPacket.TcpPorts["src"];
 
-            packetListViewModel.SearchPacketList(filterString);
-            packetDataGrid.ItemsSource = packetListViewModel.SearchResultList;
+            packetCollectionViewModel.SearchPacketList(filterString);
+            packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
 
             searchTextBox.Text = filterString;
         }
@@ -245,8 +174,8 @@ namespace richClosure
             string filterString = "ip4Adrs = " + dataGridPacket.Ip4Adrs["dst"] +
                 "&" + "ip4Adrs = " + dataGridPacket.Ip4Adrs["src"];
 
-            packetListViewModel.SearchPacketList(filterString);
-            packetDataGrid.ItemsSource = packetListViewModel.SearchResultList;
+            packetCollectionViewModel.SearchPacketList(filterString);
+            packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
 
             searchTextBox.Text = filterString;
         }
@@ -260,8 +189,8 @@ namespace richClosure
                 "|" + "ethDestinationMacAdr = " + dataGridPacket.EthSourceMacAdr +
                 "&" + "ethSourceMacAdr = " + dataGridPacket.EthDestinationMacAdr;
 
-            packetListViewModel.SearchPacketList(filterString);
-            packetDataGrid.ItemsSource = packetListViewModel.SearchResultList;
+            packetCollectionViewModel.SearchPacketList(filterString);
+            packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
 
             searchTextBox.Text = filterString;
         }

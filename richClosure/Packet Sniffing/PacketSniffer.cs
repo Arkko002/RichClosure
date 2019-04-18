@@ -9,16 +9,16 @@ using System.IO;
 
 namespace richClosure
 {
-    class PacketSniffer
+    public class PacketSniffer
     {
-        NetworkInterface Adapter { get; set; }
+        NetworkInterface Adapter { get; }
         private IPEndPoint endPoint;
         private ConcurrentQueue<byte[]> packetQueue = new ConcurrentQueue<byte[]>();
         private AutoResetEvent _queueNotifier = new AutoResetEvent(false);
         private ObservableCollection<IPacket> _packetCollection;
 
 
-        volatile bool _shouldWork = true;
+        public bool IsWorking { get; set; } = true;
 
         public PacketSniffer(NetworkInterface adapter, ObservableCollection<IPacket> packetCollection)
         {
@@ -48,7 +48,7 @@ namespace richClosure
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
             socket = ConfigureSocket(socket);
 
-            while (_shouldWork)
+            while (IsWorking)
             {
                 EnqueueIncomingPackets(socket);
             }
@@ -76,12 +76,11 @@ namespace richClosure
 
         public void GetPacketDataFromQueue()
         {
-            while (_shouldWork)
+            while (IsWorking)
             {
                 _queueNotifier.WaitOne();
 
-                byte[] buffer;
-                if (packetQueue.TryDequeue(out buffer))
+                if (packetQueue.TryDequeue(out var buffer))
                 {
                     CreatePacketFromBuffer(buffer);
                 }
@@ -101,7 +100,7 @@ namespace richClosure
 
         public void StopWorking()
         {
-            _shouldWork = false;
+            IsWorking = false;
         }
     }
 }

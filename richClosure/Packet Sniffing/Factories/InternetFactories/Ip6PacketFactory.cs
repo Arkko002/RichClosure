@@ -8,7 +8,6 @@ namespace richClosure.Packet_Sniffing.Factories
 {
     class Ip6PacketFactory : IAbstractFactory
     {
-
         private BinaryReader _binaryReader;
         private byte[] _buffer;
         private ulong _packetId;

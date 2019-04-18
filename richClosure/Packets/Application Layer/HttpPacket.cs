@@ -7,7 +7,7 @@ namespace richClosure.Packets.ApplicationLayer
     {
         public Dictionary<string, string> HttpFieldsDict { get; private set; }
 
-        public HttpPacket(Dictionary<string, object> valuesDictionary) : base(valuesDictionary)
+        public HttpPacket(Dictionary<string, object> valuesDictionary) : base (valuesDictionary)
         {
             SetHttpPacketValues(valuesDictionary);
             SetDisplayedProtocol("HTTP");

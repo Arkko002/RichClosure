@@ -53,18 +53,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PcapDotNet.Base">
-      <HintPath>..\..\..\..\..\..\pcap\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Base.dll</HintPath>
-    </Reference>
-    <Reference Include="PcapDotNet.Core">
-      <HintPath>..\..\..\..\..\..\pcap\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="PcapDotNet.Core.Extensions">
-      <HintPath>..\..\..\..\..\..\pcap\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Core.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="PcapDotNet.Packets">
-      <HintPath>..\..\..\..\..\..\pcap\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Packets.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
@@ -105,7 +93,8 @@
     <Compile Include="Packet Sniffing\Factories\TransportFactories\TcpPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\TransportFactories\UdpPacketFactory.cs" />
     <Compile Include="Events\AdapterSelectedEvent.cs" />
-    <Compile Include="AdapterSelectionWindow.xaml.cs">
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Views\AdapterSelectionWindow.xaml.cs">
       <DependentUpon>AdapterSelectionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Packets\Application Layer\DhcpPacket.cs" />
@@ -117,7 +106,6 @@
     <Compile Include="Packets\Internet Layer\IcmpPacket.cs" />
     <Compile Include="Packets\Internet Layer\IpPacket.cs" />
     <Compile Include="Packet Filtering\PacketListFilter.cs" />
-    <Compile Include="Packets Loging\PacketLogWriter.cs" />
     <Compile Include="Packet Sniffing\PacketSniffer.cs" />
     <Compile Include="Events\ShownPacketsUpdateEvent.cs" />
     <Compile Include="Packets\IPacket.cs" />
@@ -125,11 +113,11 @@
     <Compile Include="Packets\Transport Layer\TcpPacket.cs" />
     <Compile Include="Packets\Transport Layer\UdpPacket.cs" />
     <Compile Include="Packet Filtering\SearchStringParser.cs" />
-    <Page Include="AdapterSelectionWindow.xaml">
+    <Page Include="Views\AdapterSelectionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -137,16 +125,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Views\Commands\StartSniffingCommand.cs" />
+    <Compile Include="Views\Commands\StopSniffingCommand.cs" />
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packets Loging\LogPacketFactory.cs" />
-    <Compile Include="Packets Loging\PacketLogParser.cs" />
-    <Compile Include="PacketListViewModel.cs" />
-    <Compile Include="PacketViewModel.cs" />
+    <Compile Include="ViewModels\PacketCollectionViewModel.cs" />
+    <Compile Include="ViewModels\PacketViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
