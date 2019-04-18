@@ -6,34 +6,69 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using richClosure.Annotations;
 
-namespace richClosure
+namespace richClosure.ViewModels
 {
-    class PacketViewModel
+    public class PacketViewModel : INotifyPropertyChanged
     {
-        public string HexData { get; }
-        public string AsciiData { get; }
-        private IPacket SourcePacket { get; }
-        public List<TreeViewItem> TreeViewItems { get; set; }
-
-
-        public PacketViewModel(IPacket packet)
+        private string _hexData;
+        public string HexData
         {
-            TreeViewItems = new List<TreeViewItem>();
-            SourcePacket = packet;
-            AsciiData = GetAsciiPacketData(packet);
-            HexData = GetHexPacketData(packet);
-            FillPacketTreeView(packet, TreeViewItems);
+            get => _hexData;
+            private set
+            {
+                _hexData = value;
+                OnPropertyChanged(nameof(HexData));
+            }
         }
 
-        public string GetAsciiPacketData(IPacket packet)
+        private string _asciiData;
+        public string AsciiData
+        {
+            get => _asciiData;
+            private set
+            {
+                _asciiData = value;
+                OnPropertyChanged(nameof(AsciiData));
+            }
+        }
+
+
+        private IPacket _sourcePacket;
+        public IPacket SourcePacket
+        {
+            get => _sourcePacket;
+            set
+            {
+                if (_sourcePacket == value) return;
+                _sourcePacket = value;
+                GetAsciiPacketData(_sourcePacket);
+                GetHexPacketData(_sourcePacket);
+                FillPacketTreeView(_sourcePacket, TreeViewItems);
+            }
+        }
+
+        private List<TreeViewItem> _treeViewItems;
+        public List<TreeViewItem> TreeViewItems
+        {
+            get => _treeViewItems;
+            private set
+            {
+                _treeViewItems = value;
+                OnPropertyChanged(nameof(TreeViewItems));
+            }
+        }
+
+        public void GetAsciiPacketData(IPacket packet)
         {
             string[] hexString = packet.PacketData.Split('-');
 
-            string asciiData = String.Empty;
+            string tempAscii = string.Empty;
 
             foreach (string hexval in hexString)
             {
@@ -42,57 +77,57 @@ namespace richClosure
                 if (decval >= 33 && decval <= 126)
                 {
                     char ch = Convert.ToChar(decval);
-                    asciiData += ch;
+                    tempAscii += ch;
                 }
                 else
                 {
-                    asciiData += ".";
+                    tempAscii += ".";
                 }
             }
 
-            string resString = String.Empty;
+            string resString = string.Empty;
 
             for (int x = 1; x <= hexString.Length; x++)
             {
                 if (x % 16 == 0 && x != 0)
                 {
-                    resString += asciiData[x - 1] + "\n";
+                    resString += tempAscii[x - 1] + "\n";
                 }
                 else if (x % 8 == 0 && x != 0)
                 {
-                    resString += asciiData[x - 1] + "   ";
+                    resString += tempAscii[x - 1] + "   ";
                 }
                 else
                 {
-                    resString += asciiData[x - 1] + " ";
+                    resString += tempAscii[x - 1] + " ";
                 }
             }
 
-            return resString;
+            AsciiData = resString;
         }
 
-        public string GetHexPacketData(IPacket packet)
+        public void GetHexPacketData(IPacket packet)
         {
-            string[] hexString = packet.PacketData.Split('-');
-            string resString = String.Empty;
+            string[] hexTempStr = packet.PacketData.Split('-');
+            string resString = string.Empty;
 
-            for (int x = 1; x <= hexString.Length; x++)
+            for (int x = 1; x <= hexTempStr.Length; x++)
             {
                 if (x % 16 == 0 && x != 0)
                 {
-                    resString += hexString[x - 1] + "\n";
+                    resString += hexTempStr[x - 1] + "\n";
                 }
                 else if (x % 8 == 0 && x != 0)
                 {
-                    resString += hexString[x - 1] + "   ";
+                    resString += hexTempStr[x - 1] + "   ";
                 }
                 else
                 {
-                    resString += hexString[x - 1] + " ";
+                    resString += hexTempStr[x - 1] + " ";
                 }
             }
 
-            return resString;
+            HexData = resString;
         }
 
         private void FillPacketTreeView(IPacket packet, List<TreeViewItem> TreeViewItems)
@@ -445,6 +480,14 @@ namespace richClosure
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Version: " + pac.TlsVersion.ToString() });
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Data Length: " + pac.TlsDataLength.ToString() });
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Encrypted Data: " + pac.TlsEncryptedData });
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

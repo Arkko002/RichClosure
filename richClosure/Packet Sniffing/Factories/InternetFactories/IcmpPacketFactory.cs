@@ -11,7 +11,7 @@ namespace richClosure.Packet_Sniffing.Factories
         private BinaryReader _binaryReader;
         private Dictionary<string, object> _valueDictionary;
 
-        public Ip4PacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
+        public IcmpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
             _binaryReader = binaryReader;
             _valueDictionary = valueDictionary;
@@ -20,11 +20,11 @@ namespace richClosure.Packet_Sniffing.Factories
         public IPacket CreatePacket()
         {
             ReadPacketDataFromStream();
-            IPacket icmpPacket = new IcmpPacket(_valueDictionary)
+            IPacket icmpPacket = new IcmpPacket(_valueDictionary);
             return icmpPacket;
         }
 
-        private Dictionary<string, object> ReadPacketDataFromStream()
+        private void ReadPacketDataFromStream()
         {
             _valueDictionary["IcmpType"] = _binaryReader.ReadByte();
             _valueDictionary["IcmpCode"] = _binaryReader.ReadByte();
