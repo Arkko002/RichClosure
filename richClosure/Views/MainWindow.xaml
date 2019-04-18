@@ -12,16 +12,21 @@
         <viewModels:PacketViewModel x:Key="PacketViewModel"/>
     </Window.Resources>
 
-    <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Height="610" Width="852">
+    <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Height="617" Width="852">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="197*"/>
+            <RowDefinition Height="398*"/>
+            <RowDefinition Height="22*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="91*"/>
             <ColumnDefinition Width="122*"/>
         </Grid.ColumnDefinitions>
         <DataGrid x:Name="packetDataGrid"  GridLinesVisibility="None"
                   CanUserSortColumns="True" IsReadOnly="True" AutoGenerateColumns="False"
-                  Margin="10,40,10,356" HorizontalAlignment="Stretch" Width="Auto"
+                  Margin="10,40,10,334" HorizontalAlignment="Stretch" Width="Auto"
                   Height="Auto" VerticalAlignment="Stretch" Foreground="Black" Grid.ColumnSpan="2" FontSize="14" SelectedItem="{Binding SourcePacket, Source={StaticResource PacketViewModel}}"
-                  ItemsSource="{Binding PacketObservableCollection, Source={StaticResource CollectionViewModel}}">
+                  ItemsSource="{Binding PacketObservableCollection, Source={StaticResource CollectionViewModel}}" Grid.RowSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding PacketId}" Header="ID"/>
                 <DataGridTextColumn Binding="{Binding TimeDateCaptured}" Header="Time Captured"/>
@@ -56,18 +61,24 @@
                 </Style>
             </DataGrid.RowStyle>
         </DataGrid>
-        <TreeView x:Name="packetTreeView" Margin="10,0,0,180" Width="832" Height="171" VerticalAlignment="Bottom"
-                  HorizontalAlignment="Left" Foreground="Black" FontSize="14" Grid.ColumnSpan="2" ItemsSource="{Binding TreeViewItems, Source={StaticResource PacketViewModel}}"/>
+        <TreeView x:Name="packetTreeView" Margin="10,0,0,165" Width="832" Height="171" VerticalAlignment="Bottom"
+                  HorizontalAlignment="Left" Foreground="Black" FontSize="14" Grid.ColumnSpan="2" ItemsSource="{Binding TreeViewItems, Source={StaticResource PacketViewModel}}" Grid.Row="1"/>
 
-        <Grid Margin="10,595,0,-10" HorizontalAlignment="Left" Width="832" Grid.ColumnSpan="2">
-            <Label x:Name="shownPacketsLabel" Content="Shown packets:" VerticalAlignment="Top" Margin="141,0,538,0" FontSize="10"/>
-            <Label x:Name="totalPacketsLabel" Content="Total packets: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="136" FontSize="10"/>
+        <Grid Margin="10,0,0,-40" HorizontalAlignment="Left" Width="832" Grid.ColumnSpan="2" Grid.Row="2">
+            <Label x:Name="shownPacketsLabel" Content="Shown packets:" VerticalAlignment="Top" Margin="141,0,609,0" FontSize="10"/>
+            <Label x:Name="totalPacketsLabel" Content="Total packets: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="73" FontSize="10"/>
+            <Label x:Name="TotalPacketsLabel_Num" Content="{Binding TotalPacketCount, Source={StaticResource CollectionViewModel}}" HorizontalAlignment="Left" Margin="73,0,0,0" VerticalAlignment="Top" Width="63" Height="15"/>
+            <Label x:Name="ShownPacketsLabel_Num" HorizontalAlignment="Left" Margin="228,0,0,0" VerticalAlignment="Top" Width="63" Height="25" Content="{Binding ShownPacketCount, Source={StaticResource CollectionViewModel}}"/>
         </Grid>
         <Button x:Name="startButton" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding StartSniffingPackets, Mode=OneWay, Source={StaticResource CollectionViewModel}}"/>
         <Button x:Name="stopButton" Content="Stop" HorizontalAlignment="Left" Margin="63,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding StopSniffingPackets, Mode=OneWay, Source={StaticResource CollectionViewModel}}"/>
-        <TextBox x:Name="searchTextBox" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="25" Margin="338,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="420" KeyDown="SearchTextBox_KeyDown"/>
-        <Button x:Name="searchClearButton" Content="Clear" Grid.Column="1" HorizontalAlignment="Left" Margin="399,10,0,0" VerticalAlignment="Top" Width="79" Height="25" Click="Button_SearchClearClick"/>
-        <TextBox x:Name="packetHexTextBox" HorizontalAlignment="Left" Height="155" Margin="10,435,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411" Grid.ColumnSpan="2" FontFamily="Global Monospace" Text="{Binding HexData, Mode=OneWay, Source={StaticResource PacketViewModel}}"/>
-        <TextBox x:Name="packetAsciiTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="155" Margin="62,435,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="416" FontFamily="Global Monospace" Text="{Binding AsciiData, Mode=OneWay, Source={StaticResource PacketViewModel}}"/>
+        <TextBox x:Name="searchTextBox" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="25" Margin="338,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="420">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding SearchPackets, Mode=OneWay, Source={StaticResource CollectionViewModel}}" CommandParameter="{Binding Text, ElementName=searchTextBox}"/>
+            </TextBox.InputBindings>
+        </TextBox>
+        <Button x:Name="searchClearButton" Content="Clear" Grid.Column="1" HorizontalAlignment="Left" Margin="399,10,0,0" VerticalAlignment="Top" Width="79" Height="25" Command="{Binding ClearSearchResult, Mode=OneWay, Source={StaticResource CollectionViewModel}}"/>
+        <TextBox x:Name="packetHexTextBox" HorizontalAlignment="Left" Height="155" Margin="10,238,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411" Grid.ColumnSpan="2" FontFamily="Global Monospace" Text="{Binding HexData, Mode=OneWay, Source={StaticResource PacketViewModel}}" Grid.Row="1"/>
+        <TextBox x:Name="packetAsciiTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="155" Margin="62,238,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="416" FontFamily="Global Monospace" Text="{Binding AsciiData, Mode=OneWay, Source={StaticResource PacketViewModel}}" Grid.Row="1"/>
     </Grid>
 </Window>

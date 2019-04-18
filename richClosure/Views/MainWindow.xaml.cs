@@ -33,22 +33,7 @@ namespace richClosure
             InitializeComponent();
             Closed += (s, e) => tokenSource.Cancel();
 
-            BindingOperations.EnableCollectionSynchronization(packetCollectionViewModel.PacketObservableCollection, _packetListLockObject);
-
-            packetCollectionViewModel.PacketObservableCollection.CollectionChanged += PacketList_totalPacketsCountUpdate;
-
-            stopButton.IsEnabled = false;
-        }
-
-        private void PacketList_totalPacketsCountUpdate(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (!tokenSource.IsCancellationRequested)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    totalPacketsLabel.Content = "Total packets: " + packetCollectionViewModel.PacketObservableCollection.Count;
-                });
-            }
+            BindingOperations.EnableCollectionSynchronization(packetCollectionViewModel.PacketObservableCollection, _packetListLockObject);      
         }
 
         private void AdapterSelection_adapterSelected(object sender, AdapterSelectedEventArgs e)
@@ -70,35 +55,6 @@ namespace richClosure
                 startButton.IsEnabled = false;
                 stopButton.IsEnabled = true;
             }
-        }
-
-        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.Enter:
-                    packetCollectionViewModel.SearchPacketList(searchTextBox.Text);
-                    packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
-                    break;
-
-                case Key.Escape:
-                    searchTextBox.Clear();
-                    break;            
-            }
-        }
-
-        private void Button_SearchClearClick(object sender, RoutedEventArgs e)
-        {
-            if (packetDataGrid.ItemsSource != packetCollectionViewModel.PacketObservableCollection)
-            {
-                packetDataGrid.ItemsSource = packetCollectionViewModel.PacketObservableCollection;
-                shownPacketsLabel.Content = "Shown Packets: ";
-            }
-        }
-
-        private void PacketListFilter_ShownPacketCountUpdate(object sender, UpdateShownPacketsCounterEventArgs e)
-        {
-            shownPacketsLabel.Content = "Shown Packets: " + e.Count; 
         }
 
         private void SetFilterMenuItem_SubmenuOpened(object sender, RoutedEventArgs e)

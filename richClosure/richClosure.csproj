@@ -125,6 +125,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\Commands\ClearSearchResultCommand.cs" />
+    <Compile Include="Views\Commands\SearchCommand.cs" />
     <Compile Include="Views\Commands\StartSniffingCommand.cs" />
     <Compile Include="Views\Commands\StopSniffingCommand.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
