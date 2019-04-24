@@ -15,31 +15,32 @@ using System.Windows.Input;
 using richClosure.Annotations;
 using richClosure.Views.Commands;
 using System.Collections.Specialized;
+using richClosure.Commands;
 
 namespace richClosure.ViewModels
 {
     public class PacketCollectionViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<PacketViewModel> PacketObservableCollection { get; set; }
-        public ObservableCollection<IPacket> ModelCollection { get; set; }
-        public List<IPacket> SearchResultList { get; set; }
+        public ObservableCollection<PacketViewModel> PacketObservableCollection { get; private set; }
+        public ObservableCollection<IPacket> ModelCollection { get; private set; }
 
-        private PacketListFilter _packetListFilter;
+
+        private PacketFilterViewModel PacketFilterViewModel { get; set; }
+
         private PacketSniffer _packetSniffer;
 
-        private StartSniffingCommand _startSniffingCommand;
-        private StopSniffingCommand _stopSniffingCommand;
-        private ClearSearchResultCommand _clearSearchResultCommand;
-        private SearchPacketsCommand _searchPacketsCommand;
+        public ICommand StartSniffingCommand { get; private set; }
+        public ICommand StopSniffingCommand { get; private set; }
 
-        public PacketViewModel SelectedPacket { get; set; }
+
+        public PacketViewModel SelectedPacket { get; private set; }
 
 
         private int _totalPacketCount;
         public int TotalPacketCount
         {
             get => _totalPacketCount;
-            set
+            private set
             {
                 _totalPacketCount = value;
                 OnPropertyChanged(nameof(TotalPacketCount));
@@ -50,26 +51,24 @@ namespace richClosure.ViewModels
         public int ShownPacketCount
         {
             get => _shownPacketCount;
-            set
+            private set
             {
                 _shownPacketCount = value;
                 OnPropertyChanged(nameof(ShownPacketCount));
             }
         }
 
-        public PacketCollectionViewModel()
+        public PacketCollectionViewModel(ObservableCollection<IPacket> modelCollection)
         {
             PacketObservableCollection = new ObservableCollection<PacketViewModel>();
-            _packetListFilter = new PacketListFilter(ModelCollection.ToList());
-            SearchResultList = new List<IPacket>();
+            ModelCollection = modelCollection;
 
-            _startSniffingCommand = new StartSniffingCommand(this, _packetSniffer);
-            _stopSniffingCommand = new StopSniffingCommand(_packetSniffer);
-            _clearSearchResultCommand = new ClearSearchResultCommand(this);
-            _searchPacketsCommand = new SearchPacketsCommand(this);
+            PacketFilterViewModel = new PacketFilterViewModel(this);
 
-            PacketObservableCollection.CollectionChanged += PacketObservableCollection_CollectionChanged; ;
+            StartSniffingCommand = new RelayCommand(x => StartSniffingPackets(), x => !_packetSniffer.IsWorking);
+            StopSniffingCommand = new RelayCommand(x => StopSniffingPackets(), x => _packetSniffer.IsWorking);
 
+            PacketObservableCollection.CollectionChanged += PacketObservableCollection_CollectionChanged;
         }
 
         private void PacketObservableCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -77,38 +76,47 @@ namespace richClosure.ViewModels
             UpdatePacketCount(sender as ObservableCollection<PacketViewModel>);
         }
 
-        public void SearchPacketList(string searchString)
+
+
+        private void StartSniffingPackets()
         {
-            SearchResultList.Clear();
-            _packetListFilter.SearchList(searchString);
-            ShownPacketCount = SearchResultList.Count;
+            if(_packetSniffer is null)
+            {
+                //TODO
+            }
+
+            _packetSniffer.SniffPackets();
         }
 
-        public ICommand StartSniffingPackets => _startSniffingCommand;
-        public ICommand StopSniffingPackets => _stopSniffingCommand;
-        public ICommand ClearSearchResult => _clearSearchResultCommand;
-        public ICommand SearchPackets => _searchPacketsCommand;
-
+        private void StopSniffingPackets()
+        {
+            _packetSniffer.StopWorking();
+        }
 
         public void ClearPacketList()
         {
             PacketObservableCollection.Clear();
         }
 
-        public void ClearSearchResultList()
-        {
-            SearchResultList.Clear();
-            ShownPacketCount = PacketObservableCollection.Count;
-        }
 
         public void ChangeSelectedPacket(ulong packetId)
         {
             //SelectedPacket = new PacketViewModel(ModelCollection[(int)packetId - 1]);
         }
 
-        private void UpdatePacketCount(ObservableCollection<PacketViewModel> packetList)
+        private void UpdatePacketCount(ObservableCollection<PacketViewModel> packetCollection)
         {
-            TotalPacketCount = packetList.Count();
+            TotalPacketCount = packetCollection.Count();
+        }
+
+        public void UpdateShownPacketCount(ObservableCollection<PacketViewModel> packetCollection)
+        {
+            ShownPacketCount = packetCollection.Count;
+        }
+
+        public void UpdateShownPacketCount(List<IPacket> packetList)
+        {
+            ShownPacketCount = packetList.Count;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -14,6 +14,7 @@ using richClosure.Packets.TransportLayer;
 using richClosure.Packets.ApplicationLayer;
 using richClosure.Packets.SessionLayer;
 using richClosure.ViewModels;
+using Autofac;
 
 namespace richClosure
 {
@@ -23,17 +24,30 @@ namespace richClosure
     public partial class MainWindow : Window
     {
         private readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
-        PacketCollectionViewModel packetCollectionViewModel = new PacketCollectionViewModel();
+
+        IContainer Container;
         
         object _packetListLockObject = new object();
         
-
         public MainWindow()
         {
             InitializeComponent();
             Closed += (s, e) => tokenSource.Cancel();
 
-            BindingOperations.EnableCollectionSynchronization(packetCollectionViewModel.PacketObservableCollection, _packetListLockObject);      
+            ObservableCollection<IPacket> modelCollection = new ObservableCollection<IPacket>();
+
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(modelCollection)
+                .SingleInstance();
+
+            builder.RegisterType<PacketCollectionViewModel>()
+                .SingleInstance()
+                .WithParameter(new TypedParameter(typeof(ObservableCollection<IPacket>), modelCollection));
+
+            Container = builder.Build();
+
+            //TODO MVVM multi-threading
+            BindingOperations.EnableCollectionSynchronization(Container.Resolve<PacketCollectionViewModel>().PacketObservableCollection, _packetListLockObject);
         }
 
         private void AdapterSelection_adapterSelected(object sender, AdapterSelectedEventArgs e)

@@ -53,6 +53,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.9.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.9.2\lib\net45\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
@@ -79,6 +82,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Packet Filtering\SearchQuery.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\DhcpPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\DnsPacketFactory.cs" />
@@ -94,6 +98,7 @@
     <Compile Include="Packet Sniffing\Factories\TransportFactories\UdpPacketFactory.cs" />
     <Compile Include="Events\AdapterSelectedEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModels\PacketFilterViewModel.cs" />
     <Compile Include="Views\AdapterSelectionWindow.xaml.cs">
       <DependentUpon>AdapterSelectionWindow.xaml</DependentUpon>
     </Compile>
@@ -125,10 +130,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Views\Commands\ClearSearchResultCommand.cs" />
-    <Compile Include="Views\Commands\SearchCommand.cs" />
-    <Compile Include="Views\Commands\StartSniffingCommand.cs" />
-    <Compile Include="Views\Commands\StopSniffingCommand.cs" />
+    <Compile Include="Commands\ClearSearchResultCommand.cs" />
+    <Compile Include="Commands\SearchCommand.cs" />
+    <Compile Include="Commands\StartSniffingCommand.cs" />
+    <Compile Include="Commands\StopSniffingCommand.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
