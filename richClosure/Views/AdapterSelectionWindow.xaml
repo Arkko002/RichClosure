@@ -4,12 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:richClosure"
+        xmlns:viewModels="clr-namespace:richClosure.ViewModels"
         mc:Ignorable="d"
         Title="AdapterSelectionWindow" Height="328.283" Width="453.535" ResizeMode="NoResize">
+    <Window.Resources>
+        <viewModels:PacketSnifferViewModel x:Key="SnifferViewModel"/>
+    </Window.Resources>
+
     <Grid>
-        <Button Content="OK" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Width="100" Click="ButtonOk_Click" Height="34"/>
+        <Button Content="OK" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Width="100" Click="ButtonOk_Click" Height="34"
+                Command="{Binding StartSniffingCommand, Source={StaticResource SnifferViewModel}}"/>
         <Button Content="Cancel" HorizontalAlignment="Left" Margin="336,240,0,0" VerticalAlignment="Top" Width="100" Click="ButtonCancel_Click" Height="34"/>
-        <DataGrid x:Name="AdapterDataGrid" AutoGenerateColumns="False" HorizontalAlignment="Left" Height="210" Margin="10,10,0,0" VerticalAlignment="Top" Width="426" IsReadOnly="True">
+        <DataGrid x:Name="AdapterDataGrid" AutoGenerateColumns="False" SelectedItem="{Binding NetworkInterface, Source={StaticResource SnifferViewModel}}" 
+                  HorizontalAlignment="Left" Height="210" Margin="10,10,0,0" VerticalAlignment="Top" Width="426" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Id}" Header="ID"/>
                 <DataGridTextColumn Binding="{Binding Name}" Header="Name"/>

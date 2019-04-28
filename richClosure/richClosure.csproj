@@ -38,7 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,13 +56,20 @@
     <Reference Include="Autofac, Version=4.9.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.9.2\lib\net45\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="CommonServiceLocator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.2.0.4\lib\net46\CommonServiceLocator.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prism.Wpf.7.1.0.431\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -99,6 +106,7 @@
     <Compile Include="Events\AdapterSelectedEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModels\PacketFilterViewModel.cs" />
+    <Compile Include="ViewModels\PacketSnifferViewModel.cs" />
     <Compile Include="Views\AdapterSelectionWindow.xaml.cs">
       <DependentUpon>AdapterSelectionWindow.xaml</DependentUpon>
     </Compile>
@@ -118,6 +126,9 @@
     <Compile Include="Packets\Transport Layer\TcpPacket.cs" />
     <Compile Include="Packets\Transport Layer\UdpPacket.cs" />
     <Compile Include="Packet Filtering\SearchStringParser.cs" />
+    <Compile Include="Window Services\IWindowManager.cs" />
+    <Compile Include="Window Services\WindowFactory.cs" />
+    <Compile Include="Window Services\WindowManager.cs" />
     <Page Include="Views\AdapterSelectionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -130,10 +141,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Commands\ClearSearchResultCommand.cs" />
-    <Compile Include="Commands\SearchCommand.cs" />
-    <Compile Include="Commands\StartSniffingCommand.cs" />
-    <Compile Include="Commands\StopSniffingCommand.cs" />
+    <Compile Include="Window Services\IWindowFactory.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

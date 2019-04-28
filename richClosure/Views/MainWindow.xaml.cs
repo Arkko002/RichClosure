@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Windows.Data;
-using Microsoft.Win32;
-using System.Collections.Generic;
 using richClosure.Packets.InternetLayer;
 using richClosure.Packets.TransportLayer;
-using richClosure.Packets.ApplicationLayer;
-using richClosure.Packets.SessionLayer;
 using richClosure.ViewModels;
 using Autofac;
-
 namespace richClosure
 {
     /// <summary>
@@ -29,6 +20,9 @@ namespace richClosure
         
         object _packetListLockObject = new object();
         
+
+        //TODO VM for packet sniffer, seprate collection from sniffing
+        //TODO vm DI resolving in App OnStartup (no graph, parentVM!!)
         public MainWindow()
         {
             InitializeComponent();
@@ -39,6 +33,15 @@ namespace richClosure
             var builder = new ContainerBuilder();
             builder.RegisterInstance(modelCollection)
                 .SingleInstance();
+
+            WindowFactory windowFactory = new WindowFactory();
+            builder.RegisterInstance(windowFactory)
+                .As<IWindowFactory>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<WindowManager>()
+                .WithParameter(new TypedParameter(typeof(WindowFactory), windowFactory))
+                .InstancePerLifetimeScope();
 
             builder.RegisterType<PacketCollectionViewModel>()
                 .SingleInstance()
@@ -59,7 +62,7 @@ namespace richClosure
 
         private void Button_StartClick(object sender, RoutedEventArgs e)
         {
-            packetCollectionViewModel.PacketObservableCollection.Clear();
+            //packetCollectionViewModel.PacketObservableCollection.Clear();
 
             AdapterSelectionWindow adapterSelection = new AdapterSelectionWindow();
             adapterSelection.AdapterSelected += AdapterSelection_adapterSelected;
@@ -115,8 +118,8 @@ namespace richClosure
                 "&" + "udpPorts = " + dataGridPacket.UdpPorts["dst"] +
                 "&" + "udpPorts = " + dataGridPacket.UdpPorts["src"];
 
-            packetCollectionViewModel.SearchPacketList(filterString);
-            packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
+            //packetCollectionViewModel.SearchPacketList(filterString);
+            //packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
 
             searchTextBox.Text = filterString;
 
@@ -131,8 +134,8 @@ namespace richClosure
                 "&" + "tcpPorts = " + dataGridPacket.TcpPorts["dst"] +
                 "&" + "tcpPorts = " + dataGridPacket.TcpPorts["src"];
 
-            packetCollectionViewModel.SearchPacketList(filterString);
-            packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
+            //packetCollectionViewModel.SearchPacketList(filterString);
+            //packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
 
             searchTextBox.Text = filterString;
         }
@@ -144,8 +147,8 @@ namespace richClosure
             string filterString = "ip4Adrs = " + dataGridPacket.Ip4Adrs["dst"] +
                 "&" + "ip4Adrs = " + dataGridPacket.Ip4Adrs["src"];
 
-            packetCollectionViewModel.SearchPacketList(filterString);
-            packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
+            //packetCollectionViewModel.SearchPacketList(filterString);
+            //packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
 
             searchTextBox.Text = filterString;
         }
@@ -159,8 +162,8 @@ namespace richClosure
                 "|" + "ethDestinationMacAdr = " + dataGridPacket.EthSourceMacAdr +
                 "&" + "ethSourceMacAdr = " + dataGridPacket.EthDestinationMacAdr;
 
-            packetCollectionViewModel.SearchPacketList(filterString);
-            packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
+            //packetCollectionViewModel.SearchPacketList(filterString);
+            //packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
 
             searchTextBox.Text = filterString;
         }

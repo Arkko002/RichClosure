@@ -13,7 +13,6 @@ using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Input;
 using richClosure.Annotations;
-using richClosure.Views.Commands;
 using System.Collections.Specialized;
 using richClosure.Commands;
 
@@ -24,17 +23,15 @@ namespace richClosure.ViewModels
         public ObservableCollection<PacketViewModel> PacketObservableCollection { get; private set; }
         public ObservableCollection<IPacket> ModelCollection { get; private set; }
 
-
         private PacketFilterViewModel PacketFilterViewModel { get; set; }
 
-        private PacketSniffer _packetSniffer;
-
-        public ICommand StartSniffingCommand { get; private set; }
-        public ICommand StopSniffingCommand { get; private set; }
 
 
         public PacketViewModel SelectedPacket { get; private set; }
 
+        private IWindowManager _windowManager;
+
+        public NetworkInterface NetworkInterface { get; private set; }
 
         private int _totalPacketCount;
         public int TotalPacketCount
@@ -58,15 +55,15 @@ namespace richClosure.ViewModels
             }
         }
 
-        public PacketCollectionViewModel(ObservableCollection<IPacket> modelCollection)
+        public PacketCollectionViewModel(ObservableCollection<IPacket> modelCollection, IWindowManager windowManager)
         {
             PacketObservableCollection = new ObservableCollection<PacketViewModel>();
             ModelCollection = modelCollection;
 
             PacketFilterViewModel = new PacketFilterViewModel(this);
 
-            StartSniffingCommand = new RelayCommand(x => StartSniffingPackets(), x => !_packetSniffer.IsWorking);
-            StopSniffingCommand = new RelayCommand(x => StopSniffingPackets(), x => _packetSniffer.IsWorking);
+
+            _windowManager = windowManager;
 
             PacketObservableCollection.CollectionChanged += PacketObservableCollection_CollectionChanged;
         }
@@ -78,20 +75,6 @@ namespace richClosure.ViewModels
 
 
 
-        private void StartSniffingPackets()
-        {
-            if(_packetSniffer is null)
-            {
-                //TODO
-            }
-
-            _packetSniffer.SniffPackets();
-        }
-
-        private void StopSniffingPackets()
-        {
-            _packetSniffer.StopWorking();
-        }
 
         public void ClearPacketList()
         {

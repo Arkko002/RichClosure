@@ -11,7 +11,7 @@ namespace richClosure
 {
     public class PacketSniffer
     {
-        NetworkInterface Adapter { get; }
+        NetworkInterface NetInterface { get; }
         private IPEndPoint endPoint;
         private ConcurrentQueue<byte[]> packetQueue = new ConcurrentQueue<byte[]>();
         private AutoResetEvent _queueNotifier = new AutoResetEvent(false);
@@ -20,10 +20,10 @@ namespace richClosure
 
         public bool IsWorking { get; set; } = true;
 
-        public PacketSniffer(NetworkInterface adapter, ObservableCollection<IPacket> packetCollection)
+        public PacketSniffer(NetworkInterface netInterface, ObservableCollection<IPacket> packetCollection)
         {
-            Adapter = adapter;
-            IPInterfaceProperties AdapterProperties = Adapter.GetIPProperties();
+            NetInterface = netInterface;
+            IPInterfaceProperties AdapterProperties = NetInterface.GetIPProperties();
             UnicastIPAddressInformationCollection unicastIPs = AdapterProperties.UnicastAddresses;
             _packetCollection = packetCollection;
 

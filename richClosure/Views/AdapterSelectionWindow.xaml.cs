@@ -13,6 +13,7 @@ namespace richClosure
         public delegate void AdapterSelectedEventHandler(object sender, AdapterSelectedEventArgs e);
         public event AdapterSelectedEventHandler AdapterSelected;
 
+        //TODO VM for this view
         public AdapterSelectionWindow()
         {
             InitializeComponent();
