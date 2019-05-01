@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System;
+using richClosure.ViewModels;
 
 namespace richClosure
 {
@@ -14,8 +15,9 @@ namespace richClosure
         public event AdapterSelectedEventHandler AdapterSelected;
 
         //TODO VM for this view
-        public AdapterSelectionWindow()
+        public AdapterSelectionWindow(PacketSnifferViewModel vm)
         {
+            DataContext = vm;
             InitializeComponent();
 
             List<NetworkInterface> adapterList = new List<NetworkInterface>();

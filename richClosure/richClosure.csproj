@@ -95,7 +95,6 @@
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\DnsPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\HttpPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\ApplicationFactories\TlsPacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Factories\FlagsChecker.cs" />
     <Compile Include="Packet Sniffing\Factories\IAbstractFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\InternetFactories\IcmpPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Factories\InternetFactories\Ip4PacketFactory.cs" />
@@ -105,6 +104,7 @@
     <Compile Include="Packet Sniffing\Factories\TransportFactories\UdpPacketFactory.cs" />
     <Compile Include="Events\AdapterSelectedEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModels\IViewModel.cs" />
     <Compile Include="ViewModels\PacketFilterViewModel.cs" />
     <Compile Include="ViewModels\PacketSnifferViewModel.cs" />
     <Compile Include="Views\AdapterSelectionWindow.xaml.cs">

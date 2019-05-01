@@ -18,20 +18,19 @@ using richClosure.Commands;
 
 namespace richClosure.ViewModels
 {
-    public class PacketCollectionViewModel : INotifyPropertyChanged
+    //TODO maybe separate class for organizing vm stuff? 
+    public class PacketCollectionViewModel : INotifyPropertyChanged, IViewModel
     {
         public ObservableCollection<PacketViewModel> PacketObservableCollection { get; private set; }
         public ObservableCollection<IPacket> ModelCollection { get; private set; }
 
         private PacketFilterViewModel PacketFilterViewModel { get; set; }
-
-
+        private PacketSnifferViewModel PacketSnifferViewModel { get; set; }
 
         public PacketViewModel SelectedPacket { get; private set; }
 
         private IWindowManager _windowManager;
 
-        public NetworkInterface NetworkInterface { get; private set; }
 
         private int _totalPacketCount;
         public int TotalPacketCount
@@ -61,7 +60,7 @@ namespace richClosure.ViewModels
             ModelCollection = modelCollection;
 
             PacketFilterViewModel = new PacketFilterViewModel(this);
-
+            PacketFilterViewModel = new PacketFilterViewModel(this);
 
             _windowManager = windowManager;
 
@@ -74,13 +73,10 @@ namespace richClosure.ViewModels
         }
 
 
-
-
         public void ClearPacketList()
         {
             PacketObservableCollection.Clear();
         }
-
 
         public void ChangeSelectedPacket(ulong packetId)
         {

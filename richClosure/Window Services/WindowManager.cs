@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using richClosure.ViewModels;
 
 namespace richClosure
 {
@@ -20,9 +21,9 @@ namespace richClosure
             throw new NotImplementedException();
         }
 
-        public void ShowWindow(string windowName)
+        public void ShowWindow(string windowName, IViewModel viewModel)
         {
-            var window = _windowFactory.CreateWindow(windowName);
+            var window = _windowFactory.CreateWindow(windowName, viewModel);
             window.Show();
         }
     }

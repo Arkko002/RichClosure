@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace richClosure.ViewModels
 {
-    public class PacketFilterViewModel
+    public class PacketFilterViewModel : IViewModel
     {
         private PacketCollectionViewModel _packetCollectionViewModel;
 

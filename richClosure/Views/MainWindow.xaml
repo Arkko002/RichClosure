@@ -8,8 +8,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="659.833" Width="862.5" ResizeMode="CanMinimize">
     <Window.Resources>
-        <viewModels:PacketCollectionViewModel x:Key="CollectionViewModel"/>
-        <viewModels:PacketFilterViewModel x:Key="FilterViewModel"/>
         <viewModels:PacketViewModel x:Key="PacketViewModel"/>
     </Window.Resources>
 
@@ -26,8 +24,8 @@
         <DataGrid x:Name="packetDataGrid"  GridLinesVisibility="None"
                   CanUserSortColumns="True" IsReadOnly="True" AutoGenerateColumns="False"
                   Margin="10,40,10,334" HorizontalAlignment="Stretch" Width="Auto"
-                  Height="Auto" VerticalAlignment="Stretch" Foreground="Black" Grid.ColumnSpan="2" FontSize="14" SelectedItem="{Binding SourcePacket, Source={StaticResource PacketViewModel}}"
-                  ItemsSource="{Binding PacketObservableCollection, Source={StaticResource CollectionViewModel}}" Grid.RowSpan="2">
+                  Height="Auto" VerticalAlignment="Stretch" Foreground="Black" Grid.ColumnSpan="2" FontSize="14" SelectedItem="{Binding SourcePacket}"
+                  ItemsSource="{Binding PacketObservableCollection}" Grid.RowSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding PacketId}" Header="ID"/>
                 <DataGridTextColumn Binding="{Binding TimeDateCaptured}" Header="Time Captured"/>
@@ -63,23 +61,23 @@
             </DataGrid.RowStyle>
         </DataGrid>
         <TreeView x:Name="packetTreeView" Margin="10,0,0,165" Width="832" Height="171" VerticalAlignment="Bottom"
-                  HorizontalAlignment="Left" Foreground="Black" FontSize="14" Grid.ColumnSpan="2" ItemsSource="{Binding TreeViewItems, Source={StaticResource PacketViewModel}}" Grid.Row="1"/>
+                  HorizontalAlignment="Left" Foreground="Black" FontSize="14" Grid.ColumnSpan="2" ItemsSource="{Binding TreeViewItems}" Grid.Row="1"/>
 
         <Grid Margin="10,0,0,-40" HorizontalAlignment="Left" Width="832" Grid.ColumnSpan="2" Grid.Row="2">
             <Label x:Name="shownPacketsLabel" Content="Shown packets:" VerticalAlignment="Top" Margin="141,0,609,0" FontSize="10"/>
             <Label x:Name="totalPacketsLabel" Content="Total packets: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="73" FontSize="10"/>
-            <Label x:Name="TotalPacketsLabel_Num" Content="{Binding TotalPacketCount, Source={StaticResource CollectionViewModel}}" HorizontalAlignment="Left" Margin="73,0,0,0" VerticalAlignment="Top" Width="63" Height="15"/>
-            <Label x:Name="ShownPacketsLabel_Num" HorizontalAlignment="Left" Margin="228,0,0,0" VerticalAlignment="Top" Width="63" Height="25" Content="{Binding ShownPacketCount, Source={StaticResource CollectionViewModel}}"/>
+            <Label x:Name="TotalPacketsLabel_Num" Content="{Binding TotalPacketCount}" HorizontalAlignment="Left" Margin="73,0,0,0" VerticalAlignment="Top" Width="63" Height="25"/>
+            <Label x:Name="ShownPacketsLabel_Num" HorizontalAlignment="Left" Margin="228,0,0,0" VerticalAlignment="Top" Width="63" Height="25" Content="{Binding ShownPacketCount}"/>
         </Grid>
-        <Button x:Name="startButton" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding StartSniffingPackets, Mode=OneWay, Source={StaticResource CollectionViewModel}}"/>
-        <Button x:Name="stopButton" Content="Stop" HorizontalAlignment="Left" Margin="63,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding StopSniffingPackets, Mode=OneWay, Source={StaticResource CollectionViewModel}}"/>
+        <Button x:Name="startButton" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding StartSniffingPackets, Mode=OneWay}"/>
+        <Button x:Name="stopButton" Content="Stop" HorizontalAlignment="Left" Margin="63,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding StopSniffingPackets, Mode=OneWay}"/>
         <TextBox x:Name="searchTextBox" Text="{Binding SearchString}" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="25" Margin="338,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="420">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding SearchPackets, Mode=OneWay, Source={StaticResource FilterViewModel}}"/>
+                <KeyBinding Key="Enter" Command="{Binding SearchPackets, Mode=OneWay }"/>
             </TextBox.InputBindings>
         </TextBox>
-        <Button x:Name="searchClearButton" Content="Clear" Grid.Column="1" HorizontalAlignment="Left" Margin="399,10,0,0" VerticalAlignment="Top" Width="79" Height="25" Command="{Binding ClearSearchResult, Mode=OneWay, Source={StaticResource CollectionViewModel}}"/>
-        <TextBox x:Name="packetHexTextBox" HorizontalAlignment="Left" Height="155" Margin="10,238,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411" Grid.ColumnSpan="2" FontFamily="Global Monospace" Text="{Binding HexData, Mode=OneWay, Source={StaticResource PacketViewModel}}" Grid.Row="1"/>
-        <TextBox x:Name="packetAsciiTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="155" Margin="62,238,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="416" FontFamily="Global Monospace" Text="{Binding AsciiData, Mode=OneWay, Source={StaticResource PacketViewModel}}" Grid.Row="1"/>
+        <Button x:Name="searchClearButton" Content="Clear" Grid.Column="1" HorizontalAlignment="Left" Margin="399,10,0,0" VerticalAlignment="Top" Width="79" Height="25" Command="{Binding ClearSearchResult, Mode=OneWay}"/>
+        <TextBox x:Name="packetHexTextBox" HorizontalAlignment="Left" Height="155" Margin="10,238,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411" Grid.ColumnSpan="2" FontFamily="Global Monospace" Text="{Binding HexData, Mode=OneWay}" Grid.Row="1"/>
+        <TextBox x:Name="packetAsciiTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="155" Margin="62,238,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="416" FontFamily="Global Monospace" Text="{Binding AsciiData, Mode=OneWay}" Grid.Row="1"/>
     </Grid>
 </Window>

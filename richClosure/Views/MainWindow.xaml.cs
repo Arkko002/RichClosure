@@ -22,35 +22,15 @@ namespace richClosure
         
 
         //TODO VM for packet sniffer, seprate collection from sniffing
-        //TODO vm DI resolving in App OnStartup (no graph, parentVM!!)
-        public MainWindow()
+        //TODO vm DI resolving in App OnStartup (graph!!)
+        public MainWindow(PacketCollectionViewModel vm)
         {
+            DataContext = vm;
             InitializeComponent();
             Closed += (s, e) => tokenSource.Cancel();
 
-            ObservableCollection<IPacket> modelCollection = new ObservableCollection<IPacket>();
-
-            var builder = new ContainerBuilder();
-            builder.RegisterInstance(modelCollection)
-                .SingleInstance();
-
-            WindowFactory windowFactory = new WindowFactory();
-            builder.RegisterInstance(windowFactory)
-                .As<IWindowFactory>()
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<WindowManager>()
-                .WithParameter(new TypedParameter(typeof(WindowFactory), windowFactory))
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<PacketCollectionViewModel>()
-                .SingleInstance()
-                .WithParameter(new TypedParameter(typeof(ObservableCollection<IPacket>), modelCollection));
-
-            Container = builder.Build();
-
             //TODO MVVM multi-threading
-            BindingOperations.EnableCollectionSynchronization(Container.Resolve<PacketCollectionViewModel>().PacketObservableCollection, _packetListLockObject);
+            BindingOperations.EnableCollectionSynchronization(vm.PacketObservableCollection, _packetListLockObject);
         }
 
         private void AdapterSelection_adapterSelected(object sender, AdapterSelectedEventArgs e)
@@ -58,7 +38,6 @@ namespace richClosure
             NetworkInterface selectedInterface = e.Adapter;
             //packetCollectionViewModel.StartSniffingPackets(selectedInterface);       
         }
-
 
         private void Button_StartClick(object sender, RoutedEventArgs e)
         {

@@ -14,7 +14,7 @@ using richClosure.Annotations;
 
 namespace richClosure.ViewModels
 {
-    public class PacketViewModel : INotifyPropertyChanged
+    public class PacketViewModel : INotifyPropertyChanged, IViewModel
     {
         private string _hexData;
         public string HexData

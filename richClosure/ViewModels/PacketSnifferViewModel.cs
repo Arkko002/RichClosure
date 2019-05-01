@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace richClosure.ViewModels
 {
-    class PacketSnifferViewModel
+    public class PacketSnifferViewModel : IViewModel
     {
         private PacketSniffer _packetSniffer;
         public ObservableCollection<IPacket> ModelCollection { get; private set; }
