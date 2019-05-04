@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using richClosure.ViewModels;
 
 namespace richClosure
@@ -16,14 +17,14 @@ namespace richClosure
             _windowFactory = windowFactory;
         }
 
-        public void CloseWindow(string windowName)
+        public void CloseWindow(Window window)
         {
             throw new NotImplementedException();
         }
 
-        public void ShowWindow(string windowName, IViewModel viewModel)
+        public void ShowWindow(Type windowType, IViewModel viewModel)
         {
-            var window = _windowFactory.CreateWindow(windowName, viewModel);
+            var window = _windowFactory.CreateWindow(windowType, viewModel);
             window.Show();
         }
     }

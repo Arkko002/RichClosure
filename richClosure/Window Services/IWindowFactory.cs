@@ -10,6 +10,6 @@ namespace richClosure
 {
     public interface IWindowFactory
     {
-        Window CreateWindow(string windowName, IViewModel viewModel);
+        Window CreateWindow(Type windowType, IViewModel viewModel);
     }
 }

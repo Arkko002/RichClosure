@@ -24,13 +24,7 @@ namespace richClosure.ViewModels
         public ObservableCollection<PacketViewModel> PacketObservableCollection { get; private set; }
         public ObservableCollection<IPacket> ModelCollection { get; private set; }
 
-        private PacketFilterViewModel PacketFilterViewModel { get; set; }
-        private PacketSnifferViewModel PacketSnifferViewModel { get; set; }
-
         public PacketViewModel SelectedPacket { get; private set; }
-
-        private IWindowManager _windowManager;
-
 
         private int _totalPacketCount;
         public int TotalPacketCount
@@ -54,15 +48,10 @@ namespace richClosure.ViewModels
             }
         }
 
-        public PacketCollectionViewModel(ObservableCollection<IPacket> modelCollection, IWindowManager windowManager)
+        public PacketCollectionViewModel(ObservableCollection<IPacket> modelCollection)
         {
             PacketObservableCollection = new ObservableCollection<PacketViewModel>();
             ModelCollection = modelCollection;
-
-            PacketFilterViewModel = new PacketFilterViewModel(this);
-            PacketFilterViewModel = new PacketFilterViewModel(this);
-
-            _windowManager = windowManager;
 
             PacketObservableCollection.CollectionChanged += PacketObservableCollection_CollectionChanged;
         }

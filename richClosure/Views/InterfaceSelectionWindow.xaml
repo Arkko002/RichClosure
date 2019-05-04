@@ -1,4 +1,4 @@
-﻿<Window x:Class="richClosure.AdapterSelectionWindow"
+﻿<Window x:Class="richClosure.InterfaceSelectionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,16 +6,13 @@
         xmlns:local="clr-namespace:richClosure"
         xmlns:viewModels="clr-namespace:richClosure.ViewModels"
         mc:Ignorable="d"
-        Title="AdapterSelectionWindow" Height="328.283" Width="453.535" ResizeMode="NoResize">
-    <Window.Resources>
-        <viewModels:PacketSnifferViewModel x:Key="SnifferViewModel"/>
-    </Window.Resources>
-
+        Title="InterfaceSelectionWindow" Height="328.283" Width="453.535" ResizeMode="NoResize">
     <Grid>
-        <Button Content="OK" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Width="100" Click="ButtonOk_Click" Height="34"
-                Command="{Binding StartSniffingCommand, Source={StaticResource SnifferViewModel}}"/>
-        <Button Content="Cancel" HorizontalAlignment="Left" Margin="336,240,0,0" VerticalAlignment="Top" Width="100" Click="ButtonCancel_Click" Height="34"/>
-        <DataGrid x:Name="AdapterDataGrid" AutoGenerateColumns="False" SelectedItem="{Binding NetworkInterface, Source={StaticResource SnifferViewModel}}" 
+        <Button Content="OK" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Width="100" Height="34"
+                Command="{Binding ChooseInterfaceCommand, Mode=OneWay}"/>
+        <Button Content="Cancel" HorizontalAlignment="Left" Margin="336,240,0,0" VerticalAlignment="Top" Width="100"  Height="34"
+                Command="{Binding CloseRequestCommand, Mode=OneWay}"/>
+        <DataGrid x:Name="AdapterDataGrid" AutoGenerateColumns="False" SelectedItem="{Binding SelectedInterface}" ItemsSource="{Binding NetworkInterfaces}" 
                   HorizontalAlignment="Left" Height="210" Margin="10,10,0,0" VerticalAlignment="Top" Width="426" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Id}" Header="ID"/>

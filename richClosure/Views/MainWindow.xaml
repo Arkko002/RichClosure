@@ -69,7 +69,7 @@
             <Label x:Name="TotalPacketsLabel_Num" Content="{Binding TotalPacketCount}" HorizontalAlignment="Left" Margin="73,0,0,0" VerticalAlignment="Top" Width="63" Height="25"/>
             <Label x:Name="ShownPacketsLabel_Num" HorizontalAlignment="Left" Margin="228,0,0,0" VerticalAlignment="Top" Width="63" Height="25" Content="{Binding ShownPacketCount}"/>
         </Grid>
-        <Button x:Name="startButton" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding StartSniffingPackets, Mode=OneWay}"/>
+        <Button x:Name="startButton" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding ShowAdapterSelectionCommand, Mode=OneWay}"/>
         <Button x:Name="stopButton" Content="Stop" HorizontalAlignment="Left" Margin="63,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding StopSniffingPackets, Mode=OneWay}"/>
         <TextBox x:Name="searchTextBox" Text="{Binding SearchString}" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="25" Margin="338,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="420">
             <TextBox.InputBindings>

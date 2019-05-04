@@ -20,17 +20,16 @@ namespace richClosure
         
         object _packetListLockObject = new object();
         
-
         //TODO VM for packet sniffer, seprate collection from sniffing
         //TODO vm DI resolving in App OnStartup (graph!!)
-        public MainWindow(PacketCollectionViewModel vm)
+        public MainWindow(MainWindowViewModel vm)
         {
             DataContext = vm;
             InitializeComponent();
             Closed += (s, e) => tokenSource.Cancel();
 
             //TODO MVVM multi-threading
-            BindingOperations.EnableCollectionSynchronization(vm.PacketObservableCollection, _packetListLockObject);
+            BindingOperations.EnableCollectionSynchronization(vm.PacketCollectionViewModel.PacketObservableCollection, _packetListLockObject);
         }
 
         private void AdapterSelection_adapterSelected(object sender, AdapterSelectedEventArgs e)
@@ -41,16 +40,11 @@ namespace richClosure
 
         private void Button_StartClick(object sender, RoutedEventArgs e)
         {
-            //packetCollectionViewModel.PacketObservableCollection.Clear();
-
-            AdapterSelectionWindow adapterSelection = new AdapterSelectionWindow();
-            adapterSelection.AdapterSelected += AdapterSelection_adapterSelected;
-
-            if (adapterSelection.ShowDialog() == true)
-            {
-                startButton.IsEnabled = false;
-                stopButton.IsEnabled = true;
-            }
+            //if (adapterSelection.ShowDialog() == true)
+            //{
+            //    startButton.IsEnabled = false;
+            //    stopButton.IsEnabled = true;
+            //}
         }
 
         private void SetFilterMenuItem_SubmenuOpened(object sender, RoutedEventArgs e)

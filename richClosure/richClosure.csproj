@@ -104,11 +104,13 @@
     <Compile Include="Packet Sniffing\Factories\TransportFactories\UdpPacketFactory.cs" />
     <Compile Include="Events\AdapterSelectedEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModels\InterfaceSelectionViewModel.cs" />
     <Compile Include="ViewModels\IViewModel.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\PacketFilterViewModel.cs" />
     <Compile Include="ViewModels\PacketSnifferViewModel.cs" />
-    <Compile Include="Views\AdapterSelectionWindow.xaml.cs">
-      <DependentUpon>AdapterSelectionWindow.xaml</DependentUpon>
+    <Compile Include="Views\InterfaceSelectionWindow.xaml.cs">
+      <DependentUpon>InterfaceSelectionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Packets\Application Layer\DhcpPacket.cs" />
     <Compile Include="Packets\Application Layer\DnsPacket.cs" />
@@ -129,7 +131,7 @@
     <Compile Include="Window Services\IWindowManager.cs" />
     <Compile Include="Window Services\WindowFactory.cs" />
     <Compile Include="Window Services\WindowManager.cs" />
-    <Page Include="Views\AdapterSelectionWindow.xaml">
+    <Page Include="Views\InterfaceSelectionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

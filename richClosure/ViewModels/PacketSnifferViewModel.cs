@@ -25,19 +25,20 @@ namespace richClosure.ViewModels
         {
             ModelCollection = modelCollection;
 
+            _packetSniffer = new PacketSniffer(modelCollection);
+
             StartSniffingCommand = new RelayCommand(x => StartSniffingPackets(), x => !_packetSniffer.IsWorking);
             StopSniffingCommand = new RelayCommand(x => StopSniffingPackets(), x => _packetSniffer.IsWorking);
         }
 
         private void StartSniffingPackets()
         {
-            _packetSniffer = new PacketSniffer(NetworkInterface, ModelCollection);
-            _packetSniffer.SniffPackets();
+            _packetSniffer.SniffPackets(NetworkInterface);
         }
 
         private void StopSniffingPackets()
         {
-            _packetSniffer.StopWorking();
+            _packetSniffer.StopSniffing();
         }
     }
 }

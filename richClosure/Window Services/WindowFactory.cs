@@ -12,12 +12,9 @@ namespace richClosure
 {
     public class WindowFactory : IWindowFactory
     {
-        public Window CreateWindow(string windowName, IViewModel viewModel)
+        public Window CreateWindow(Type windowType, IViewModel viewModel)
         {
-            string windowClass = "richClosure.Views." + windowName;
-            Type type = Assembly.GetExecutingAssembly().GetType(windowClass);
-
-            Window window = (Window)Activator.CreateInstance(type);
+            Window window = (Window)Activator.CreateInstance(windowType, viewModel);
             window.DataContext = viewModel;
 
             return window;
