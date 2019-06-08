@@ -15,7 +15,7 @@ namespace richClosure
         {
             DataContext = vm;
             InitializeComponent();
-            vm.ClosingRequest += (sender, e) => Close();
+            vm.WindowManager.ClosingRequest += (sender, e) => Close();
         }
     }
 }

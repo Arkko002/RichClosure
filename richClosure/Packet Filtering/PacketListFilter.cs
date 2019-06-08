@@ -14,6 +14,7 @@ namespace richClosure
     class PacketListFilter
     {
         //TODO Write unit tests for this
+        //TODO Break down into seprate classes, one for all reflection operations
 
         private List<IPacket> _mainPacketList;
         private List<IPacket> _resultList;

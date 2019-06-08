@@ -10,7 +10,9 @@ namespace richClosure
 {
     public interface IWindowManager
     {
+        event EventHandler ClosingRequest;
+
         void ShowWindow(Type windowType, IViewModel viewModel);
-        void CloseWindow(Window window);
+        void CloseWindow();
     }
 }

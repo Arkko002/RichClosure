@@ -12,14 +12,20 @@ namespace richClosure
     {
         private IWindowFactory _windowFactory;
 
+        public event EventHandler ClosingRequest;
+
         public WindowManager(IWindowFactory windowFactory)
         {
             _windowFactory = windowFactory;
         }
 
-        public void CloseWindow(Window window)
+
+        public void CloseWindow()
         {
-            throw new NotImplementedException();
+            if (!(ClosingRequest is null))
+            {
+                ClosingRequest(this, EventArgs.Empty);
+            }
         }
 
         public void ShowWindow(Type windowType, IViewModel viewModel)

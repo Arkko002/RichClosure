@@ -18,7 +18,6 @@ using richClosure.Commands;
 
 namespace richClosure.ViewModels
 {
-    //TODO maybe separate class for organizing vm stuff? 
     public class PacketCollectionViewModel : INotifyPropertyChanged, IViewModel
     {
         public ObservableCollection<PacketViewModel> PacketObservableCollection { get; private set; }

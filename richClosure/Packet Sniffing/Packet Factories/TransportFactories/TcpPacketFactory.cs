@@ -26,20 +26,22 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
             ReadPacketDataFromStream();
             IPacket packet = new TcpPacket(_valueDictionary);
 
-            ; return packet;
+            return packet;
         }
 
         private void ReadPacketDataFromStream()
         {
-            UInt16 tcpSourcePort = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
-            UInt16 tcpDestinationPort = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+            _valueDictionary["PacketDisplayedProtocol"] = "TCP";
 
-            _valueDictionary["TcpSequenceNum"] = (UInt32)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt32());
-            _valueDictionary["TcpAckNum"] = (UInt32)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt32());
+            UInt16 tcpSourcePort = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadInt16());
+            UInt16 tcpDestinationPort = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadInt16());
+
+            _valueDictionary["TcpSequenceNumber"] = (UInt32)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadInt32());
+            _valueDictionary["TcpAckNumber"] = (UInt32)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadInt32());
 
             byte tcpDataOffsetAndNs = _binaryReader.ReadByte();
 
@@ -69,14 +71,14 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
             _valueDictionary["TcpFlags"] = tcpFlagsObj;
 
             _valueDictionary["TcpWindowSize"] = (UInt16)IPAddress.NetworkToHostOrder(
-                                _binaryReader.ReadUInt16());
+                                _binaryReader.ReadInt16());
             _valueDictionary["TcpChecksum"] = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
-            _valueDictionary["TcpUrgPtr"] = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+                                            _binaryReader.ReadInt16());
+            _valueDictionary["TcpUrgentPointer"] = (UInt16)IPAddress.NetworkToHostOrder(
+                                            _binaryReader.ReadInt16());
 
             //TODO
-            if ((int)_valueDictionary["TcpDataOffset"] > 5)
+            if (Convert.ToInt32(_valueDictionary["TcpDataOffset"]) > 5)
             {
 
             }
@@ -134,7 +136,6 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
 
         public AppProtocolEnum CheckForAppLayerPorts(IPacket packet)
         {
-
             TcpPacket tcpPac = packet as TcpPacket;
 
             if (tcpPac.TcpPorts.Any(x => x.Value.Equals(53)))

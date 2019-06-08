@@ -137,12 +137,6 @@ namespace richClosure.ViewModels
 
             FillFrameTreeView(pac, TreeViewItems);
 
-            //Ethernet frame is unincluded if ethProtocol == 0
-            if (pac.EthProtocol != 0)
-            {
-                FillEthernetTreeView(pac, TreeViewItems);
-            }
-
             FillIpTreeView(pac, TreeViewItems);
             FillIpProtocolTreeView(pac, TreeViewItems);
 
@@ -156,19 +150,6 @@ namespace richClosure.ViewModels
         {
             TreeViewItem frameItem = new TreeViewItem { Header = "Frame " + packet.PacketId + ", Time Captured: " + packet.TimeDateCaptured };
             TreeViewItems.Add(frameItem);
-        }
-
-        private void FillEthernetTreeView(IPacket packet, List<TreeViewItem> TreeViewItems)
-        {
-            IpPacket pac = packet as IpPacket;
-
-            TreeViewItem ethItem = new TreeViewItem { Header = "Ethernet Layer, " + "Dest: " + pac.EthDestinationMacAdr + ", Src: " + pac.EthSourceMacAdr };
-
-            ethItem.Items.Add(new TreeViewItem { Header = "Ethernet Dest. MAC: " + pac.EthDestinationMacAdr });
-            ethItem.Items.Add(new TreeViewItem { Header = "Ethernet Src. MAC: " + pac.EthSourceMacAdr });
-            ethItem.Items.Add(new TreeViewItem { Header = "Ethernet Protocol: " + pac.EthProtocol });
-
-            TreeViewItems.Add(ethItem);
         }
 
         private void FillIpTreeView(IPacket packet, List<TreeViewItem> TreeViewItems)

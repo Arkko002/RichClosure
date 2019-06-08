@@ -36,11 +36,30 @@ namespace richClosure
                 })
                 .SingleInstance();
 
+            builder.RegisterType<PacketSnifferViewModel>()
+                .WithParameter(new ResolvedParameter(
+                    (info, context) => info.ParameterType == typeof(ObservableCollection<IPacket>),
+                    (info, context) => context.Resolve(typeof(ObservableCollection<IPacket>))))
+                .SingleInstance();
+
+            builder.RegisterType<PacketFilterViewModel>()
+                .WithParameter(new ResolvedParameter(
+                    ((info, context) => info.ParameterType == typeof(PacketCollectionViewModel)),
+                    ((info, context) => context.Resolve(typeof(PacketCollectionViewModel)))))
+                .SingleInstance();
+
             builder.RegisterType<MainWindowViewModel>()
                 .WithParameters(new List<Parameter>()
                 {
                     new ResolvedParameter(((info, context) => info.ParameterType == typeof(PacketCollectionViewModel)),
                         ((info, context) => context.Resolve(typeof(PacketCollectionViewModel)))),
+
+                    new ResolvedParameter(((info, context) => info.ParameterType == typeof(PacketFilterViewModel)),
+                        (info, context) => context.Resolve(typeof(PacketFilterViewModel))),
+
+                    new ResolvedParameter(((info, context) => info.ParameterType == typeof(PacketSnifferViewModel)),
+                        (info, context) => context.Resolve(typeof(PacketSnifferViewModel))),
+
                     new TypedParameter(typeof(IWindowManager), new WindowManager(new WindowFactory()))                  
                 })
                 .SingleInstance();

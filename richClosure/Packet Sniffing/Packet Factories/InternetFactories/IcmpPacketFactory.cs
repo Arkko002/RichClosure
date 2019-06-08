@@ -26,6 +26,9 @@ namespace richClosure.Packet_Sniffing.Factories
 
         private void ReadPacketDataFromStream()
         {
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.NoAppProtocol;
+            _valueDictionary["PacketDisplayedProtocol"] = "ICMP";
+
             _valueDictionary["IcmpType"] = _binaryReader.ReadByte();
             _valueDictionary["IcmpCode"] = _binaryReader.ReadByte();
 

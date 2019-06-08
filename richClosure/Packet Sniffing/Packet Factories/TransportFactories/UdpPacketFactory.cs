@@ -30,10 +30,12 @@ namespace richClosure.Packet_Sniffing.Factories
 
         private void ReadPacketDataFromStream()
         {
+            _valueDictionary["PacketDisplayedProtocol"] = "UDP";
+
             UInt16 udpSourcePort = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+                                            _binaryReader.ReadInt16());
             UInt16 udpDestinationPort = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+                                            _binaryReader.ReadInt16());
 
             _valueDictionary["UdpPorts"] = new Dictionary<string, string>()
             {
@@ -42,9 +44,9 @@ namespace richClosure.Packet_Sniffing.Factories
             };
 
             _valueDictionary["UdpLength"] = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+                                            _binaryReader.ReadInt16());
             _valueDictionary["UdpChecksum"] = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+                                            _binaryReader.ReadInt16());
         }
 
         public AppProtocolEnum CheckForAppLayerPorts(IPacket packet)

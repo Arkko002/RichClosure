@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using richClosure.Packets.InternetLayer;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 
@@ -23,6 +24,7 @@ namespace richClosure.Packet_Sniffing.Factories
         }
         public IPacket CreatePacket()
         {
+            
             ReadPacketDataFromStream();
             IpPacket ip6Packet = new IpPacket(_valueDictionary);
 
@@ -31,7 +33,13 @@ namespace richClosure.Packet_Sniffing.Factories
 
         private void ReadPacketDataFromStream()
         {
-            UInt32 dataBatch = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.NoAppProtocol;
+            _valueDictionary["PacketDisplayedProtocol"] = "IPv6";
+            _valueDictionary["PacketId"] = _packetId;
+            _valueDictionary["DateTimeCaptured"] = DateTime.Now.ToString("yyyy-MM-dd / HH:mm:ss.fff",
+                CultureInfo.InvariantCulture);
+
+            UInt32 dataBatch = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
 
             string dataBatchBin = Convert.ToString(dataBatch, 2);
 

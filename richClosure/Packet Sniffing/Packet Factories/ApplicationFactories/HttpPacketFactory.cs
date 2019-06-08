@@ -28,6 +28,9 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
         private void ReadPacketDataFromStream()
         {
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.HTTP;
+            _valueDictionary["PacketDisplayedProtocol"] = "HTTP";
+
             Dictionary<string, string> fields = new Dictionary<string, string>();
             List<byte> byteList = new List<byte>();
 

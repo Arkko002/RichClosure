@@ -9,7 +9,10 @@ using System.IO;
 
 namespace richClosure.Packet_Sniffing.Factories
 {
-    class PacketFactory : IAbstractFactory
+    //TODO Stop returning nulls
+    //TODO Check data types, get rid of useless casting
+    //TODO Open-closed this
+    public class PacketFactory : IAbstractFactory
     {
         private ulong _packetId;
         private BinaryReader _binaryReader;
@@ -25,7 +28,6 @@ namespace richClosure.Packet_Sniffing.Factories
 
         public IPacket CreatePacket()
         {
-            Dictionary<string, object> valueDict = new Dictionary<string, object>();
             _packetId++;
 
             byte ipVersion = GetPacketIpVersionAndResetStreamPosition();
@@ -100,12 +102,12 @@ namespace richClosure.Packet_Sniffing.Factories
 
         private IAbstractFactory CreateApplicationFactory(IPacket basePacket)
         {
-            switch (basePacket.PacketDisplayedProtocol)
+            switch (basePacket.IpProtocol)
             {
-                case "UDP":
+                case IpProtocolEnum.UDP:
                     return CreateUdpApplicationFactory(basePacket);
 
-                case "TCP":
+                case IpProtocolEnum.TCP:
                     return CreateTcpApplicationFactory(basePacket);
 
                 default:

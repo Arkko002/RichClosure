@@ -12,20 +12,19 @@ namespace richClosure.ViewModels
     {
         public PacketCollectionViewModel PacketCollectionViewModel { get; set; }
         public PacketFilterViewModel PacketFilterViewModel { get; set; }
-        public InterfaceSelectionViewModel InterfaceSelectionViewModel { get; set; }
         public PacketSnifferViewModel PacketSnifferViewModel { get; set; }
 
         private IWindowManager _windowManager;
 
         public ICommand ShowAdapterSelectionCommand { get; private set; }
 
-        public MainWindowViewModel(PacketCollectionViewModel packetCollectionViewModel, IWindowManager windowManager)
+        //TODO Refactor, maybe seprate class?
+        public MainWindowViewModel(PacketCollectionViewModel packetCollectionViewModel, PacketFilterViewModel packetFilterViewModel,
+            PacketSnifferViewModel packetSnifferViewModel,IWindowManager windowManager)
         {
-            //TODO Better DI for this
             PacketCollectionViewModel = packetCollectionViewModel;
-            PacketFilterViewModel = new PacketFilterViewModel(PacketCollectionViewModel);
-            PacketSnifferViewModel = new PacketSnifferViewModel(PacketCollectionViewModel.ModelCollection);
-            InterfaceSelectionViewModel = new InterfaceSelectionViewModel(PacketSnifferViewModel);
+            PacketFilterViewModel = packetFilterViewModel;
+            PacketSnifferViewModel = packetSnifferViewModel;
 
             _windowManager = windowManager;
 
@@ -34,7 +33,7 @@ namespace richClosure.ViewModels
 
         public void StartSniffing()
         {
-            _windowManager.ShowWindow(typeof(InterfaceSelectionWindow), InterfaceSelectionViewModel);
+            _windowManager.ShowWindow(typeof(InterfaceSelectionWindow), new InterfaceSelectionViewModel(PacketSnifferViewModel, _windowManager));
         }
 
         public void StopSniffing()

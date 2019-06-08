@@ -18,14 +18,16 @@ namespace richClosure.ViewModels
         public ICommand ChooseInterfaceCommand { get; set; }
         public ICommand CloseRequestCommand { get; set; }
 
-        public EventHandler ClosingRequest;
+        public IWindowManager WindowManager { get; set; }
 
         private PacketSnifferViewModel _packetSnifferViewModel;
 
-        public InterfaceSelectionViewModel(PacketSnifferViewModel packetSnifferViewModel)
+        public InterfaceSelectionViewModel(PacketSnifferViewModel packetSnifferViewModel, IWindowManager windowManager)
         {
             NetworkInterfaces = new List<NetworkInterface>();
             _packetSnifferViewModel = packetSnifferViewModel;
+
+            WindowManager = windowManager;
 
             ChooseInterfaceCommand = new RelayCommand(x => ChoseInterface(), x => true);
             CloseRequestCommand = new RelayCommand(x => CloseSelectionWindow(), x => true);
@@ -44,15 +46,14 @@ namespace richClosure.ViewModels
             if (_packetSnifferViewModel.StartSniffingCommand.CanExecute(null))
             {
                 _packetSnifferViewModel.StartSniffingCommand.Execute(null);
-            }           
+            }
+            CloseSelectionWindow();
         }
 
         private void CloseSelectionWindow()
         {
-            if (!(ClosingRequest is null))
-            {
-                ClosingRequest(this, EventArgs.Empty);
-            }
+            //TODO Close only caller window
+            WindowManager.CloseWindow();
         }
     }
 }

@@ -17,12 +17,10 @@ namespace richClosure.Packets.InternetLayer
         public ulong PacketId { get; private set; }
         public string PacketData { get; private set; }
         public string TimeDateCaptured { get; private set; }
-        public string EthDestinationMacAdr { get; private set; }
-        public string EthSourceMacAdr { get; private set; }
-        public uint EthProtocol { get; private set; }
         public byte IpVersion { get; private set; }
         public ushort IpTotalLength { get; private set; }
         public AppProtocolEnum IpAppProtocol { get; private set; }
+        public IpProtocolEnum IpProtocol { get; private set; }
         public string PacketDisplayedProtocol { get; private set; }
         public string PacketComment { get; private set; }
 
@@ -34,7 +32,6 @@ namespace richClosure.Packets.InternetLayer
         public ushort Ip4Offset { get; private set; }
         public IpFlags Ip4Flags { get; private set; }
         public byte Ip4TimeToLive { get; private set; }
-        public IpProtocolEnum IpProtocol { get; private set; }
         public uint Ip4HeaderChecksum { get; private set; }
 
 
@@ -63,7 +60,7 @@ namespace richClosure.Packets.InternetLayer
 
             AssignVersionlessProperties(valuesDictionary);
 
-            switch (valuesDictionary["IpVersion"])
+            switch (Convert.ToInt32(valuesDictionary["IpVersion"]))
             {
                 case 4:
                     AssignIp4Properties(valuesDictionary);
@@ -79,33 +76,25 @@ namespace richClosure.Packets.InternetLayer
         {
             PacketId = (ulong) valueDictionary["PacketId"];
             PacketData = (string) valueDictionary["PacketData"];
-            TimeDateCaptured = (string) valueDictionary["TimeDateCaptured"];
-            EthDestinationMacAdr = (string) valueDictionary["EthDestinationMacAdr"];
-            EthSourceMacAdr = (string) valueDictionary["EthSourceMacAdr"];
-            EthProtocol = (uint) valueDictionary["EthProtocol"];
+            TimeDateCaptured = (string) valueDictionary["DateTimeCaptured"];
             IpVersion = (byte) valueDictionary["IpVersion"];
             IpTotalLength = (ushort) valueDictionary["IpTotalLength"];
-            IpAppProtocol = (AppProtocolEnum) valueDictionary["IpAppProtocol"];
-            PacketDisplayedProtocol = (string) valueDictionary["PacketDisplayedProtocol"];
-            PacketComment = (string) valueDictionary["PacketComment"];
+            IpAppProtocol = (AppProtocolEnum) valueDictionary["AppProtocol"];
+            IpProtocol = (IpProtocolEnum)Convert.ToInt32(valueDictionary["IpProtocol"]);
+            valueDictionary.TryGetValue("PacketComment", out object comment);
+            PacketComment = (string) comment;
         }
 
         private void AssignIp4Properties(Dictionary<string, object> valueDictionary)
         {
             Ip4HeaderLength = (byte) valueDictionary["Ip4HeaderLength"];
 
-            Ip4Adrs = new Dictionary<string, string>
-            {
-                {"src", valueDictionary["Ip4SourceAdr"].ToString()},
-                {"dst", valueDictionary["Ip4DestinationAdr"].ToString()}
-            };
-
+            Ip4Adrs = (Dictionary<string, string>)valueDictionary["Ip4Adrs"];
             Ip4Dscp = (byte) valueDictionary["Ip4Dscp"];
             Ip4Identification = (ushort) valueDictionary["Ip4Identification"];
             Ip4Offset = (ushort) valueDictionary["Ip4Offset"];
             Ip4Flags = (IpFlags) valueDictionary["Ip4Flags"];
             Ip4TimeToLive = (byte) valueDictionary["Ip4TimeToLive"];
-            IpProtocol = (IpProtocolEnum) valueDictionary["IpProtocol"];
             Ip4HeaderChecksum = (uint) valueDictionary["Ip4HeaderChecksum"];
         }
 

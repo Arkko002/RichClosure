@@ -20,7 +20,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
         }
 
         public IPacket CreatePacket()
-        {
+        {        
             ReadPacketDataFromStream();
 
             IPacket dnsPacket;
@@ -43,13 +43,16 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
         private void ReadPacketDataFromStream()
         {
-            _valueDictionary["DnsIdentification"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-            UInt16 dnsFlagsAndCodes = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.DNS;
+            _valueDictionary["PacketDisplayedProtocol"] = "DNS";
 
-            _valueDictionary["DnsQuestions"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-            _valueDictionary["DnsAnswersRR"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-            _valueDictionary["DnsAuthRR"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-            _valueDictionary["DnsAdditionalRR"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            _valueDictionary["DnsIdentification"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+            UInt16 dnsFlagsAndCodes = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+
+            _valueDictionary["DnsQuestions"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+            _valueDictionary["DnsAnswersRR"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+            _valueDictionary["DnsAuthRR"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+            _valueDictionary["DnsAdditionalRR"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
 
             string dnsFlagsBinStr = Convert.ToString(dnsFlagsAndCodes, 2);
 
@@ -191,10 +194,10 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                     }
                 }
 
-                DnsTypeEnum dnsRecordType = (DnsTypeEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-                DnsClassEnum dnsRecordClass = (DnsClassEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-                UInt32 dnsRecordTTL = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
-                UInt16 dnsRDataLength = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+                DnsTypeEnum dnsRecordType = (DnsTypeEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+                DnsClassEnum dnsRecordClass = (DnsClassEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+                UInt32 dnsRecordTTL = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
+                UInt16 dnsRDataLength = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
 
                 byte[] byteData = _binaryReader.ReadBytes(dnsRDataLength);
                 StringBuilder dataBuilder = new StringBuilder();

@@ -20,8 +20,6 @@ namespace richClosure
         
         object _packetListLockObject = new object();
         
-        //TODO VM for packet sniffer, seprate collection from sniffing
-        //TODO vm DI resolving in App OnStartup (graph!!)
         public MainWindow(MainWindowViewModel vm)
         {
             DataContext = vm;
@@ -32,35 +30,11 @@ namespace richClosure
             BindingOperations.EnableCollectionSynchronization(vm.PacketCollectionViewModel.PacketObservableCollection, _packetListLockObject);
         }
 
-        private void AdapterSelection_adapterSelected(object sender, AdapterSelectedEventArgs e)
-        {
-            NetworkInterface selectedInterface = e.Adapter;
-            //packetCollectionViewModel.StartSniffingPackets(selectedInterface);       
-        }
-
-        private void Button_StartClick(object sender, RoutedEventArgs e)
-        {
-            //if (adapterSelection.ShowDialog() == true)
-            //{
-            //    startButton.IsEnabled = false;
-            //    stopButton.IsEnabled = true;
-            //}
-        }
-
         private void SetFilterMenuItem_SubmenuOpened(object sender, RoutedEventArgs e)
         {
             if (packetDataGrid.SelectedItem != null)
             {
                 var dataGridPacket = packetDataGrid.SelectedItem as IpPacket;
-
-                if(dataGridPacket.EthProtocol == 0)
-                {
-                    EthFilter.IsEnabled = false;
-                }
-                else
-                {
-                    EthFilter.IsEnabled = true;
-                }
 
                 switch(dataGridPacket.IpProtocol)
                 {
@@ -119,21 +93,6 @@ namespace richClosure
 
             string filterString = "ip4Adrs = " + dataGridPacket.Ip4Adrs["dst"] +
                 "&" + "ip4Adrs = " + dataGridPacket.Ip4Adrs["src"];
-
-            //packetCollectionViewModel.SearchPacketList(filterString);
-            //packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;
-
-            searchTextBox.Text = filterString;
-        }
-
-        private void MenuItem_EthernetFilterClick(object sender, RoutedEventArgs e)
-        {
-            var dataGridPacket = packetDataGrid.SelectedItem as IpPacket;
-
-            string filterString = "ethDestinationMacAdr = " + dataGridPacket.EthDestinationMacAdr +
-                "&" + "ethSourceMacAdr = " + dataGridPacket.EthSourceMacAdr +
-                "|" + "ethDestinationMacAdr = " + dataGridPacket.EthSourceMacAdr +
-                "&" + "ethSourceMacAdr = " + dataGridPacket.EthDestinationMacAdr;
 
             //packetCollectionViewModel.SearchPacketList(filterString);
             //packetDataGrid.ItemsSource = packetCollectionViewModel.SearchResultList;

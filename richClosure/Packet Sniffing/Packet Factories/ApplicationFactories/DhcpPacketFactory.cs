@@ -29,14 +29,17 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
         private void ReadPacketDataFromStream()
         {
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.DHCP;
+            _valueDictionary["PacketDisplayedProtocol"] = "DHCP";
+
             _valueDictionary["DhcpOpcode"] = _binaryReader.ReadByte();
             _valueDictionary["DhcpHardType"] = _binaryReader.ReadByte();
             _valueDictionary["dhcpHardAdrLength"] = _binaryReader.ReadByte();
             _valueDictionary["dhcpHops"] = _binaryReader.ReadByte();
 
-            _valueDictionary["dhcpTransId"] = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
-            _valueDictionary["dhcpSeconds"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
-            UInt16 dhcpFlags = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            _valueDictionary["dhcpTransId"] = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
+            _valueDictionary["dhcpSeconds"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+            UInt16 dhcpFlags = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
 
             string flagsFinal;
             if (dhcpFlags > 0)
@@ -50,10 +53,10 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
             _valueDictionary["DhcpFlags"] = flagsFinal;
 
-            UInt32 dhcpClientIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
-            UInt32 dhcpYourIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
-            UInt32 dhcpServerIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
-            UInt32 dhcpGatewayIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt32());
+            UInt32 dhcpClientIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
+            UInt32 dhcpYourIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
+            UInt32 dhcpServerIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
+            UInt32 dhcpGatewayIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
 
             _valueDictionary["DhcpClientIp"] = new IPAddress(dhcpClientIp).ToString();
             _valueDictionary["DhcpYourIp"] = new IPAddress(dhcpYourIp).ToString();

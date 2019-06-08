@@ -24,6 +24,7 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
 
         public IPacket CreatePacket()
         {
+            
             ReadPacketDataFromStream();
 
             IpPacket ip4Packet = new IpPacket(_valueDictionary);
@@ -32,6 +33,8 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
 
         private void ReadPacketDataFromStream()
         {
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.NoAppProtocol;
+            _valueDictionary["PacketDisplayedProtocol"] = "IPv4";
             _valueDictionary["PacketId"] = _packetId;
             _valueDictionary["DateTimeCaptured"] = DateTime.Now.ToString("yyyy-MM-dd / HH:mm:ss.fff",
                 CultureInfo.InvariantCulture);
@@ -48,26 +51,26 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
             ipHeaderLength >>= 4;
             ipHeaderLength *= 4;
 
-            _valueDictionary["Ip4HearderLength"] = ipHeaderLength;
+            _valueDictionary["Ip4HeaderLength"] = ipHeaderLength;
 
 
-            _valueDictionary["IpDscp"] = _binaryReader.ReadByte();
+            _valueDictionary["Ip4Dscp"] = _binaryReader.ReadByte();
 
 
             _valueDictionary["IpTotalLength"] = (UInt16)IPAddress.NetworkToHostOrder(
-                _binaryReader.ReadUInt16());
-            _valueDictionary["IpIdentification"] = (UInt16)IPAddress.NetworkToHostOrder(
-                _binaryReader.ReadUInt16());
+                _binaryReader.ReadInt16());
+            _valueDictionary["Ip4Identification"] = (UInt16)IPAddress.NetworkToHostOrder(
+                _binaryReader.ReadInt16());
 
             UInt16 ipFlagsAndOffset = (UInt16)IPAddress.NetworkToHostOrder(
-                _binaryReader.ReadUInt16());
-            _valueDictionary["IpTimeToLive"] = _binaryReader.ReadByte();
+                _binaryReader.ReadInt16());
+            _valueDictionary["Ip4TimeToLive"] = _binaryReader.ReadByte();
             _valueDictionary["IpProtocol"] = _binaryReader.ReadByte();
-            _valueDictionary["IpChecksum"] = (UInt16)IPAddress.NetworkToHostOrder(
-                _binaryReader.ReadUInt16());
+            _valueDictionary["Ip4HeaderChecksum"] = (UInt16)IPAddress.NetworkToHostOrder(
+                _binaryReader.ReadInt16());
 
-            uint ipSourceIpAddress = _binaryReader.ReadUInt32();
-            uint ipDestinationIpAddress = _binaryReader.ReadUInt32();
+            uint ipSourceIpAddress = (uint)_binaryReader.ReadInt32();
+            uint ipDestinationIpAddress = (uint)_binaryReader.ReadInt32();
 
             _valueDictionary["Ip4Adrs"] = new Dictionary<string, string>()
             {
@@ -91,14 +94,15 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
                 ipFlagsObj.MF.IsSet = true;
             }
 
-            _valueDictionary["IpFlags"] = ipFlagsObj;
+            _valueDictionary["Ip4Flags"] = ipFlagsObj;
 
             int ipOffset = ipFlagsAndOffset << 3;
             ipOffset >>= 3;
 
-            _valueDictionary["IpOffset"] = ipOffset;
+            _valueDictionary["Ip4Offset"] = ipOffset;
 
-            _valueDictionary["PacketData"] = BitConverter.ToString(_buffer, 0, (int)_valueDictionary["IpTotalLength"]);
+           
+            _valueDictionary["PacketData"] = BitConverter.ToString(_buffer, 0, Convert.ToInt32(_valueDictionary["IpTotalLength"]));
         }
     }
 }

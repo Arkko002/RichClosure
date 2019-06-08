@@ -28,13 +28,16 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
         private void ReadPacketDataFromStream()
         {
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.TLS;
+            _valueDictionary["PacketDisplayedProtocol"] = "TLS";
+
             _valueDictionary["TlsType"] = _binaryReader.ReadByte();
             if (!Enum.IsDefined(typeof(TlsContentTypeEnum), (int)_valueDictionary["TlsType"]))
             {
                 return;
             }
 
-            UInt16 tlsVersion = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            UInt16 tlsVersion = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
 
             string tlsVersionFinal;
             if (tlsVersion == 0x0303)
