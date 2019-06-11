@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace richClosure.Packet_Filtering
 {
+    //TODO Make this use regular expressions
     public class SearchStringParser
     {
         public SearchQueryList ParseString(string commandString)
@@ -28,7 +29,7 @@ namespace richClosure.Packet_Filtering
             return searchQueries;
         }
 
-        public List<SearchQuery> ParseOrString(string commandString)
+        private List<SearchQuery> ParseOrString(string commandString)
         {
             string[] parsedOrConditions = commandString.Split('|');
             List<SearchQuery> searchQueries = new List<SearchQuery>();
@@ -41,7 +42,7 @@ namespace richClosure.Packet_Filtering
             return searchQueries;
         }
 
-        public List<SearchQuery> ParseAndString(string commandString)
+        private List<SearchQuery> ParseAndString(string commandString)
         {
             string[] parsedAndConditions = commandString.Split('&');
             List<SearchQuery> searchQueries = new List<SearchQuery>();
