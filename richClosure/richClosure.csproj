@@ -98,6 +98,7 @@
     </ApplicationDefinition>
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Packet Filtering\SearchQuery.cs" />
+    <Compile Include="Packet Filtering\SearchQueryList.cs" />
     <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\DhcpPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\DnsPacketFactory.cs" />
     <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\HttpPacketFactory.cs" />

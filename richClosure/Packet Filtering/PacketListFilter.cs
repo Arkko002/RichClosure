@@ -23,19 +23,16 @@ namespace richClosure.Packet_Filtering
         public void SearchList(string conditionString)
         {
             SearchStringParser parser = new SearchStringParser();
+            SearchQueryList queries = parser.ParseString(conditionString);
 
-            List<SearchQuery> orSearchQueries = parser.ParseOrString(conditionString);
-
-            foreach (var query in orSearchQueries)
+            foreach (var query in queries.OrQueries)
             {
                 SearchListWithSingleCondition(query);
             }
             
-            List<SearchQuery> andSearchQueries = parser.ParseAndString(conditionString);
-
-            if (andSearchQueries.Count > 0)
+            if (queries.AndQueries.Count > 0)
             {
-                SearchListWithAnd(andSearchQueries);
+                SearchListWithAnd(queries.AndQueries);
             }
    
         }
