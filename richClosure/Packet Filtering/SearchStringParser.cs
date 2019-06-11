@@ -1,26 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using richClosure.Packet_Filtering;
 
-namespace richClosure
+namespace richClosure.Packet_Filtering
 {
-    class SearchStringParser
+    public class SearchStringParser
     {
-        public static List<SearchQuery> ParseOrString(string commandString)
+        //TODO main public method, check for single commands, not only chained | or &
+        public List<SearchQuery> ParseString()
         {
+            throw new NotImplementedException();
+        }
+
+        public List<SearchQuery> ParseOrString(string commandString)
+        {
+            if (!commandString.Contains("|"))
+            {
+                return new List<SearchQuery>();
+            }
+
             string[] parsedOrConditions = commandString.Split('|');
             List<SearchQuery> searchQueries = new List<SearchQuery>();
 
             foreach (var op in parsedOrConditions)
             {
-                SearchQuery query = new SearchQuery()
+                string[] queryParts = op.TrimStart().TrimEnd().Split(' ');
+
+                SearchQuery query = new SearchQuery
                 {
-                    SearchedProperty = op[0].ToString(),
-                    OperatorStr = op[1].ToString(),
-                    SearchedValue = op[2].ToString()
+                    SearchedProperty = queryParts[0],
+                    OperatorStr = queryParts[1],
+                    SearchedValue = queryParts[2]
                 };
 
                 searchQueries.Add(query);
@@ -29,19 +38,25 @@ namespace richClosure
             return searchQueries;
         }
 
-        public static List<SearchQuery> ParseAndString(string commandString)
+        public List<SearchQuery> ParseAndString(string commandString)
         {
-            string[] parsedAndConditions = commandString.Split('&');
+            if (!commandString.Contains("&"))
+            {
+                return new List<SearchQuery>();
+            }
 
+            string[] parsedAndConditions = commandString.Split('&');
             List<SearchQuery> searchQueries = new List<SearchQuery>();
 
             foreach (var op in parsedAndConditions)
             {
-                SearchQuery query = new SearchQuery()
+                string[] queryParts = op.TrimStart().TrimEnd().Split(' ');
+
+                SearchQuery query = new SearchQuery
                 {
-                    SearchedProperty = op[0].ToString(),
-                    OperatorStr = op[1].ToString(),
-                    SearchedValue = op[2].ToString()
+                    SearchedProperty = queryParts[0],
+                    OperatorStr = queryParts[1],
+                    SearchedValue = queryParts[2]
                 };
 
                 searchQueries.Add(query);

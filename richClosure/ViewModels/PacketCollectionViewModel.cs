@@ -1,27 +1,18 @@
-﻿using richClosure.Packets.ApplicationLayer;
-using richClosure.Packets.InternetLayer;
-using richClosure.Packets.SessionLayer;
-using richClosure.Packets.TransportLayer;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Windows.Controls;
-using System.Windows.Input;
-using richClosure.Annotations;
 using System.Collections.Specialized;
-using richClosure.Commands;
+using richClosure.Packets;
+using richClosure.Properties;
 
 namespace richClosure.ViewModels
 {
     public class PacketCollectionViewModel : INotifyPropertyChanged, IViewModel
     {
-        public ObservableCollection<PacketViewModel> PacketObservableCollection { get; private set; }
-        public ObservableCollection<IPacket> ModelCollection { get; private set; }
+        public ObservableCollection<PacketViewModel> PacketObservableCollection { get; }
+        public ObservableCollection<IPacket> ModelCollection { get; }
 
         public PacketViewModel SelectedPacket { get; private set; }
 
@@ -60,7 +51,6 @@ namespace richClosure.ViewModels
             UpdatePacketCount(sender as ObservableCollection<PacketViewModel>);
         }
 
-
         public void ClearPacketList()
         {
             PacketObservableCollection.Clear();
@@ -68,12 +58,12 @@ namespace richClosure.ViewModels
 
         public void ChangeSelectedPacket(ulong packetId)
         {
-            //SelectedPacket = new PacketViewModel(ModelCollection[(int)packetId - 1]);
+            // SelectedPacket = new PacketViewModel(ModelCollection[(int)packetId - 1]);
         }
 
         private void UpdatePacketCount(ObservableCollection<PacketViewModel> packetCollection)
         {
-            TotalPacketCount = packetCollection.Count();
+            TotalPacketCount = packetCollection.Count;
         }
 
         public void UpdateShownPacketCount(ObservableCollection<PacketViewModel> packetCollection)

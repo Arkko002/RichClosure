@@ -1,31 +1,27 @@
 ﻿
 namespace richClosure
 {
-    class ErrorLoger
+    class ErrorLogger
     {
 
         public enum ErrorSeverity
         {
-            low,
-            medium,
-            high
+            Low,
+            Medium,
+            High
         };
 
-        private static object lockObject = new object();
-
-        private ErrorLoger()
-        {
-        }
+        private static readonly object LockObject = new object();
 
         public static void LogError(string dateTime, string errorMsg, object location, ErrorSeverity severity, string dumpData)
         {
-            lock(lockObject)
+            lock(LockObject)
             {
                 switch (severity)
                 {
-                    case ErrorSeverity.low:
+                    case ErrorSeverity.Low:
                         System.IO.File.AppendAllText("LogFile.txt", "AT " + dateTime + "\n");
-                        System.IO.File.AppendAllText("LogFile.txt", errorMsg + " in " + location.ToString() + "\n");
+                        System.IO.File.AppendAllText("LogFile.txt", errorMsg + " in " + location + "\n");
 
                         if(dumpData != string.Empty)
                         {
@@ -35,11 +31,11 @@ namespace richClosure
                         System.IO.File.AppendAllText("LogFile.txt", "---------END----------");
                         break;
 
-                    case ErrorSeverity.medium:
+                    case ErrorSeverity.Medium:
 
                         break;
 
-                    case ErrorSeverity.high:
+                    case ErrorSeverity.High:
 
                         break;
                 }

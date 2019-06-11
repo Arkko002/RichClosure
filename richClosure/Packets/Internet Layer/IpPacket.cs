@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
 
-namespace richClosure.Packets.InternetLayer
+namespace richClosure.Packets.Internet_Layer
 {
     class IpFlags : IFlags
     {
-        public CustomBool DF = new CustomBool();
-        public CustomBool MF = new CustomBool();
+        public CustomBool Df = new CustomBool();
+        public CustomBool Mf = new CustomBool();
         public CustomBool Res = new CustomBool();
     }
 
     class IpPacket : IPacket
     {
-        //IPacket
+        // IPacket
         public ulong PacketId { get; private set; }
         public string PacketData { get; private set; }
         public string TimeDateCaptured { get; private set; }
@@ -24,7 +23,7 @@ namespace richClosure.Packets.InternetLayer
         public string PacketDisplayedProtocol { get; private set; }
         public string PacketComment { get; private set; }
 
-        //IP4
+        // IP4
         public byte Ip4HeaderLength { get; private set; }
         public Dictionary<string, string> Ip4Adrs { get; private set; }
         public byte Ip4Dscp { get; private set; }
@@ -34,8 +33,7 @@ namespace richClosure.Packets.InternetLayer
         public byte Ip4TimeToLive { get; private set; }
         public uint Ip4HeaderChecksum { get; private set; }
 
-
-        //IP6
+        // IP6
         public byte Ip6TrafficClass { get; private set; }
         public UInt32 Ip6FlowLabel { get; private set; }
         public byte Ip6HopLimit { get; private set; }

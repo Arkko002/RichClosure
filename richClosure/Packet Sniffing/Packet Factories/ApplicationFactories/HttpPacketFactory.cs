@@ -1,15 +1,15 @@
-﻿using richClosure.Packets.ApplicationLayer;
-using richClosure.Packets.TransportLayer;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using richClosure.Packets;
+using richClosure.Packets.Application_Layer;
 
-namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
+namespace richClosure.Packet_Sniffing.Packet_Factories.ApplicationFactories
 {
     class HttpPacketFactory : IAbstractFactory
     {
-        private BinaryReader _binaryReader;
-        private Dictionary<string, object> _valueDictionary;
+        private readonly BinaryReader _binaryReader;
+        private readonly Dictionary<string, object> _valueDictionary;
 
         public HttpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
@@ -28,7 +28,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
         private void ReadPacketDataFromStream()
         {
-            _valueDictionary["AppProtocol"] = AppProtocolEnum.HTTP;
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.Http;
             _valueDictionary["PacketDisplayedProtocol"] = "HTTP";
 
             Dictionary<string, string> fields = new Dictionary<string, string>();
@@ -66,15 +66,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                             }
                         }
 
-                        if (splitHeader.Length > 1)
-                        {
-                            fields.Add(splitHeader[0], splitHeader[1]);
-                        }
-                        else
-                        {
-                            fields.Add(splitHeader[0], string.Empty);
-                        }
-
+                        fields.Add(splitHeader[0], splitHeader.Length > 1 ? splitHeader[1] : string.Empty);
 
                         byteList.RemoveRange(0, i + 2);
                         i = 0;

@@ -1,19 +1,18 @@
-﻿using System.Collections.Generic;
-using richClosure.Packet_Sniffing.Factories.ApplicationFactories;
-using richClosure.Packets.InternetLayer;
-using richClosure.Packets.TransportLayer;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using richClosure.Packets;
+using richClosure.Packets.Transport_Layer;
 
-namespace richClosure.Packet_Sniffing.Factories.TransportFactories
+namespace richClosure.Packet_Sniffing.Packet_Factories.TransportFactories
 {
     class TcpPacketFactory : IAbstractFactory
     {
-        private BinaryReader _binaryReader;
-        private Dictionary<string, object> _valueDictionary;
+        private readonly BinaryReader _binaryReader;
+        private readonly Dictionary<string, object> _valueDictionary;
 
         public TcpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
@@ -54,7 +53,6 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
 
             byte tcpFlags = _binaryReader.ReadByte();
 
-
             StringBuilder tcpFlagsBinStr = new StringBuilder();
             tcpFlagsBinStr.Append(Convert.ToString(tcpFlags, 2));
 
@@ -77,7 +75,7 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
             _valueDictionary["TcpUrgentPointer"] = (UInt16)IPAddress.NetworkToHostOrder(
                                             _binaryReader.ReadInt16());
 
-            //TODO
+            // TODO
             if (Convert.ToInt32(_valueDictionary["TcpDataOffset"]) > 5)
             {
 
@@ -96,39 +94,39 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
 
             if ((tcpFlagsInt & 1) != 0)
             {
-                tcpFlagsObj.FIN.IsSet = true;
+                tcpFlagsObj.Fin.IsSet = true;
             }
             if ((tcpFlagsInt & 2) != 0)
             {
-                tcpFlagsObj.SYN.IsSet = true;
+                tcpFlagsObj.Syn.IsSet = true;
             }
             if ((tcpFlagsInt & 4) != 0)
             {
-                tcpFlagsObj.RST.IsSet = true;
+                tcpFlagsObj.Rst.IsSet = true;
             }
             if ((tcpFlagsInt & 8) != 0)
             {
-                tcpFlagsObj.PSH.IsSet = true;
+                tcpFlagsObj.Psh.IsSet = true;
             }
             if ((tcpFlagsInt & 16) != 0)
             {
-                tcpFlagsObj.ACK.IsSet = true;
+                tcpFlagsObj.Ack.IsSet = true;
             }
             if ((tcpFlagsInt & 32) != 0)
             {
-                tcpFlagsObj.URG.IsSet = true;
+                tcpFlagsObj.Urg.IsSet = true;
             }
             if ((tcpFlagsInt & 64) != 0)
             {
-                tcpFlagsObj.ECE.IsSet = true;
+                tcpFlagsObj.Ece.IsSet = true;
             }
             if ((tcpFlagsInt & 128) != 0)
             {
-                tcpFlagsObj.CWR.IsSet = true;
+                tcpFlagsObj.Cwr.IsSet = true;
             }
             if ((tcpFlagsInt & 256) != 0)
             {
-                tcpFlagsObj.NS.IsSet = true;
+                tcpFlagsObj.Ns.IsSet = true;
             }
 
             return tcpFlagsObj;
@@ -140,15 +138,15 @@ namespace richClosure.Packet_Sniffing.Factories.TransportFactories
 
             if (tcpPac.TcpPorts.Any(x => x.Value.Equals(53)))
             {
-                return AppProtocolEnum.DNS;
+                return AppProtocolEnum.Dns;
             }
             else if (tcpPac.TcpPorts.Any(x => x.Value.Equals(80)))
             {
-                return AppProtocolEnum.HTTP;
+                return AppProtocolEnum.Http;
             }
             else if (tcpPac.TcpPorts.Any(x => x.Value.Equals(443)))
             {
-                return AppProtocolEnum.TLS;
+                return AppProtocolEnum.Tls;
             }
             else
             {

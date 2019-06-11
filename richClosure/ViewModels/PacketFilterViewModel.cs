@@ -1,28 +1,30 @@
 ﻿using richClosure.Commands;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using richClosure.Packet_Filtering;
+using richClosure.Packets;
 
 namespace richClosure.ViewModels
 {
     public class PacketFilterViewModel : IViewModel
     {
-        private PacketCollectionViewModel _packetCollectionViewModel;
+        private readonly PacketCollectionViewModel _packetCollectionViewModel;
 
-        private PacketListFilter _packetListFilter;
-        public List<IPacket> SearchResultList { get; private set; }
+        private readonly PacketListFilter _packetListFilter;
+        public List<IPacket> SearchResultList { get; }
 
-        public ICommand ClearSearchResultCommand { get; private set; }
-        public ICommand SearchPacketsCommand { get; private set; }
+        public ICommand ClearSearchResultCommand { get; }
+        public ICommand SearchPacketsCommand { get; }
 
         public string SearchString { get; set; }
 
         public PacketFilterViewModel(PacketCollectionViewModel packetCollectionViewModel)
         {
             _packetCollectionViewModel = packetCollectionViewModel;
+
+            _packetListFilter = new PacketListFilter(packetCollectionViewModel.ModelCollection.ToList());
+            SearchResultList = new List<IPacket>();
 
             ClearSearchResultCommand = new RelayCommand(x => ClearSearchResultList(), x => true);
             SearchPacketsCommand = new RelayCommand(x => SearchPacketList(SearchString), x => true);

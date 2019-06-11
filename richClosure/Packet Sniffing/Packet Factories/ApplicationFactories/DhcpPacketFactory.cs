@@ -1,17 +1,17 @@
-﻿using richClosure.Packets.ApplicationLayer;
-using richClosure.Packets.TransportLayer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using richClosure.Packets;
+using richClosure.Packets.Application_Layer;
 
-namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
+namespace richClosure.Packet_Sniffing.Packet_Factories.ApplicationFactories
 {
     class DhcpPacketFactory : IAbstractFactory
     {
-        private BinaryReader _binaryReader;
-        private Dictionary<string, object> _valueDictionary;
+        private readonly BinaryReader _binaryReader;
+        private readonly Dictionary<string, object> _valueDictionary;
 
         public DhcpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
@@ -29,7 +29,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
         private void ReadPacketDataFromStream()
         {
-            _valueDictionary["AppProtocol"] = AppProtocolEnum.DHCP;
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.Dhcp;
             _valueDictionary["PacketDisplayedProtocol"] = "DHCP";
 
             _valueDictionary["DhcpOpcode"] = _binaryReader.ReadByte();
@@ -42,14 +42,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             UInt16 dhcpFlags = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
 
             string flagsFinal;
-            if (dhcpFlags > 0)
-            {
-                flagsFinal = "Broadcast";
-            }
-            else
-            {
-                flagsFinal = "No Flags";
-            }
+            flagsFinal = dhcpFlags > 0 ? "Broadcast" : "No Flags";
 
             _valueDictionary["DhcpFlags"] = flagsFinal;
 
@@ -61,7 +54,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             _valueDictionary["DhcpClientIp"] = new IPAddress(dhcpClientIp).ToString();
             _valueDictionary["DhcpYourIp"] = new IPAddress(dhcpYourIp).ToString();
             _valueDictionary["DhcpServerIp"] = new IPAddress(dhcpServerIp).ToString();
-            _valueDictionary["DhcpGatewayIp"] = new IPAddress(dhcpGatewayIp).ToString(); ;
+            _valueDictionary["DhcpGatewayIp"] = new IPAddress(dhcpGatewayIp).ToString();
 
             byte[] dhcpClientHardAdr = _binaryReader.ReadBytes((int)_valueDictionary["dhcpHardAdrLength"]);
             _valueDictionary["DhcpClientHardAdr"] = BitConverter.ToString(dhcpClientHardAdr);
@@ -74,7 +67,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             byte[] dhcpBootFilename = _binaryReader.ReadBytes(128);
             _valueDictionary["DhcpBootFilename"] = ConvertNameToString(dhcpBootFilename);
 
-            //TODO
+            // TODO
             string dhcpOptions;
         }
 

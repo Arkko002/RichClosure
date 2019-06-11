@@ -1,7 +1,6 @@
-﻿using System.IO;
+﻿using richClosure.Packets;
 
-
-namespace richClosure.Packet_Sniffing.Factories
+namespace richClosure.Packet_Sniffing.Packet_Factories
 {
     interface IAbstractFactory
     {

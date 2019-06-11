@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace richClosure.Packet_Sniffing
 {
     class SocketConfigurator
     {
-        private NetworkInterface _networkInterface;
+        private readonly NetworkInterface _networkInterface;
         private EndPoint _endPoint;
 
-        private Socket _socket;
+        private readonly Socket _socket;
 
         public SocketConfigurator(NetworkInterface networkInterface, Socket socket)
         {
@@ -42,8 +37,8 @@ namespace richClosure.Packet_Sniffing
 
         private UnicastIPAddressInformationCollection GetInterfaceIpInfromation()
         {
-            IPInterfaceProperties AdapterProperties = _networkInterface.GetIPProperties();
-            return AdapterProperties.UnicastAddresses;
+            IPInterfaceProperties adapterProperties = _networkInterface.GetIPProperties();
+            return adapterProperties.UnicastAddresses;
         }
 
         private void GetInterfaceEndpoints(UnicastIPAddressInformationCollection unicastIps)

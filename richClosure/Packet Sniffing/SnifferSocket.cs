@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
+﻿using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace richClosure.Packet_Sniffing
 {
     class SnifferSocket : Socket
     {
-        private SocketConfigurator _socketConfigurator;
+        private readonly SocketConfigurator _socketConfigurator;
 
-        private PacketQueue _packetQueue;
+        private readonly PacketQueue _packetQueue;
 
         public SnifferSocket(SocketType socketType, ProtocolType protocolType, NetworkInterface networkInterface, PacketQueue packetQueue)
             : base(socketType, protocolType)
@@ -47,6 +42,9 @@ namespace richClosure.Packet_Sniffing
             return new SocketConfigurator(networkInterface, this);
         }
 
+        /// <summary>
+        /// Receives packet's data and enqueues it into PacketQueue
+        /// </summary>
         public void ReceivePacket()
         {
             byte[] buffer = new byte[65565];

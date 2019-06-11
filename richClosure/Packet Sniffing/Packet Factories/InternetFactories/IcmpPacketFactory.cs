@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using richClosure.Packets.InternetLayer;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using richClosure.Packets;
+using richClosure.Packets.Internet_Layer;
 
-namespace richClosure.Packet_Sniffing.Factories
+namespace richClosure.Packet_Sniffing.Packet_Factories.InternetFactories
 {
     class IcmpPacketFactory : IAbstractFactory
     {
-        private BinaryReader _binaryReader;
-        private Dictionary<string, object> _valueDictionary;
+        private readonly BinaryReader _binaryReader;
+        private readonly Dictionary<string, object> _valueDictionary;
 
         public IcmpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {

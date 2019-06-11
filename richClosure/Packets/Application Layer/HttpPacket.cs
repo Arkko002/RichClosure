@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using richClosure.Packets.TransportLayer;
+using richClosure.Packets.Transport_Layer;
 
-namespace richClosure.Packets.ApplicationLayer
+namespace richClosure.Packets.Application_Layer
 {
     class HttpPacket : TcpPacket
     {

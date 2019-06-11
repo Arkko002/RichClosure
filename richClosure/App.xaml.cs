@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using Autofac;
 using Autofac.Core;
+using richClosure.Packets;
 using richClosure.ViewModels;
+using richClosure.Views;
+using richClosure.Window_Services;
 
 namespace richClosure
 {
@@ -21,7 +19,7 @@ namespace richClosure
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            //TODO Clean up DI
+            // TODO Clean up DI
             var builder = new ContainerBuilder();
 
             builder.RegisterType<ObservableCollection<IPacket>>()

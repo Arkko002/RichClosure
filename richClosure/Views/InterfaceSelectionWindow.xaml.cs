@@ -1,10 +1,7 @@
 ﻿using System.Windows;
-using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using System;
 using richClosure.ViewModels;
 
-namespace richClosure
+namespace richClosure.Views
 {
     /// <summary>
     /// Interaction logic for InterfaceSelectionWindow.xaml

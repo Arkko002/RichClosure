@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using richClosure.Commands;
+using richClosure.Window_Services;
 
 namespace richClosure.ViewModels
 {
@@ -20,7 +17,7 @@ namespace richClosure.ViewModels
 
         public IWindowManager WindowManager { get; set; }
 
-        private PacketSnifferViewModel _packetSnifferViewModel;
+        private readonly PacketSnifferViewModel _packetSnifferViewModel;
 
         public InterfaceSelectionViewModel(PacketSnifferViewModel packetSnifferViewModel, IWindowManager windowManager)
         {
@@ -52,7 +49,7 @@ namespace richClosure.ViewModels
 
         private void CloseSelectionWindow()
         {
-            //TODO Close only caller window
+            // TODO Close only caller window
             WindowManager.CloseWindow();
         }
     }

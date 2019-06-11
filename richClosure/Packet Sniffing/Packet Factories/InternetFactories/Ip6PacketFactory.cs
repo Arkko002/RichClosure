@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
-using richClosure.Packets.InternetLayer;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using richClosure.Packets;
+using richClosure.Packets.Internet_Layer;
 
-namespace richClosure.Packet_Sniffing.Factories
+namespace richClosure.Packet_Sniffing.Packet_Factories.InternetFactories
 {
     class Ip6PacketFactory : IAbstractFactory
     {
-        private BinaryReader _binaryReader;
-        private byte[] _buffer;
-        private ulong _packetId;
-        private Dictionary<string, object> _valueDictionary;
+        private readonly BinaryReader _binaryReader;
+        private readonly byte[] _buffer;
+        private readonly ulong _packetId;
+        private readonly Dictionary<string, object> _valueDictionary;
 
         public Ip6PacketFactory(BinaryReader binaryReader, byte[] buffer, ulong packetId,
          Dictionary<string, object> valueDictionary)
@@ -38,6 +39,7 @@ namespace richClosure.Packet_Sniffing.Factories
             _valueDictionary["PacketId"] = _packetId;
             _valueDictionary["DateTimeCaptured"] = DateTime.Now.ToString("yyyy-MM-dd / HH:mm:ss.fff",
                 CultureInfo.InvariantCulture);
+            _valueDictionary["PacketData"] = _buffer;
 
             UInt32 dataBatch = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
 

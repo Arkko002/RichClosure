@@ -12,4 +12,12 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Packet Sniffing Tests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\richClosure\richClosure.csproj" />
+  </ItemGroup>
+
 </Project>

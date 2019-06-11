@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-namespace richClosure.Packets.InternetLayer
+
+namespace richClosure.Packets.Internet_Layer
 {
 
     public enum IcmpTypeEnum
@@ -12,7 +13,7 @@ namespace richClosure.Packets.InternetLayer
         RouterAdvertisment = 9,
         RouterSolicitation = 10,
         TimeExceeded = 11,
-        ParameterProblem_BadIPHeader = 12,
+        ParameterProblemBadIpHeader = 12,
         Timestamp = 13,
         TimestampReply = 14,
         InformationRequest = 15,
@@ -27,7 +28,7 @@ namespace richClosure.Packets.InternetLayer
         DestinationHostUnreachable = 1,
         DestinationProtocolUnreachable = 2,
         DestinationPortUnreachable = 3,
-        FragmentationRequired_DFFlagSet = 4,
+        FragmentationRequiredDfFlagSet = 4,
         SourceRouteFailed = 5,
         DestinationNetworkUnknown = 6,
         DestinationHostUnknown = 7,
@@ -51,7 +52,7 @@ namespace richClosure.Packets.InternetLayer
 
     public enum TimeExceededCodeEnum
     {
-        TTL_ExpiredInTransit = 0,
+        TtlExpiredInTransit = 0,
         FragmentReassemblyTimeExceeded = 1
     }
 

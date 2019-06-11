@@ -1,17 +1,17 @@
-﻿using richClosure.Packets.SessionLayer;
-using richClosure.Packets.TransportLayer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using richClosure.Packets;
+using richClosure.Packets.Session_Layer;
 
-namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
+namespace richClosure.Packet_Sniffing.Packet_Factories.ApplicationFactories
 {
     class TlsPacketFactory : IAbstractFactory
     {
-        private BinaryReader _binaryReader;
-        private Dictionary<string, object> _valueDictionary;
+        private readonly BinaryReader _binaryReader;
+        private readonly Dictionary<string, object> _valueDictionary;
 
         public TlsPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
@@ -28,7 +28,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
         private void ReadPacketDataFromStream()
         {
-            _valueDictionary["AppProtocol"] = AppProtocolEnum.TLS;
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.Tls;
             _valueDictionary["PacketDisplayedProtocol"] = "TLS";
 
             _valueDictionary["TlsType"] = _binaryReader.ReadByte();

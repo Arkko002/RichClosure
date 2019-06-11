@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using richClosure.Commands;
+using richClosure.Views;
+using richClosure.Window_Services;
 
 namespace richClosure.ViewModels
 {
     public class MainWindowViewModel : IViewModel
     {
-        public PacketCollectionViewModel PacketCollectionViewModel { get; set; }
-        public PacketFilterViewModel PacketFilterViewModel { get; set; }
-        public PacketSnifferViewModel PacketSnifferViewModel { get; set; }
-
-        private IWindowManager _windowManager;
-
-        public ICommand ShowAdapterSelectionCommand { get; private set; }
-
-        //TODO Refactor, maybe seprate class?
-        public MainWindowViewModel(PacketCollectionViewModel packetCollectionViewModel, PacketFilterViewModel packetFilterViewModel,
-            PacketSnifferViewModel packetSnifferViewModel,IWindowManager windowManager)
+        private readonly IWindowManager _windowManager;
+        // TODO Refactor, maybe seprate class?
+        public MainWindowViewModel(
+            PacketCollectionViewModel packetCollectionViewModel,
+            PacketFilterViewModel packetFilterViewModel,
+            PacketSnifferViewModel packetSnifferViewModel,
+            IWindowManager windowManager)
         {
             PacketCollectionViewModel = packetCollectionViewModel;
             PacketFilterViewModel = packetFilterViewModel;
@@ -30,6 +23,14 @@ namespace richClosure.ViewModels
 
             ShowAdapterSelectionCommand = new RelayCommand(x => StartSniffing(), x => true);
         }
+
+        public PacketCollectionViewModel PacketCollectionViewModel { get; set; }
+
+        public PacketFilterViewModel PacketFilterViewModel { get; set; }
+
+        public PacketSnifferViewModel PacketSnifferViewModel { get; set; }
+
+        public ICommand ShowAdapterSelectionCommand { get; }
 
         public void StartSniffing()
         {

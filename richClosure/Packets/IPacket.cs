@@ -1,23 +1,21 @@
 ﻿using System.Collections.Generic;
-using System;
-using System.Windows.Controls;
 
-namespace richClosure
+namespace richClosure.Packets
 {
     public enum IpProtocolEnum
     {
-        ICMP = 1,
-        TCP = 6,
-        UDP = 17
+        Icmp = 1,
+        Tcp = 6,
+        Udp = 17
     };
 
     public enum AppProtocolEnum
     {
         NoAppProtocol = 0,
-        DNS,
-        DHCP,
-        HTTP,
-        TLS
+        Dns,
+        Dhcp,
+        Http,
+        Tls
     };
 
     public interface IPacket

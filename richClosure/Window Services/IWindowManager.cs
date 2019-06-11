@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using richClosure.ViewModels;
 
-namespace richClosure
+namespace richClosure.Window_Services
 {
     public interface IWindowManager
     {

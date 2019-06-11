@@ -1,25 +1,21 @@
 ﻿using richClosure.Commands;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using richClosure.Packet_Sniffing;
+using richClosure.Packets;
 
 namespace richClosure.ViewModels
 {
     public class PacketSnifferViewModel : IViewModel
     {
-        private PacketSniffer _packetSniffer;
-        public ObservableCollection<IPacket> ModelCollection { get; private set; }
+        private readonly PacketSniffer _packetSniffer;
+        public ObservableCollection<IPacket> ModelCollection { get; }
 
         public NetworkInterface NetworkInterface { get; set; }
 
-        public ICommand StartSniffingCommand { get; private set; }
-        public ICommand StopSniffingCommand { get; private set; }
-
+        public ICommand StartSniffingCommand { get; }
+        public ICommand StopSniffingCommand { get; }
 
         public PacketSnifferViewModel(ObservableCollection<IPacket> modelCollection)
         {

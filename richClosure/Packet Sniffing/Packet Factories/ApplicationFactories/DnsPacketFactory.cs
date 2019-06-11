@@ -1,17 +1,17 @@
-﻿using richClosure.Packets.ApplicationLayer;
-using richClosure.Packets.TransportLayer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using richClosure.Packets;
+using richClosure.Packets.Application_Layer;
 
-namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
+namespace richClosure.Packet_Sniffing.Packet_Factories.ApplicationFactories
 {
     class DnsPacketFactory : IAbstractFactory
     {
-        private BinaryReader _binaryReader;
-        private Dictionary<string, object> _valueDictionary;
+        private readonly BinaryReader _binaryReader;
+        private readonly Dictionary<string, object> _valueDictionary;
 
         public DnsPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
@@ -26,11 +26,11 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             IPacket dnsPacket;
             switch ((IpProtocolEnum)_valueDictionary["IpProtocl"])
             {
-                case IpProtocolEnum.TCP:
+                case IpProtocolEnum.Tcp:
                     dnsPacket = new DnsTcpPacket(_valueDictionary);
                     break;
 
-                case IpProtocolEnum.UDP:
+                case IpProtocolEnum.Udp:
                     dnsPacket = new DnsUdpPacket(_valueDictionary);
                     break;
 
@@ -43,7 +43,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
         private void ReadPacketDataFromStream()
         {
-            _valueDictionary["AppProtocol"] = AppProtocolEnum.DNS;
+            _valueDictionary["AppProtocol"] = AppProtocolEnum.Dns;
             _valueDictionary["PacketDisplayedProtocol"] = "DNS";
 
             _valueDictionary["DnsIdentification"] = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
@@ -61,18 +61,11 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                 dnsFlagsBinStr = dnsFlagsBinStr.Insert(0, "0");
             }
 
-            string dnsQR = String.Empty;
+            string dnsQr;
 
-            if (dnsFlagsBinStr[0] == 0)
-            {
-                dnsQR = "Query";
-            }
-            else
-            {
-                dnsQR = "Response";
-            }
+            dnsQr = dnsFlagsBinStr[0] == 0 ? "Query" : "Response";
 
-            _valueDictionary["DnsQR"] = dnsQR;
+            _valueDictionary["DnsQR"] = dnsQr;
 
             _valueDictionary["DnsOpcode"] = Convert.ToByte(dnsFlagsBinStr.Substring(1, 4), 10);
 
@@ -139,11 +132,11 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
 
             if ((dnsFlagsInt & 1) != 0)
             {
-                dnsFlagsObj.CD.IsSet = true;
+                dnsFlagsObj.Cd.IsSet = true;
             }
             if ((dnsFlagsInt & 2) != 0)
             {
-                dnsFlagsObj.AD.IsSet = true;
+                dnsFlagsObj.Ad.IsSet = true;
             }
             if ((dnsFlagsInt & 4) != 0)
             {
@@ -151,19 +144,19 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
             }
             if ((dnsFlagsInt & 8) != 0)
             {
-                dnsFlagsObj.RA.IsSet = true;
+                dnsFlagsObj.Ra.IsSet = true;
             }
             if ((dnsFlagsInt & 16) != 0)
             {
-                dnsFlagsObj.RA.IsSet = true;
+                dnsFlagsObj.Ra.IsSet = true;
             }
             if ((dnsFlagsInt & 32) != 0)
             {
-                dnsFlagsObj.TC.IsSet = true;
+                dnsFlagsObj.Tc.IsSet = true;
             }
             if ((dnsFlagsInt & 64) != 0)
             {
-                dnsFlagsObj.AA.IsSet = true;
+                dnsFlagsObj.Aa.IsSet = true;
             }
 
             return dnsFlagsObj;
@@ -173,7 +166,6 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
         {
             for (int procRecIndex = 1; procRecIndex <= recordsCount; procRecIndex++)
             {
-                StringBuilder stringBuilder = new StringBuilder();
                 string dnsRecordName;
 
                 byte[] byteChar = _binaryReader.ReadBytes(2);
@@ -184,19 +176,12 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                 }
                 else
                 {
-                    if (recordList[procRecIndex - 2].DnsRecordType == DnsTypeEnum.CNAME)
-                    {
-                        dnsRecordName = recordList[procRecIndex - 2].DnsRdata;
-                    }
-                    else
-                    {
-                        dnsRecordName = recordList[procRecIndex - 2].DnsRecordName;
-                    }
+                    dnsRecordName = recordList[procRecIndex - 2].DnsRecordType == DnsTypeEnum.Cname ? recordList[procRecIndex - 2].DnsRdata : recordList[procRecIndex - 2].DnsRecordName;
                 }
 
                 DnsTypeEnum dnsRecordType = (DnsTypeEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
                 DnsClassEnum dnsRecordClass = (DnsClassEnum)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-                UInt32 dnsRecordTTL = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
+                UInt32 dnsRecordTtl = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
                 UInt16 dnsRDataLength = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
 
                 byte[] byteData = _binaryReader.ReadBytes(dnsRDataLength);
@@ -232,7 +217,7 @@ namespace richClosure.Packet_Sniffing.Factories.ApplicationFactories
                     DnsRecordName = dnsRecordName,
                     DnsRecordType = dnsRecordType,
                     DnsRecordClass = dnsRecordClass,
-                    DnsTimeToLive = dnsRecordTTL,
+                    DnsTimeToLive = dnsRecordTtl,
                     DnsRdataLength = dnsRDataLength,
                     DnsRdata = dataBuilder.ToString()
                 });

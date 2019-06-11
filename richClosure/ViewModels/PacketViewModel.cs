@@ -1,16 +1,14 @@
-﻿using richClosure.Packets.ApplicationLayer;
-using richClosure.Packets.InternetLayer;
-using richClosure.Packets.SessionLayer;
-using richClosure.Packets.TransportLayer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using richClosure.Annotations;
+using richClosure.Packets;
+using richClosure.Packets.Application_Layer;
+using richClosure.Packets.Internet_Layer;
+using richClosure.Packets.Session_Layer;
+using richClosure.Packets.Transport_Layer;
+using richClosure.Properties;
 
 namespace richClosure.ViewModels
 {
@@ -37,7 +35,6 @@ namespace richClosure.ViewModels
                 OnPropertyChanged(nameof(AsciiData));
             }
         }
-
 
         private IPacket _sourcePacket;
         public IPacket SourcePacket
@@ -130,29 +127,28 @@ namespace richClosure.ViewModels
             HexData = resString;
         }
 
-        private void FillPacketTreeView(IPacket packet, List<TreeViewItem> TreeViewItems)
+        private void FillPacketTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
         {
             IpPacket pac = packet as IpPacket;
 
+            FillFrameTreeView(pac, treeViewItems);
 
-            FillFrameTreeView(pac, TreeViewItems);
-
-            FillIpTreeView(pac, TreeViewItems);
-            FillIpProtocolTreeView(pac, TreeViewItems);
+            FillIpTreeView(pac, treeViewItems);
+            FillIpProtocolTreeView(pac, treeViewItems);
 
             if (packet.IpAppProtocol != AppProtocolEnum.NoAppProtocol)
             {
-                FillAppProtocolTreeView(pac, TreeViewItems);
+                FillAppProtocolTreeView(pac, treeViewItems);
             }
         }
 
-        private void FillFrameTreeView(IPacket packet, List<TreeViewItem> TreeViewItems)
+        private void FillFrameTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
         {
             TreeViewItem frameItem = new TreeViewItem { Header = "Frame " + packet.PacketId + ", Time Captured: " + packet.TimeDateCaptured };
-            TreeViewItems.Add(frameItem);
+            treeViewItems.Add(frameItem);
         }
 
-        private void FillIpTreeView(IPacket packet, List<TreeViewItem> TreeViewItems)
+        private void FillIpTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
         {
             switch (packet.IpVersion)
             {
@@ -172,54 +168,50 @@ namespace richClosure.ViewModels
                     ipItem.Items.Add(new TreeViewItem { Header = "Offset: " + ip4Packet.Ip4Offset });
 
                     TreeViewItem ipFlagsItem = new TreeViewItem();
-                    ipFlagsItem.Items.Add(new TreeViewItem { Header = "DF - " + ip4Packet.Ip4Flags.DF });
-                    ipFlagsItem.Items.Add(new TreeViewItem { Header = "MF - " + ip4Packet.Ip4Flags.MF });
+                    ipFlagsItem.Items.Add(new TreeViewItem { Header = "DF - " + ip4Packet.Ip4Flags.Df });
+                    ipFlagsItem.Items.Add(new TreeViewItem { Header = "MF - " + ip4Packet.Ip4Flags.Mf });
                     ipFlagsItem.Items.Add(new TreeViewItem { Header = "Res. - " + ip4Packet.Ip4Flags.Res });
                     ipItem.Items.Add(ipFlagsItem);
 
                     ipItem.Items.Add(new TreeViewItem { Header = "TTL: " + ip4Packet.Ip4TimeToLive });
                     ipItem.Items.Add(new TreeViewItem { Header = "Header Checksum: " + ip4Packet.Ip4HeaderChecksum });
-                    TreeViewItems.Add(ipItem);
+                    treeViewItems.Add(ipItem);
                     break;
 
                 case 6:
                     IpPacket ip6Packet = packet as IpPacket;
-                    TreeViewItem ip6item = new TreeViewItem { Header = "IPv6 Layer, " + "Dest: " + ip6Packet.Ip6Adrs["dst"] + ", Src: " + ip6Packet.Ip6Adrs["src"] };
+                    TreeViewItem ip6Item = new TreeViewItem { Header = "IPv6 Layer, " + "Dest: " + ip6Packet.Ip6Adrs["dst"] + ", Src: " + ip6Packet.Ip6Adrs["src"] };
 
-
-                    ip6item.Items.Add(new TreeViewItem { Header = "Version: " + ip6Packet.IpVersion });
-                    ip6item.Items.Add(new TreeViewItem { Header = "Traffic Class: " + ip6Packet.Ip6TrafficClass });
-                    ip6item.Items.Add(new TreeViewItem { Header = "Flow Label: " + ip6Packet.Ip6FlowLabel });
-                    ip6item.Items.Add(new TreeViewItem { Header = "Payload Length: " + ip6Packet.IpTotalLength });
-                    ip6item.Items.Add(new TreeViewItem { Header = "Next Header: " + ip6Packet.IpProtocol });
-                    ip6item.Items.Add(new TreeViewItem { Header = "Hop Limit: " + ip6Packet.Ip6HopLimit });
-                    ip6item.Items.Add(new TreeViewItem { Header = "Src. Adr.: " + ip6Packet.Ip6Adrs["dst"] });
-                    ip6item.Items.Add(new TreeViewItem { Header = "Dest. Adr.: " + ip6Packet.Ip6Adrs["src"] });
-                    TreeViewItems.Add(ip6item);
+                    ip6Item.Items.Add(new TreeViewItem { Header = "Version: " + ip6Packet.IpVersion });
+                    ip6Item.Items.Add(new TreeViewItem { Header = "Traffic Class: " + ip6Packet.Ip6TrafficClass });
+                    ip6Item.Items.Add(new TreeViewItem { Header = "Flow Label: " + ip6Packet.Ip6FlowLabel });
+                    ip6Item.Items.Add(new TreeViewItem { Header = "Payload Length: " + ip6Packet.IpTotalLength });
+                    ip6Item.Items.Add(new TreeViewItem { Header = "Next Header: " + ip6Packet.IpProtocol });
+                    ip6Item.Items.Add(new TreeViewItem { Header = "Hop Limit: " + ip6Packet.Ip6HopLimit });
+                    ip6Item.Items.Add(new TreeViewItem { Header = "Src. Adr.: " + ip6Packet.Ip6Adrs["dst"] });
+                    ip6Item.Items.Add(new TreeViewItem { Header = "Dest. Adr.: " + ip6Packet.Ip6Adrs["src"] });
+                    treeViewItems.Add(ip6Item);
                     break;
             }
 
-
-
         }
 
-        private void FillIpProtocolTreeView(IPacket packet, List<TreeViewItem> TreeViewItems)
+        private void FillIpProtocolTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
         {
             TreeViewItem ipProtocolItem = new TreeViewItem { Header = packet.IpProtocol.ToString() };
-            TreeViewItems.Add(ipProtocolItem);
-
+            treeViewItems.Add(ipProtocolItem);
 
             switch (packet.IpProtocol)
             {
-                case IpProtocolEnum.TCP:
+                case IpProtocolEnum.Tcp:
                     FillTcpTreeView(ipProtocolItem, packet);
                     break;
 
-                case IpProtocolEnum.ICMP:
+                case IpProtocolEnum.Icmp:
                     FillIcmpTreeView(ipProtocolItem, packet);
                     break;
 
-                case IpProtocolEnum.UDP:
+                case IpProtocolEnum.Udp:
                     FillUdpTreeView(ipProtocolItem, packet);
                     break;
             }
@@ -243,15 +235,15 @@ namespace richClosure.ViewModels
             ipProtocolItem.Items.Add(new TreeViewItem { Header = "Checksum: " + tcpPacket.TcpChecksum });
 
             TreeViewItem tcpFlagsItem = new TreeViewItem { Header = "TCP Flags" };
-            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "FIN - " + tcpPacket.TcpFlags.FIN.IsSet.ToString() });
-            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "SYN - " + tcpPacket.TcpFlags.SYN.IsSet.ToString() });
-            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "RST - " + tcpPacket.TcpFlags.RST.IsSet.ToString() });
-            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "PSH - " + tcpPacket.TcpFlags.PSH.IsSet.ToString() });
-            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "ACK - " + tcpPacket.TcpFlags.ACK.IsSet.ToString() });
-            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "URG - " + tcpPacket.TcpFlags.URG.IsSet.ToString() });
-            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "ECE - " + tcpPacket.TcpFlags.ECE.IsSet.ToString() });
-            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "CWR - " + tcpPacket.TcpFlags.CWR.IsSet.ToString() });
-            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "NS - " + tcpPacket.TcpFlags.NS.IsSet.ToString() });
+            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "FIN - " + tcpPacket.TcpFlags.Fin.IsSet.ToString() });
+            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "SYN - " + tcpPacket.TcpFlags.Syn.IsSet.ToString() });
+            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "RST - " + tcpPacket.TcpFlags.Rst.IsSet.ToString() });
+            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "PSH - " + tcpPacket.TcpFlags.Psh.IsSet.ToString() });
+            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "ACK - " + tcpPacket.TcpFlags.Ack.IsSet.ToString() });
+            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "URG - " + tcpPacket.TcpFlags.Urg.IsSet.ToString() });
+            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "ECE - " + tcpPacket.TcpFlags.Ece.IsSet.ToString() });
+            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "CWR - " + tcpPacket.TcpFlags.Cwr.IsSet.ToString() });
+            tcpFlagsItem.Items.Add(new TreeViewItem { Header = "NS - " + tcpPacket.TcpFlags.Ns.IsSet.ToString() });
 
             ipProtocolItem.Items.Add(tcpFlagsItem);
         }
@@ -324,26 +316,26 @@ namespace richClosure.ViewModels
             ipProtocolItem.Items.Add(new TreeViewItem { Header = "Checksum: " + udpPacket.UdpChecksum });
         }
 
-        private void FillAppProtocolTreeView(IPacket packet, List<TreeViewItem> TreeViewItems)
+        private void FillAppProtocolTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
         {
             TreeViewItem appProtocolItem = new TreeViewItem { Header = packet.IpAppProtocol.ToString() };
-            TreeViewItems.Add(appProtocolItem);
+            treeViewItems.Add(appProtocolItem);
 
             switch (packet.IpAppProtocol)
             {
-                case AppProtocolEnum.DNS:
+                case AppProtocolEnum.Dns:
                     FillDnsProtocolTreeView(appProtocolItem, packet);
                     break;
 
-                case AppProtocolEnum.DHCP:
+                case AppProtocolEnum.Dhcp:
                     FillDhcpProtocolTreeView(appProtocolItem, packet);
                     break;
 
-                case AppProtocolEnum.HTTP:
+                case AppProtocolEnum.Http:
                     FillHttpProtocolTreeView(appProtocolItem, packet);
                     break;
 
-                case AppProtocolEnum.TLS:
+                case AppProtocolEnum.Tls:
                     FillTlsProtocolTreeView(appProtocolItem, packet);
                     break;
             }
@@ -351,29 +343,29 @@ namespace richClosure.ViewModels
 
         private void FillDnsProtocolTreeView(TreeViewItem appProtocolItem, IPacket packet)
         {
-            if (packet.IpProtocol == IpProtocolEnum.TCP)
+            if (packet.IpProtocol == IpProtocolEnum.Tcp)
             {
                 DnsTcpPacket pac = packet as DnsTcpPacket;
                 appProtocolItem.Items.Add(new TreeViewItem { Header = "Identification: " + pac.DnsIdentification });
-                appProtocolItem.Items.Add(new TreeViewItem { Header = "QR: " + pac.DnsQR });
+                appProtocolItem.Items.Add(new TreeViewItem { Header = "QR: " + pac.DnsQr });
                 appProtocolItem.Items.Add(new TreeViewItem { Header = "Opcode: " + pac.DnsOpcode });
                 appProtocolItem.Items.Add(new TreeViewItem { Header = "Rcode: " + pac.DnsRcode });
                 appProtocolItem.Items.Add(new TreeViewItem { Header = "Flags: " + pac.DnsFlags });
                 appProtocolItem.Items.Add(new TreeViewItem { Header = "Num. of Questions: " + pac.DnsQuestions });
-                appProtocolItem.Items.Add(new TreeViewItem { Header = "Num. of Answers: " + pac.DnsAnswersRR });
-                appProtocolItem.Items.Add(new TreeViewItem { Header = "Num. of Auth.: " + pac.DnsAuthRR });
-                appProtocolItem.Items.Add(new TreeViewItem { Header = "Num. of Add.: " + pac.DnsAdditionalRR });
+                appProtocolItem.Items.Add(new TreeViewItem { Header = "Num. of Answers: " + pac.DnsAnswersRr });
+                appProtocolItem.Items.Add(new TreeViewItem { Header = "Num. of Auth.: " + pac.DnsAuthRr });
+                appProtocolItem.Items.Add(new TreeViewItem { Header = "Num. of Add.: " + pac.DnsAdditionalRr });
 
                 TreeViewItem questionItem = new TreeViewItem { Header = "Questions: " + pac.DnsQuestions };
                 appProtocolItem.Items.Add(questionItem);
 
-                TreeViewItem answersItem = new TreeViewItem { Header = "Answers: " + pac.DnsAnswersRR };
+                TreeViewItem answersItem = new TreeViewItem { Header = "Answers: " + pac.DnsAnswersRr };
                 appProtocolItem.Items.Add(answersItem);
 
-                TreeViewItem authItem = new TreeViewItem { Header = "Auth.: " + pac.DnsAuthRR };
+                TreeViewItem authItem = new TreeViewItem { Header = "Auth.: " + pac.DnsAuthRr };
                 appProtocolItem.Items.Add(authItem);
 
-                TreeViewItem addItem = new TreeViewItem { Header = "Add.: " + pac.DnsAdditionalRR };
+                TreeViewItem addItem = new TreeViewItem { Header = "Add.: " + pac.DnsAdditionalRr };
                 appProtocolItem.Items.Add(addItem);
 
                 for (int i = 0; i < pac.DnsQuestions; i++)
@@ -381,17 +373,17 @@ namespace richClosure.ViewModels
                     FillDnsQuestionTreeView(questionItem, pac.DnsQuerryList[i], i);
                 }
 
-                for (int i = 0; i < pac.DnsAnswersRR; i++)
+                for (int i = 0; i < pac.DnsAnswersRr; i++)
                 {
                     FillDnsRecordTreeView(answersItem, pac.DnsAnswerList[i], i);
                 }
 
-                for (int i = 0; i < pac.DnsAuthRR; i++)
+                for (int i = 0; i < pac.DnsAuthRr; i++)
                 {
                     FillDnsRecordTreeView(authItem, pac.DnsAuthList[i], i);
                 }
 
-                for (int i = 0; i < pac.DnsAdditionalRR; i++)
+                for (int i = 0; i < pac.DnsAdditionalRr; i++)
                 {
                     FillDnsRecordTreeView(addItem, pac.DnsAdditionalList[i], i);
                 }
@@ -457,9 +449,9 @@ namespace richClosure.ViewModels
         private void FillTlsProtocolTreeView(TreeViewItem appProtocolItem, IPacket packet)
         {
             TlsPacket pac = packet as TlsPacket;
-            appProtocolItem.Items.Add(new TreeViewItem { Header = "Content Type: " + pac.TlsType.ToString() });
-            appProtocolItem.Items.Add(new TreeViewItem { Header = "Version: " + pac.TlsVersion.ToString() });
-            appProtocolItem.Items.Add(new TreeViewItem { Header = "Data Length: " + pac.TlsDataLength.ToString() });
+            appProtocolItem.Items.Add(new TreeViewItem { Header = "Content Type: " + pac.TlsType });
+            appProtocolItem.Items.Add(new TreeViewItem { Header = "Version: " + pac.TlsVersion });
+            appProtocolItem.Items.Add(new TreeViewItem { Header = "Data Length: " + pac.TlsDataLength });
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Encrypted Data: " + pac.TlsEncryptedData });
         }
 

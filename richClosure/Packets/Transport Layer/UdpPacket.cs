@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using richClosure.Packets.InternetLayer;
+﻿using System.Collections.Generic;
+using richClosure.Packets.Internet_Layer;
 
-namespace richClosure.Packets.TransportLayer
+namespace richClosure.Packets.Transport_Layer
 {
     class UdpPacket : IpPacket
     {

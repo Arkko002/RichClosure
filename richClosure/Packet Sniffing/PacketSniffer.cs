@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Net.Sockets;
-using System.Net.NetworkInformation;
-using System.Net;
-using richClosure.Packet_Sniffing.Factories;
-using System.Threading;
-using System.Collections.Concurrent;
+﻿using System.Collections.ObjectModel;
 using System.IO;
-using richClosure.Packet_Sniffing;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using richClosure.Packet_Sniffing.Packet_Factories;
+using richClosure.Packets;
 
-namespace richClosure
+namespace richClosure.Packet_Sniffing
 {
-    //TODO Make this highest level of abstraction (like in factories)
-    //TODO PacketFactory DI, maybe separate class for passing socket data to factory?
-    //TODO Clean this up
+    // TODO Make this highest level of abstraction (like in factories)
+    // TODO PacketFactory DI, maybe separate class for passing socket data to factory?
+    // TODO Clean this up
     public class PacketSniffer
     {
-        private ObservableCollection<IPacket> _packetCollection;
-        private PacketFactory _packetFactory;
+        private readonly ObservableCollection<IPacket> _packetCollection;
 
         private SnifferSocket _socket;
 
-        private PacketQueue _packetQueue;
+        private readonly PacketQueue _packetQueue;
 
-        private SnifferThreads _snifferThreads;
+        private readonly SnifferThreads _snifferThreads;
         public bool IsWorking { get; set; }
 
         public PacketSniffer(ObservableCollection<IPacket> packetCollection)
@@ -64,14 +59,19 @@ namespace richClosure
             {
                 var buffer = _packetQueue.DequeuePacket();
 
-                MemoryStream memoryStream = new MemoryStream(buffer);
-                BinaryReader binaryReader = new BinaryReader(memoryStream);
-
-                IAbstractFactory packetFactory = new PacketFactory(binaryReader, buffer);
+                IAbstractFactory packetFactory = CreatePacketFactory(buffer);
 
                 IPacket packet = packetFactory.CreatePacket();
                 _packetCollection.Add(packet);
             }
+        }
+
+        private IAbstractFactory CreatePacketFactory(byte[] buffer)
+        {
+            MemoryStream memoryStream = new MemoryStream(buffer);
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+
+            return new PacketFactory(binaryReader, buffer);
         }
     }
 }

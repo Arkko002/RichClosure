@@ -1,18 +1,19 @@
-﻿using richClosure.Packets.InternetLayer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using richClosure.Packets;
+using richClosure.Packets.Internet_Layer;
 
-namespace richClosure.Packet_Sniffing.Factories.InternetFactories
+namespace richClosure.Packet_Sniffing.Packet_Factories.InternetFactories
 {
     class Ip4PacketFactory : IAbstractFactory
     {
-        private BinaryReader _binaryReader;
-        private byte[] _buffer;
-        private ulong _packetId;
-        private Dictionary<string, object> _valueDictionary;
+        private readonly BinaryReader _binaryReader;
+        private readonly byte[] _buffer;
+        private readonly ulong _packetId;
+        private readonly Dictionary<string, object> _valueDictionary;
 
         public Ip4PacketFactory(BinaryReader binaryReader, byte[] buffer, ulong packetId, Dictionary<string, object> valueDictionary)
         {
@@ -53,9 +54,7 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
 
             _valueDictionary["Ip4HeaderLength"] = ipHeaderLength;
 
-
             _valueDictionary["Ip4Dscp"] = _binaryReader.ReadByte();
-
 
             _valueDictionary["IpTotalLength"] = (UInt16)IPAddress.NetworkToHostOrder(
                 _binaryReader.ReadInt16());
@@ -75,7 +74,7 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
             _valueDictionary["Ip4Adrs"] = new Dictionary<string, string>()
             {
                 {"src", new IPAddress(ipSourceIpAddress).ToString()},
-                {"dst", new IPAddress(ipSourceIpAddress).ToString()}
+                {"dst", new IPAddress(ipDestinationIpAddress).ToString()}
             };
 
             int ipFlags = ipFlagsAndOffset >> 13;
@@ -87,11 +86,11 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
             }
             if ((ipFlags & 2) != 0)
             {
-                ipFlagsObj.DF.IsSet = true;
+                ipFlagsObj.Df.IsSet = true;
             }
             if ((ipFlags & 4) != 0)
             {
-                ipFlagsObj.MF.IsSet = true;
+                ipFlagsObj.Mf.IsSet = true;
             }
 
             _valueDictionary["Ip4Flags"] = ipFlagsObj;
@@ -101,7 +100,6 @@ namespace richClosure.Packet_Sniffing.Factories.InternetFactories
 
             _valueDictionary["Ip4Offset"] = ipOffset;
 
-           
             _valueDictionary["PacketData"] = BitConverter.ToString(_buffer, 0, Convert.ToInt32(_valueDictionary["IpTotalLength"]));
         }
     }

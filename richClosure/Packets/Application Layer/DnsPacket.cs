@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using richClosure.Packets.TransportLayer;
+using richClosure.Packets.Transport_Layer;
 
-namespace richClosure.Packets.ApplicationLayer
+namespace richClosure.Packets.Application_Layer
 {
     enum DnsOpcodeEnum
     {
-        QUERY = 0,
-        IQUERY = 1,
-        STATUS = 2,
+        Query = 0,
+        Iquery = 1,
+        Status = 2,
         Notify = 4,
         Update = 5
     };
@@ -21,129 +21,129 @@ namespace richClosure.Packets.ApplicationLayer
         NameError = 3,
         NotImplemented = 4,
         Refused = 5,
-        YXDomain = 6,
-        YXRRSet = 7,
-        NXRRSet = 8,
+        YxDomain = 6,
+        YxrrSet = 7,
+        NxrrSet = 8,
         NotAuth = 9,
         NotZone = 10,
-        BADVERS = 16,
-        BADKEY = 17,
-        BADTIME = 18,
-        BADMODE = 19,
-        BADNAME = 20,
-        BADALG = 21,
-        BADTRUNC = 22
+        Badvers = 16,
+        Badkey = 17,
+        Badtime = 18,
+        Badmode = 19,
+        Badname = 20,
+        Badalg = 21,
+        Badtrunc = 22
     };
 
     enum DnsTypeEnum
     {
         NoType = 0,
         A = 1,
-        NS = 2,
-        MD = 3,
-        MF = 4,
-        CNAME = 5,
-        SOA = 6,
-        MB = 7,
-        MG = 8,
-        MR = 9,
-        NULL = 10,
-        WKS = 11,
-        PTR = 12,
-        HINFO = 13,
-        MINFO = 14,
-        MX = 15,
-        TXT = 16,
-        RP = 17,
-        AFSDB = 18,
+        Ns = 2,
+        Md = 3,
+        Mf = 4,
+        Cname = 5,
+        Soa = 6,
+        Mb = 7,
+        Mg = 8,
+        Mr = 9,
+        Null = 10,
+        Wks = 11,
+        Ptr = 12,
+        Hinfo = 13,
+        Minfo = 14,
+        Mx = 15,
+        Txt = 16,
+        Rp = 17,
+        Afsdb = 18,
         X25 = 19,
-        ISDN = 20,
-        RT = 21,
-        NSAP = 22,
-        NSAP_PTR = 23,
-        SIG = 24,
-        KEY = 25,
-        PX = 26,
-        GPOS = 27,
-        AAAA = 28,
-        LOC = 29,
-        NXT = 30,
-        EID = 31,
-        NIMLOC = 32,
-        SRV = 33,
-        ATMA = 34,
-        NAPTR = 35,
-        KX = 36,
-        CERT = 37,
+        Isdn = 20,
+        Rt = 21,
+        Nsap = 22,
+        NsapPtr = 23,
+        Sig = 24,
+        Key = 25,
+        Px = 26,
+        Gpos = 27,
+        Aaaa = 28,
+        Loc = 29,
+        Nxt = 30,
+        Eid = 31,
+        Nimloc = 32,
+        Srv = 33,
+        Atma = 34,
+        Naptr = 35,
+        Kx = 36,
+        Cert = 37,
         A6 = 38,
-        DNAM = 39,
-        SINK = 40,
-        OPT = 41,
-        APL = 42,
-        DS = 43,
-        SSHFP = 44,
-        IPSECKEY = 45,
-        RRSIG = 46,
-        NSEC = 47,
-        DNSKEY = 48,
-        DHCID = 49,
-        NSEC3 = 50,
-        NSEC3PARAM = 51,
-        TLSA = 52,
-        HIP = 55,
-        NINFO = 56,
-        RKEY = 57,
-        TALINK = 58,
-        Child_DS = 59,
-        SPF = 99,
-        UINFO = 100,
-        UID = 101,
-        GID = 102,
-        UNSPEC = 103,
-        TKEY = 249,
-        TSIG = 250,
-        IXFR = 251,
-        AXFR = 252,
-        MAILB = 253,
-        MAILA = 254,
-        URI = 256,
-        CAA = 257,
-        DNSSEC_Trust = 32768,
-        DNSSEC_Val = 32769
+        Dnam = 39,
+        Sink = 40,
+        Opt = 41,
+        Apl = 42,
+        Ds = 43,
+        Sshfp = 44,
+        Ipseckey = 45,
+        Rrsig = 46,
+        Nsec = 47,
+        Dnskey = 48,
+        Dhcid = 49,
+        Nsec3 = 50,
+        Nsec3Param = 51,
+        Tlsa = 52,
+        Hip = 55,
+        Ninfo = 56,
+        Rkey = 57,
+        Talink = 58,
+        ChildDs = 59,
+        Spf = 99,
+        Uinfo = 100,
+        Uid = 101,
+        Gid = 102,
+        Unspec = 103,
+        Tkey = 249,
+        Tsig = 250,
+        Ixfr = 251,
+        Axfr = 252,
+        Mailb = 253,
+        Maila = 254,
+        Uri = 256,
+        Caa = 257,
+        DnssecTrust = 32768,
+        DnssecVal = 32769
     };
 
     enum DnsClassEnum
     {
         Reserved = 0,
-        IN = 1,
-        CH = 3,
-        HS = 4,
+        In = 1,
+        Ch = 3,
+        Hs = 4,
         None = 254,
         Any = 255
     };
 
     class DnsFlags : IFlags
     {
-        public CustomBool AA = new CustomBool();
-        public CustomBool TC = new CustomBool();
-        public CustomBool RD = new CustomBool();
-        public CustomBool RA = new CustomBool();
+        public CustomBool Aa = new CustomBool();
+        public CustomBool Tc = new CustomBool();
+        public CustomBool Rd = new CustomBool();
+        public CustomBool Ra = new CustomBool();
         public CustomBool Z = new CustomBool();
-        public CustomBool AD = new CustomBool();
-        public CustomBool CD = new CustomBool();
+        public CustomBool Ad = new CustomBool();
+        public CustomBool Cd = new CustomBool();
     }
 
     class DnsTcpPacket : TcpPacket
     {
         public ushort DnsIdentification { get; private set; }
-        public string DnsQR { get; private set; }
+        public string DnsQr { get; private set; }
         public DnsOpcodeEnum DnsOpcode { get; private set; }
         public DnsFlags DnsFlags { get; private set; }
         public DnsRcodeEnum DnsRcode { get; private set; }
         public ushort DnsQuestions { get; private set; }
-        public ushort DnsAnswersRR { get; private set; }
-        public ushort DnsAuthRR { get; private set; }
-        public ushort DnsAdditionalRR { get; private set; }
+        public ushort DnsAnswersRr { get; private set; }
+        public ushort DnsAuthRr { get; private set; }
+        public ushort DnsAdditionalRr { get; private set; }
         public List<DnsQuery> DnsQuerryList { get; private set; }
         public List<DnsRecord> DnsAnswerList { get; private set; }
         public List<DnsRecord> DnsAuthList { get; private set; }
@@ -158,14 +158,14 @@ namespace richClosure.Packets.ApplicationLayer
         private void SetDnsPacketValues(Dictionary<string, object> valuesDictionary)
         {
             DnsIdentification = (ushort)valuesDictionary["DnsIdentification"];
-            DnsQR = (string)valuesDictionary["DnsQR"];
+            DnsQr = (string)valuesDictionary["DnsQR"];
             DnsOpcode = (DnsOpcodeEnum)valuesDictionary["DnsOpcode"];
             DnsFlags = (DnsFlags)valuesDictionary["DnsFlags"];
             DnsRcode = (DnsRcodeEnum)valuesDictionary["DnsRcode"];
             DnsQuestions = (ushort)valuesDictionary["DnsQuestions"];
-            DnsAnswersRR = (ushort)valuesDictionary["DnsAnswersRR"];
-            DnsAuthRR = (ushort)valuesDictionary["DnsAuthRR"];
-            DnsAdditionalRR = (ushort)valuesDictionary["DnsAdditionalRR"];
+            DnsAnswersRr = (ushort)valuesDictionary["DnsAnswersRR"];
+            DnsAuthRr = (ushort)valuesDictionary["DnsAuthRR"];
+            DnsAdditionalRr = (ushort)valuesDictionary["DnsAdditionalRR"];
             DnsQuerryList = (List<DnsQuery>)valuesDictionary["DnsQuerryList"];
             DnsAnswerList = (List<DnsRecord>)valuesDictionary["DnsAnswerLIst"];
             DnsAuthList = (List<DnsRecord>)valuesDictionary["DnsAuthList"];
@@ -176,14 +176,14 @@ namespace richClosure.Packets.ApplicationLayer
     class DnsUdpPacket : UdpPacket
     {
         public ushort DnsIdentification { get; private set; }
-        public string DnsQR { get; private set; }
+        public string DnsQr { get; private set; }
         public DnsOpcodeEnum DnsOpcode { get; private set; }
         public DnsFlags DnsFlags { get; private set; }
         public DnsRcodeEnum DnsRcode { get; private set; }
         public ushort DnsQuestions { get; private set; }
-        public ushort DnsAnswersRR { get; private set; }
-        public ushort DnsAuthRR { get; private set; }
-        public ushort DnsAdditionalRR { get; private set; }
+        public ushort DnsAnswersRr { get; private set; }
+        public ushort DnsAuthRr { get; private set; }
+        public ushort DnsAdditionalRr { get; private set; }
         public List<DnsQuery> DnsQuerryList { get; private set; }
         public List<DnsRecord> DnsAnswerList { get; private set; }
         public List<DnsRecord> DnsAuthList { get; private set; }
@@ -198,14 +198,14 @@ namespace richClosure.Packets.ApplicationLayer
         private void SetDnsPacketValues(Dictionary<string, object> valuesDictionary)
         {
             DnsIdentification = (ushort)valuesDictionary["DnsIdentification"];
-            DnsQR = (string)valuesDictionary["DnsQR"];
+            DnsQr = (string)valuesDictionary["DnsQR"];
             DnsOpcode = (DnsOpcodeEnum)valuesDictionary["DnsOpcode"];
             DnsFlags = (DnsFlags)valuesDictionary["DnsFlags"];
             DnsRcode = (DnsRcodeEnum)valuesDictionary["DnsRcode"];
             DnsQuestions = (ushort)valuesDictionary["DnsQuestions"];
-            DnsAnswersRR = (ushort)valuesDictionary["DnsAnswersRR"];
-            DnsAuthRR = (ushort)valuesDictionary["DnsAuthRR"];
-            DnsAdditionalRR = (ushort)valuesDictionary["DnsAdditionalRR"];
+            DnsAnswersRr = (ushort)valuesDictionary["DnsAnswersRR"];
+            DnsAuthRr = (ushort)valuesDictionary["DnsAuthRR"];
+            DnsAdditionalRr = (ushort)valuesDictionary["DnsAdditionalRR"];
             DnsQuerryList = (List<DnsQuery>)valuesDictionary["DnsQuerryList"];
             DnsAnswerList = (List<DnsRecord>)valuesDictionary["DnsAnswerLIst"];
             DnsAuthList = (List<DnsRecord>)valuesDictionary["DnsAuthList"];

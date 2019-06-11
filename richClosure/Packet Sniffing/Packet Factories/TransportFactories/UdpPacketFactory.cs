@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
-using richClosure.Packet_Sniffing.Factories.ApplicationFactories;
-using richClosure.Packets.InternetLayer;
-using richClosure.Packets.TransportLayer;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using richClosure.Packets;
+using richClosure.Packets.Transport_Layer;
 
-namespace richClosure.Packet_Sniffing.Factories
+namespace richClosure.Packet_Sniffing.Packet_Factories.TransportFactories
 {
     class UdpPacketFactory : IAbstractFactory
     {
-        private BinaryReader _binaryReader;
-        private Dictionary<string, object> _valueDictionary;
+        private readonly BinaryReader _binaryReader;
+        private readonly Dictionary<string, object> _valueDictionary;
 
         public UdpPacketFactory(BinaryReader binaryReader, Dictionary<string, object> valueDictionary)
         {
@@ -56,11 +55,11 @@ namespace richClosure.Packet_Sniffing.Factories
 
             if (udpPac.UdpPorts.Any(x => x.Value.Equals(53)))
             {
-                return AppProtocolEnum.DNS;
+                return AppProtocolEnum.Dns;
             }
             else if (udpPac.UdpPorts.Any(x => x.Value.Equals(67)) || (udpPac.UdpPorts.Any(x => x.Value.Equals(68))))
             {
-                return AppProtocolEnum.DHCP;
+                return AppProtocolEnum.Dhcp;
             }
             else
             {

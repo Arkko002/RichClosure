@@ -1,50 +1,49 @@
 ﻿using System.Collections.Generic;
-using System;
-using richClosure.Packets.TransportLayer;
+using richClosure.Packets.Transport_Layer;
 
-namespace richClosure.Packets.ApplicationLayer
+namespace richClosure.Packets.Application_Layer
 {
     public enum DhcpOpcodeEnum
     {
-        BOOTREQUEST = 1,
-        BOOTREPLY = 2
+        Bootrequest = 1,
+        Bootreply = 2
     };
 
     public enum DhcpHardwareTypeEnum
     {
         Ethernet = 1,
-        Experimental_Ethernet = 2,
-        Amateur_RadioAX25 = 3,
-        Proten_ProNET_TokenRing = 4,
+        ExperimentalEthernet = 2,
+        AmateurRadioAx25 = 3,
+        ProtenProNetTokenRing = 4,
         Chaos = 5,
-        IEEE802 = 6,
-        ARCNET = 7,
+        Ieee802 = 6,
+        Arcnet = 7,
         Hyperchannel = 8,
         Lanstar = 9,
-        Autonet_Short_Address = 10,
+        AutonetShortAddress = 10,
         LocalTalk = 11,
         LocalNet = 12,
         UltraLink = 13,
-        SMDS = 14,
-        Fame_Relay = 15,
-        ATM = 16,
-        HDLC = 17,
-        Fibre_Channel = 18,
-        Serial_Line = 20,
-        MIL_STD_188_220 = 22,
+        Smds = 14,
+        FameRelay = 15,
+        Atm = 16,
+        Hdlc = 17,
+        FibreChannel = 18,
+        SerialLine = 20,
+        MilStd188220 = 22,
         Metricom = 23,
-        IEEE_1394_1995 = 24,
-        MAPOS = 25,
+        Ieee13941995 = 24,
+        Mapos = 25,
         Twinaxial = 26,
-        EUI_64 = 27,
-        HIPARP = 28,
-        IP_and_ARP_over_ISO_7816_3 = 29,
-        ARPSec = 30,
-        IPsec_tunnel = 31,
+        Eui64 = 27,
+        Hiparp = 28,
+        IpAndArpOverIso78163 = 29,
+        ArpSec = 30,
+        PsecTunnel = 31,
         Infiniband = 32,
-        CAI = 33,
-        Wiegand_Interface = 34,
-        Pure_IP = 35
+        Cai = 33,
+        WiegandInterface = 34,
+        PureIp = 35
     };
 
     public enum DhcpOptionsTagEnum
@@ -58,9 +57,9 @@ namespace richClosure.Packets.ApplicationLayer
         DomainServer = 6,
         LogServer = 7,
         QuotesServer = 8,
-        LPRServer = 9,
+        LprServer = 9,
         ImpressServer = 10,
-        RLPServer = 11,
+        RlpServer = 11,
         Hostname = 12,
         BootFileSize = 13,
         MeritDumpFile = 14,
@@ -68,15 +67,15 @@ namespace richClosure.Packets.ApplicationLayer
         SwapServer = 16,
         RootPath = 17,
         ExtensionFile = 18,
-        ForwardOn_Off = 19,
-        SrcRteOn_Off = 20,
+        ForwardOnOff = 19,
+        SrcRteOnOff = 20,
         PolicyFilter = 21,
-        MaxDGAssembly = 22,
-        DefaultIPTTL = 23,
-        MTUTimeout = 24,
-        MTUPlateau = 25,
-        MTUInterface = 26,
-        MTUSubnet = 27,
+        MaxDgAssembly = 22,
+        DefaultIpttl = 23,
+        MtuTimeout = 24,
+        MtuPlateau = 25,
+        MtuInterface = 26,
+        MtuSubnet = 27,
         BroadcastAddress = 28,
         MaskDiscovery = 29,
         MaskSupplier = 30,
@@ -84,12 +83,12 @@ namespace richClosure.Packets.ApplicationLayer
         RouterRequest = 32,
         StaticRoute = 33,
         Trailers = 34,
-        ARPTimeout = 35,
+        ArpTimeout = 35,
         Ethernet = 36,
-        DefaultTCPTTL = 37,
+        DefaultTcpttl = 37,
         KeepaliveTime = 38,
         KeepaliveData = 39,
-        NISDomain = 40,
+        NisDomain = 40,
     };
 
     class DhcpPacket : UdpPacket
@@ -120,6 +119,7 @@ namespace richClosure.Packets.ApplicationLayer
             DhcpOpcode = (DhcpOpcodeEnum)valuesDictionary["DhcpOpcode"];
             DhcpHardType = (DhcpHardwareTypeEnum)valuesDictionary["DhcpHardType"];
             DhcpHopCount = (byte)valuesDictionary["DhcpHopCount"];
+            DhcpHardAdrLength = (byte) valuesDictionary["DhcpHardAdrLength"];
             DhcpTransactionId = (uint)valuesDictionary["DhcpTransactionId"];
             DhcpNumOfSeconds = (ushort)valuesDictionary["DhcpNumOfSeconds"];
             DhcpFlags = (string)valuesDictionary["DhcpFLags"];

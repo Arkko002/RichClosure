@@ -1,23 +1,18 @@
-﻿using richClosure.Packets;
-using richClosure.Packets.ApplicationLayer;
-using richClosure.Packets.InternetLayer;
-using richClosure.Packets.SessionLayer;
-using richClosure.Packets.TransportLayer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using richClosure.Packet_Filtering;
+using richClosure.Packets;
 
-namespace richClosure
+namespace richClosure.Packet_Filtering
 {
     class PacketListFilter
     {
-        //TODO Write unit tests for this
-        //TODO Break down into seprate classes, one for all reflection operations
+        // TODO Write unit tests for this
+        // TODO Break down into seprate classes, one for all reflection operations
 
-        private List<IPacket> _mainPacketList;
-        private List<IPacket> _resultList;
+        private readonly List<IPacket> _mainPacketList;
+        private readonly List<IPacket> _resultList;
 
         public PacketListFilter(List<IPacket> mainPacketList)
         {
@@ -26,19 +21,21 @@ namespace richClosure
         }
 
         public void SearchList(string conditionString)
-        {           
-            List<SearchQuery> OrSearchQueries = SearchStringParser.ParseOrString(conditionString);
+        {
+            SearchStringParser parser = new SearchStringParser();
 
-            foreach (var query in OrSearchQueries)
+            List<SearchQuery> orSearchQueries = parser.ParseOrString(conditionString);
+
+            foreach (var query in orSearchQueries)
             {
                 SearchListWithSingleCondition(query);
             }
             
-            List<SearchQuery> AndSearchQueries = SearchStringParser.ParseAndString(conditionString);
+            List<SearchQuery> andSearchQueries = parser.ParseAndString(conditionString);
 
-            if (AndSearchQueries.Count > 0)
+            if (andSearchQueries.Count > 0)
             {
-                SearchListWithAnd(AndSearchQueries);
+                SearchListWithAnd(andSearchQueries);
             }
    
         }
@@ -62,7 +59,7 @@ namespace richClosure
             LookupSeveralProperties(searchQueries, searchedProperties);
         }
 
-        //TODO Break this down into shared code, then do "LookupSingleProperty" and "LookupSeveralProperties"
+        // TODO Break this down into shared code, then do "LookupSingleProperty" and "LookupSeveralProperties"
         private void LookupSingleProperty(SearchQuery searchQuery, List<PropertyInfo> searchedProperties)                               
         {
             foreach (IPacket packet in _mainPacketList)
@@ -80,17 +77,17 @@ namespace richClosure
                     }
                 }
 
-                //if (boolList.Count == boolNum && boolList.All(e => e))
-                //{
+                // if (boolList.Count == boolNum && boolList.All(e => e))
+                // {
                 //    if (!_resultList.Contains(packet))
                 //    {
                 //        _resultList.Add(packet);
                 //    }
-                //}
+                // }
             }
         }
 
-        //TODO
+        // TODO
         private void LookupSeveralProperties(List<SearchQuery> searchQueries, List<PropertyInfo> searchedProperties)
         {
             foreach (IPacket packet in _mainPacketList)
@@ -111,7 +108,7 @@ namespace richClosure
                     }
                 }
 
-                if (propertiesMatched.Count == searchQueries.Count && propertiesMatched.All(p => p == true))
+                if (propertiesMatched.Count == searchQueries.Count && propertiesMatched.All(p => p))
                 {
                     if (!_resultList.Contains(packet))
                     {
@@ -121,7 +118,7 @@ namespace richClosure
             }
         }
 
-        //TODO Get rid of ifs
+        // TODO Get rid of ifs
         private bool ComparePacketsAndSearchedValues(PropertyInfo searchedProperty, SearchQuery searchQuery, IPacket packet)
         {
             if (searchedProperty.PropertyType == typeof(Dictionary<string, string>))
@@ -139,7 +136,7 @@ namespace richClosure
 
             if (IsNumericType(searchedProperty.PropertyType))
             {
-                //Convert all values into ulong to prevent unnecessary CompareNum overloads
+                // Convert all values into ulong to prevent unnecessary CompareNum overloads
                 ulong packetValue = (ulong)searchedProperty.GetValue(packet);
                 ulong conditionValue = ulong.Parse(searchQuery.SearchedValue);
 
@@ -183,14 +180,14 @@ namespace richClosure
         {
             List<Type> types = GetAllPacketTypesInAssembly();
 
-            List<PropertyInfo> SearchedProperties = new List<PropertyInfo>();
+            List<PropertyInfo> searchedProperties = new List<PropertyInfo>();
             foreach (var type in types)
             {
                 PropertyInfo[] assemblyPacketProperties = type.GetProperties();
-                SearchedProperties = FindSearchedProperties(searchedProperty, assemblyPacketProperties);
+                searchedProperties = FindSearchedProperties(searchedProperty, assemblyPacketProperties);
             }
 
-            return SearchedProperties;
+            return searchedProperties;
         }
 
         private List<Type> GetAllPacketTypesInAssembly()
@@ -207,7 +204,7 @@ namespace richClosure
         {
             if(searchedProperty.Contains('.'))
             {
-                //FindNestedProperties(outputList, searchedPropertyStr, assemblyPacketProperties);
+                // FindNestedProperties(outputList, searchedPropertyStr, assemblyPacketProperties);
             }
 
             List<PropertyInfo> outputList = new List<PropertyInfo>();
@@ -222,13 +219,13 @@ namespace richClosure
             return outputList;
         }
 
-        //TODO This isn't finished
-        //private List<PropertyInfo> FindNestedProperties(string searchedPropertyStr, PropertyInfo[] assemblyPacketProperties)
-        //{
+        // TODO This isn't finished
+        // private List<PropertyInfo> FindNestedProperties(string searchedPropertyStr, PropertyInfo[] assemblyPacketProperties)
+        // {
         //    string[] propertyParts = searchedPropertyStr.Split('.');
         //    PropertyInfo currentProperty = null;
            
-        //    foreach (var property in assemblyPacketProperties)
+        // foreach (var property in assemblyPacketProperties)
         //    {
         //        if (property.Name.ToLower() == propertyParts[0].ToLower())
         //        {
@@ -236,12 +233,12 @@ namespace richClosure
         //        }
         //    }
 
-        //    for (int i = 1; i < propertyParts.Length; i++)
+        // for (int i = 1; i < propertyParts.Length; i++)
         //    {
         //        Type obj = currentProperty.DeclaringType;
         //        var nestedInfo = obj.GetProperties();
         //    }          
-        //}
+        // }
 
         private bool CompareNum(string op, ulong x, ulong y)
         {

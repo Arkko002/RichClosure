@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using richClosure.Packets.InternetLayer;
+﻿using System.Collections.Generic;
+using richClosure.Packets.Internet_Layer;
 
-namespace richClosure.Packets.TransportLayer
+namespace richClosure.Packets.Transport_Layer
 {
     class TcpFlags : IFlags
     {
-        public CustomBool ACK = new CustomBool();
-        public CustomBool FIN = new CustomBool();
-        public CustomBool URG = new CustomBool();
-        public CustomBool PSH = new CustomBool();
-        public CustomBool RST = new CustomBool();
-        public CustomBool ECE = new CustomBool();
-        public CustomBool CWR = new CustomBool();
-        public CustomBool SYN = new CustomBool();
-        public CustomBool NS = new CustomBool();
+        public CustomBool Ack = new CustomBool();
+        public CustomBool Fin = new CustomBool();
+        public CustomBool Urg = new CustomBool();
+        public CustomBool Psh = new CustomBool();
+        public CustomBool Rst = new CustomBool();
+        public CustomBool Ece = new CustomBool();
+        public CustomBool Cwr = new CustomBool();
+        public CustomBool Syn = new CustomBool();
+        public CustomBool Ns = new CustomBool();
     }
 
     class TcpPacket : IpPacket
@@ -28,7 +27,6 @@ namespace richClosure.Packets.TransportLayer
         public ushort TcpChecksum { get; private set; }
         public Dictionary<string, string> TcpPorts { get; private set; }
         public TcpFlags TcpFlags { get; private set; }
-
 
         public TcpPacket(Dictionary<string, object> valuesDictionary) : base(valuesDictionary)
         {
