@@ -4,7 +4,7 @@ using System.Threading;
 namespace richClosure.Packet_Sniffing
 {
     // TODO Gracefully stop threads on request
-    class PacketQueue
+    public class PacketQueue
     {
         private readonly ConcurrentQueue<byte[]> _packetQueue = new ConcurrentQueue<byte[]>();
         private readonly AutoResetEvent _queueNotifier = new AutoResetEvent(false);
