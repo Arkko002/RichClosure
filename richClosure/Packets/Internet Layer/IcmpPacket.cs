@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace richClosure.Packets.Internet_Layer
 {
@@ -80,7 +81,7 @@ namespace richClosure.Packets.Internet_Layer
         {
             IcmpType = (byte)valuesDictionary["IcmpType"];
             IcmpCode = (byte)valuesDictionary["IcmpCode"];
-            IcmpChecksum = (uint)valuesDictionary["IcmpChecksum"];
+            IcmpChecksum = Convert.ToUInt32(valuesDictionary["IcmpChecksum"]);
             IcmpRest = (string)valuesDictionary["IcmpRest"];
         }
     }

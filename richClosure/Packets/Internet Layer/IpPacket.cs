@@ -90,10 +90,10 @@ namespace richClosure.Packets.Internet_Layer
             Ip4Adrs = (Dictionary<string, string>)valueDictionary["Ip4Adrs"];
             Ip4Dscp = (byte) valueDictionary["Ip4Dscp"];
             Ip4Identification = (ushort) valueDictionary["Ip4Identification"];
-            Ip4Offset = (ushort) valueDictionary["Ip4Offset"];
+            Ip4Offset = Convert.ToUInt16(valueDictionary["Ip4Offset"]);
             Ip4Flags = (IpFlags) valueDictionary["Ip4Flags"];
             Ip4TimeToLive = (byte) valueDictionary["Ip4TimeToLive"];
-            Ip4HeaderChecksum = (uint) valueDictionary["Ip4HeaderChecksum"];
+            Ip4HeaderChecksum = Convert.ToUInt32(valueDictionary["Ip4HeaderChecksum"]);
         }
 
         private void AssignIp6Properties(Dictionary<string, object> valueDictionary)
