@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace richClosure.ViewModels
         public ObservableCollection<PacketViewModel> PacketObservableCollection { get; }
         public ObservableCollection<IPacket> ModelCollection { get; }
 
-        public PacketViewModel SelectedPacket { get; private set; }
+        public PacketViewModel SelectedPacket { get; set; }
 
         private int _totalPacketCount;
         public int TotalPacketCount
@@ -43,12 +44,35 @@ namespace richClosure.ViewModels
             PacketObservableCollection = new ObservableCollection<PacketViewModel>();
             ModelCollection = modelCollection;
 
+            modelCollection.CollectionChanged += ModelCollection_CollectionChanged;
             PacketObservableCollection.CollectionChanged += PacketObservableCollection_CollectionChanged;
+        }
+
+        //TODO
+        private void ModelCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    AddPacketViewModelsToCollection(e.NewItems);
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         private void PacketObservableCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             UpdatePacketCount(sender as ObservableCollection<PacketViewModel>);
+        }
+
+        private void AddPacketViewModelsToCollection(IList newPackets)
+        {
+            foreach (var packet in newPackets)
+            {
+                PacketObservableCollection.Add(new PacketViewModel((IPacket)packet));
+            }
         }
 
         public void ClearPacketList()

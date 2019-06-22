@@ -14,56 +14,27 @@ namespace richClosure.ViewModels
 {
     public class PacketViewModel : INotifyPropertyChanged, IViewModel
     {
-        private string _hexData;
-        public string HexData
+        public string AsciiData { get; set; }
+        public string HexData { get; set; }
+
+        //TODO Find a way to get rid of direct reference to underlying data, maybe some hardcore use of reflection and dynamic objects?
+        public IPacket SourcePacket { get; set; }
+
+        public List<TreeViewItem> TreeViewItems { get; set; }
+
+        public PacketViewModel(IPacket sourcePacket)
         {
-            get => _hexData;
-            private set
-            {
-                _hexData = value;
-                OnPropertyChanged(nameof(HexData));
-            }
+            SourcePacket = sourcePacket;
+            TreeViewItems = new List<TreeViewItem>();
+
+            GetAsciiPacketData();
+            GetHexPacketData();
+            FillPacketTreeView();
         }
 
-        private string _asciiData;
-        public string AsciiData
+        private void GetAsciiPacketData()
         {
-            get => _asciiData;
-            private set
-            {
-                _asciiData = value;
-                OnPropertyChanged(nameof(AsciiData));
-            }
-        }
-
-        private IPacket _sourcePacket;
-        public IPacket SourcePacket
-        {
-            get => _sourcePacket;
-            set
-            {
-                if (_sourcePacket == value) return;
-                _sourcePacket = value;
-                GetAsciiPacketData(_sourcePacket);
-                GetHexPacketData(_sourcePacket);
-                FillPacketTreeView(_sourcePacket, TreeViewItems);
-            }
-        }
-
-        private List<TreeViewItem> _treeViewItems;
-        public List<TreeViewItem> TreeViewItems
-        {
-            get => _treeViewItems;
-            private set
-            {
-                _treeViewItems = value;
-                OnPropertyChanged(nameof(TreeViewItems));
-            }
-        }
-
-        public void GetAsciiPacketData(IPacket packet)
-        {
-            string[] hexString = packet.PacketData.Split('-');
+            string[] hexString = SourcePacket.PacketData.Split('-');
 
             string tempAscii = string.Empty;
 
@@ -103,9 +74,9 @@ namespace richClosure.ViewModels
             AsciiData = resString;
         }
 
-        public void GetHexPacketData(IPacket packet)
+        private void GetHexPacketData()
         {
-            string[] hexTempStr = packet.PacketData.Split('-');
+            string[] hexTempStr = SourcePacket.PacketData.Split('-');
             string resString = string.Empty;
 
             for (int x = 1; x <= hexTempStr.Length; x++)
@@ -127,33 +98,27 @@ namespace richClosure.ViewModels
             HexData = resString;
         }
 
-        private void FillPacketTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
+        private void FillPacketTreeView()
         {
-            IpPacket pac = packet as IpPacket;
-
-            FillFrameTreeView(pac, treeViewItems);
-
-            FillIpTreeView(pac, treeViewItems);
-            FillIpProtocolTreeView(pac, treeViewItems);
-
-            if (packet.IpAppProtocol != AppProtocolEnum.NoAppProtocol)
-            {
-                FillAppProtocolTreeView(pac, treeViewItems);
-            }
+            FillFrameTreeView();
+            FillIpTreeView();
+            FillIpProtocolTreeView();
+            FillAppProtocolTreeView();
+            
         }
 
-        private void FillFrameTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
+        private void FillFrameTreeView()
         {
-            TreeViewItem frameItem = new TreeViewItem { Header = "Frame " + packet.PacketId + ", Time Captured: " + packet.TimeDateCaptured };
-            treeViewItems.Add(frameItem);
+            TreeViewItem frameItem = new TreeViewItem { Header = "Frame " + SourcePacket.PacketId + ", Time Captured: " + SourcePacket.TimeDateCaptured };
+            TreeViewItems.Add(frameItem);
         }
 
-        private void FillIpTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
+        private void FillIpTreeView()
         {
-            switch (packet.IpVersion)
+            switch (SourcePacket.IpVersion)
             {
                 case 4:
-                    IpPacket ip4Packet = packet as IpPacket;
+                    IpPacket ip4Packet = SourcePacket as IpPacket;
 
                     TreeViewItem ipItem = new TreeViewItem { Header = "IP4 Layer, " + "Dest: " + ip4Packet.Ip4Adrs["dst"] + ", Src: " + ip4Packet.Ip4Adrs["src"] };
 
@@ -175,11 +140,11 @@ namespace richClosure.ViewModels
 
                     ipItem.Items.Add(new TreeViewItem { Header = "TTL: " + ip4Packet.Ip4TimeToLive });
                     ipItem.Items.Add(new TreeViewItem { Header = "Header Checksum: " + ip4Packet.Ip4HeaderChecksum });
-                    treeViewItems.Add(ipItem);
+                    TreeViewItems.Add(ipItem);
                     break;
 
                 case 6:
-                    IpPacket ip6Packet = packet as IpPacket;
+                    IpPacket ip6Packet = SourcePacket as IpPacket;
                     TreeViewItem ip6Item = new TreeViewItem { Header = "IPv6 Layer, " + "Dest: " + ip6Packet.Ip6Adrs["dst"] + ", Src: " + ip6Packet.Ip6Adrs["src"] };
 
                     ip6Item.Items.Add(new TreeViewItem { Header = "Version: " + ip6Packet.IpVersion });
@@ -190,37 +155,37 @@ namespace richClosure.ViewModels
                     ip6Item.Items.Add(new TreeViewItem { Header = "Hop Limit: " + ip6Packet.Ip6HopLimit });
                     ip6Item.Items.Add(new TreeViewItem { Header = "Src. Adr.: " + ip6Packet.Ip6Adrs["dst"] });
                     ip6Item.Items.Add(new TreeViewItem { Header = "Dest. Adr.: " + ip6Packet.Ip6Adrs["src"] });
-                    treeViewItems.Add(ip6Item);
+                    TreeViewItems.Add(ip6Item);
                     break;
             }
 
         }
 
-        private void FillIpProtocolTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
+        private void FillIpProtocolTreeView()
         {
-            TreeViewItem ipProtocolItem = new TreeViewItem { Header = packet.IpProtocol.ToString() };
-            treeViewItems.Add(ipProtocolItem);
+            TreeViewItem ipProtocolItem = new TreeViewItem { Header = SourcePacket.IpProtocol.ToString() };
+            TreeViewItems.Add(ipProtocolItem);
 
-            switch (packet.IpProtocol)
+            switch (SourcePacket.IpProtocol)
             {
                 case IpProtocolEnum.Tcp:
-                    FillTcpTreeView(ipProtocolItem, packet);
+                    FillTcpTreeView(ipProtocolItem);
                     break;
 
                 case IpProtocolEnum.Icmp:
-                    FillIcmpTreeView(ipProtocolItem, packet);
+                    FillIcmpTreeView(ipProtocolItem);
                     break;
 
                 case IpProtocolEnum.Udp:
-                    FillUdpTreeView(ipProtocolItem, packet);
+                    FillUdpTreeView(ipProtocolItem);
                     break;
             }
         }
 
-        private void FillTcpTreeView(TreeViewItem ipProtocolItem, IPacket packet)
+        private void FillTcpTreeView(TreeViewItem ipProtocolItem)
         {
 
-            TcpPacket tcpPacket = packet as TcpPacket;
+            TcpPacket tcpPacket = SourcePacket as TcpPacket;
 
             ipProtocolItem.Header += ", Dest. Port: " + tcpPacket.TcpPorts["dst"] +
                                      ", Src. Port: " + tcpPacket.TcpPorts["src"];
@@ -248,9 +213,9 @@ namespace richClosure.ViewModels
             ipProtocolItem.Items.Add(tcpFlagsItem);
         }
 
-        private void FillIcmpTreeView(TreeViewItem ipProtocolItem, IPacket packet)
+        private void FillIcmpTreeView(TreeViewItem ipProtocolItem)
         {
-            IcmpPacket icmpPacket = packet as IcmpPacket;
+            IcmpPacket icmpPacket = SourcePacket as IcmpPacket;
             ipProtocolItem.Header += ", Type: " + icmpPacket.IcmpType + ", Code: " + icmpPacket.IcmpCode;
 
             ipProtocolItem.Items.Add(new TreeViewItem { Header = "ICMP Type: " + icmpPacket.IcmpType + ", " + (IcmpTypeEnum)icmpPacket.IcmpType });
@@ -302,9 +267,9 @@ namespace richClosure.ViewModels
             ipProtocolItem.Items.Add(new TreeViewItem { Header = "ICMP Rest: " + icmpPacket.IcmpRest });
         }
 
-        private void FillUdpTreeView(TreeViewItem ipProtocolItem, IPacket packet)
+        private void FillUdpTreeView(TreeViewItem ipProtocolItem)
         {
-            UdpPacket udpPacket = packet as UdpPacket;
+            UdpPacket udpPacket = SourcePacket as UdpPacket;
 
             ipProtocolItem.Header += ", Dest. Port: " + udpPacket.UdpPorts["dst"] +
                                      ", Src. Port: " + udpPacket.UdpPorts["src"];
@@ -316,36 +281,36 @@ namespace richClosure.ViewModels
             ipProtocolItem.Items.Add(new TreeViewItem { Header = "Checksum: " + udpPacket.UdpChecksum });
         }
 
-        private void FillAppProtocolTreeView(IPacket packet, List<TreeViewItem> treeViewItems)
+        private void FillAppProtocolTreeView()
         {
-            TreeViewItem appProtocolItem = new TreeViewItem { Header = packet.IpAppProtocol.ToString() };
-            treeViewItems.Add(appProtocolItem);
+            TreeViewItem appProtocolItem = new TreeViewItem { Header = SourcePacket.IpAppProtocol.ToString() };
+            TreeViewItems.Add(appProtocolItem);
 
-            switch (packet.IpAppProtocol)
+            switch (SourcePacket.IpAppProtocol)
             {
                 case AppProtocolEnum.Dns:
-                    FillDnsProtocolTreeView(appProtocolItem, packet);
+                    FillDnsProtocolTreeView(appProtocolItem);
                     break;
 
                 case AppProtocolEnum.Dhcp:
-                    FillDhcpProtocolTreeView(appProtocolItem, packet);
+                    FillDhcpProtocolTreeView(appProtocolItem);
                     break;
 
                 case AppProtocolEnum.Http:
-                    FillHttpProtocolTreeView(appProtocolItem, packet);
+                    FillHttpProtocolTreeView(appProtocolItem);
                     break;
 
                 case AppProtocolEnum.Tls:
-                    FillTlsProtocolTreeView(appProtocolItem, packet);
+                    FillTlsProtocolTreeView(appProtocolItem);
                     break;
             }
         }
 
-        private void FillDnsProtocolTreeView(TreeViewItem appProtocolItem, IPacket packet)
+        private void FillDnsProtocolTreeView(TreeViewItem appProtocolItem)
         {
-            if (packet.IpProtocol == IpProtocolEnum.Tcp)
+            if (SourcePacket.IpProtocol == IpProtocolEnum.Tcp)
             {
-                DnsTcpPacket pac = packet as DnsTcpPacket;
+                DnsTcpPacket pac = SourcePacket as DnsTcpPacket;
                 appProtocolItem.Items.Add(new TreeViewItem { Header = "Identification: " + pac.DnsIdentification });
                 appProtocolItem.Items.Add(new TreeViewItem { Header = "QR: " + pac.DnsQr });
                 appProtocolItem.Items.Add(new TreeViewItem { Header = "Opcode: " + pac.DnsOpcode });
@@ -417,9 +382,9 @@ namespace richClosure.ViewModels
 
         }
 
-        private void FillDhcpProtocolTreeView(TreeViewItem appProtocolItem, IPacket packet)
+        private void FillDhcpProtocolTreeView(TreeViewItem appProtocolItem)
         {
-            DhcpPacket dhcpPacket = packet as DhcpPacket;
+            DhcpPacket dhcpPacket = SourcePacket as DhcpPacket;
 
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Opcode: " + dhcpPacket.DhcpOpcode });
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Hardware Type: " + dhcpPacket.DhcpHardType });
@@ -436,9 +401,9 @@ namespace richClosure.ViewModels
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Boot Filename: " + dhcpPacket.DhcpBootFilename });
         }
 
-        private void FillHttpProtocolTreeView(TreeViewItem appProtocolItem, IPacket packet)
+        private void FillHttpProtocolTreeView(TreeViewItem appProtocolItem)
         {
-            HttpPacket pac = packet as HttpPacket;
+            HttpPacket pac = SourcePacket as HttpPacket;
 
             foreach (KeyValuePair<string, string> entry in pac.HttpFieldsDict)
             {
@@ -446,9 +411,9 @@ namespace richClosure.ViewModels
             }
         }
 
-        private void FillTlsProtocolTreeView(TreeViewItem appProtocolItem, IPacket packet)
+        private void FillTlsProtocolTreeView(TreeViewItem appProtocolItem)
         {
-            TlsPacket pac = packet as TlsPacket;
+            TlsPacket pac = SourcePacket as TlsPacket;
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Content Type: " + pac.TlsType });
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Version: " + pac.TlsVersion });
             appProtocolItem.Items.Add(new TreeViewItem { Header = "Data Length: " + pac.TlsDataLength });
