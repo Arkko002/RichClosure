@@ -16,16 +16,17 @@ namespace richClosure.Packet_Sniffing
 
         private SnifferSocket _socket;
 
+        private SnifferThreads _snifferThreads;
+
         private readonly PacketQueue _packetQueue;
 
-        private readonly SnifferThreads _snifferThreads;
         public bool IsWorking { get; set; }
 
-        public PacketSniffer(ObservableCollection<IPacket> packetCollection)
+        public PacketSniffer(ObservableCollection<IPacket> packetCollection, PacketQueue packetQueue, SnifferThreads snifferThreads)
         {       
             _packetCollection = packetCollection;
-            _packetQueue = new PacketQueue();
-            _snifferThreads = new SnifferThreads(EnqueueIncomingPackets, CreatePacketFromBuffer);
+            _packetQueue = packetQueue;
+            _snifferThreads = snifferThreads;
         }
 
         public void SniffPackets(NetworkInterface networkInterface)
@@ -37,6 +38,9 @@ namespace richClosure.Packet_Sniffing
                 _packetQueue);
 
             IsWorking = true;
+
+            _snifferThreads = new SnifferThreads();
+            _snifferThreads.AssignMethodsToThreads(EnqueueIncomingPackets, DequeuePacketBuffer);
             _snifferThreads.StartThreads();
         }
 
@@ -53,7 +57,7 @@ namespace richClosure.Packet_Sniffing
             }
         }
 
-        private void CreatePacketFromBuffer()
+        private void DequeuePacketBuffer()
         {
             while (IsWorking)
             {

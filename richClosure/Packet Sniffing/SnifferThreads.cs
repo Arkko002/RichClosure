@@ -4,14 +4,19 @@ namespace richClosure.Packet_Sniffing
 {
     public class SnifferThreads
     {
-        private readonly Thread _enqueueThread;
-        private readonly Thread _dequeueThread;
+        private Thread _enqueueThread;
+        private Thread _dequeueThread;
 
-        public SnifferThreads(ThreadStart enqueueMethod, ThreadStart dequeueMethod)
+        public void AssignMethodsToThreads(ThreadStart enqueueMethod, ThreadStart dequeueMethod)
         {
             _enqueueThread = new Thread(enqueueMethod);
             _dequeueThread = new Thread(dequeueMethod);
 
+            ConfigureThreads();
+        }
+
+        private void ConfigureThreads()
+        {
             _enqueueThread.SetApartmentState(ApartmentState.STA);
             _dequeueThread.SetApartmentState(ApartmentState.STA);
 

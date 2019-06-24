@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using Autofac;
 using Autofac.Core;
+using richClosure.Packet_Sniffing;
 using richClosure.Packets;
 using richClosure.ViewModels;
 using richClosure.Views;
@@ -17,6 +18,7 @@ namespace richClosure
     {
         private IContainer _container;
 
+        //TODO!!! Make all dependencies injectable, remove creation of classes from constructors and provide them through DI
         protected override void OnStartup(StartupEventArgs e)
         {
             // TODO Clean up DI
@@ -25,19 +27,30 @@ namespace richClosure
             builder.RegisterType<ObservableCollection<IPacket>>()
                 .SingleInstance();
 
-            builder.RegisterType<PacketCollectionViewModel>()
+            builder.RegisterType<PacketSniffer>()
                 .WithParameters(new List<Parameter>()
                 {
-                    new ResolvedParameter((info, context) => info.ParameterType == typeof(ObservableCollection<IPacket>),
+                    new ResolvedParameter(
+                        (info, context) => info.ParameterType == typeof(ObservableCollection<IPacket>),
                         (info, context) => context.Resolve(typeof(ObservableCollection<IPacket>))),
 
-                })
+                    new TypedParameter(typeof(PacketQueue), new PacketQueue()),
+                    
+                    new TypedParameter(typeof(SnifferThreads), new SnifferThreads())
+                });
+
+            builder.RegisterType<PacketCollectionViewModel>()
+                .WithParameter(new ResolvedParameter((info, context) => info.ParameterType == typeof(ObservableCollection<IPacket>),
+                    (info, context) => context.Resolve(typeof(ObservableCollection<IPacket>))))
                 .SingleInstance();
 
             builder.RegisterType<PacketSnifferViewModel>()
-                .WithParameter(new ResolvedParameter(
-                    (info, context) => info.ParameterType == typeof(ObservableCollection<IPacket>),
-                    (info, context) => context.Resolve(typeof(ObservableCollection<IPacket>))))
+                .WithParameters(new List<Parameter>
+                {
+                    new ResolvedParameter(
+                        (info, context) => info.ParameterType == typeof(PacketSniffer),
+                        (info, context) => context.Resolve(typeof(PacketSniffer))),
+                }) 
                 .SingleInstance();
 
             builder.RegisterType<PacketFilterViewModel>()
