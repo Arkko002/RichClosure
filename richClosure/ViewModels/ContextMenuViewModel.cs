@@ -1,10 +1,10 @@
 using System;
 using System.Windows.Input;
+using PacketSniffer.Packets;
+using PacketSniffer.Packets.Internet_Layer;
+using PacketSniffer.Packets.Transport_Layer;
 using richClosure.Commands;
 using richClosure.Events;
-using richClosure.Packets;
-using richClosure.Packets.Internet_Layer;
-using richClosure.Packets.Transport_Layer;
 
 namespace richClosure.ViewModels
 {

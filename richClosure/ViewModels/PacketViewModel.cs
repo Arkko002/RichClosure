@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
-using richClosure.Packets;
-using richClosure.Packets.Application_Layer;
-using richClosure.Packets.Internet_Layer;
-using richClosure.Packets.Session_Layer;
-using richClosure.Packets.Transport_Layer;
+using PacketSniffer.Packets;
+using PacketSniffer.Packets.Application_Layer;
+using PacketSniffer.Packets.Internet_Layer;
+using PacketSniffer.Packets.Session_Layer;
+using PacketSniffer.Packets.Transport_Layer;
 using richClosure.Properties;
 
 namespace richClosure.ViewModels
 {
+    //TODO Create a proper bit viewer for ascii and hex data
+    //TODO Refrence to source packet breaks threading, find a way to copy/reference packet's data on UI
     public class PacketViewModel : INotifyPropertyChanged, IViewModel
     {
         public string AsciiData { get; set; }
@@ -21,6 +23,8 @@ namespace richClosure.ViewModels
         public IPacket SourcePacket { get; set; }
 
         public List<TreeViewItem> TreeViewItems { get; set; }
+
+        public TreeViewItem TreeViewItem { get; set; }
 
         public PacketViewModel(IPacket sourcePacket)
         {
@@ -104,7 +108,7 @@ namespace richClosure.ViewModels
             FillIpTreeView();
             FillIpProtocolTreeView();
             FillAppProtocolTreeView();
-            
+
         }
 
         private void FillFrameTreeView()

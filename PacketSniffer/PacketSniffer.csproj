@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{582D5D11-71F3-405A-BF84-A099CFB1419E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PacketSniffer</RootNamespace>
+    <AssemblyName>PacketSniffer</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Packet Sniffing\Packet Factories\AbstractFactories\IAbstractByteFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\AbstractFactories\IAbstractFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\DhcpPacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\DnsPacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\HttpPacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\TlsPacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\InternetFactories\IcmpPacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\InternetFactories\Ip4PacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\InternetFactories\Ip6PacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\PacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\TransportFactories\TcpPacketFactory.cs" />
+    <Compile Include="Packet Sniffing\Packet Factories\TransportFactories\UdpPacketFactory.cs" />
+    <Compile Include="Packet Sniffing\PacketQueue.cs" />
+    <Compile Include="Packet Sniffing\PacketSniffer.cs" />
+    <Compile Include="Packet Sniffing\SnifferSocket.cs" />
+    <Compile Include="Packet Sniffing\SnifferThreads.cs" />
+    <Compile Include="Packet Sniffing\SocketConfigurator.cs" />
+    <Compile Include="Packets\Application Layer\DhcpPacket.cs" />
+    <Compile Include="Packets\Application Layer\DnsPacket.cs" />
+    <Compile Include="Packets\Application Layer\HttpPacket.cs" />
+    <Compile Include="Packets\CusomBool.cs" />
+    <Compile Include="Packets\IFlags.cs" />
+    <Compile Include="Packets\Internet Layer\IcmpPacket.cs" />
+    <Compile Include="Packets\Internet Layer\IpPacket.cs" />
+    <Compile Include="Packets\IPacket.cs" />
+    <Compile Include="Packets\Session Layer\TlsPacket.cs" />
+    <Compile Include="Packets\Transport Layer\TcpPacket.cs" />
+    <Compile Include="Packets\Transport Layer\UdpPacket.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+</Project>

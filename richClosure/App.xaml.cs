@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using Autofac;
 using Autofac.Core;
-using richClosure.Packet_Sniffing;
-using richClosure.Packets;
+using PacketSniffer.Packet_Sniffing;
+using PacketSniffer.Packets;
 using richClosure.ViewModels;
 using richClosure.Views;
 using richClosure.Window_Services;
@@ -27,7 +27,8 @@ namespace richClosure
             builder.RegisterType<ObservableCollection<IPacket>>()
                 .SingleInstance();
 
-            builder.RegisterType<PacketSniffer>()
+            //TODO Hide PacketQueue and SnifferThreads, remove library config from DI 
+            builder.RegisterType<PacketSniffer.Packet_Sniffing.PacketSnifferService>()
                 .WithParameters(new List<Parameter>()
                 {
                     new ResolvedParameter(
@@ -48,8 +49,8 @@ namespace richClosure
                 .WithParameters(new List<Parameter>
                 {
                     new ResolvedParameter(
-                        (info, context) => info.ParameterType == typeof(PacketSniffer),
-                        (info, context) => context.Resolve(typeof(PacketSniffer))),
+                        (info, context) => info.ParameterType == typeof(PacketSniffer.Packet_Sniffing.PacketSnifferService),
+                        (info, context) => context.Resolve(typeof(PacketSniffer.Packet_Sniffing.PacketSnifferService))),
                 }) 
                 .SingleInstance();
 

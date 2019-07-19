@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Collections.Specialized;
-using richClosure.Packets;
+using System.Windows;
+using System.Windows.Threading;
+using PacketSniffer.Packets;
 using richClosure.Properties;
 
 namespace richClosure.ViewModels
@@ -15,7 +17,16 @@ namespace richClosure.ViewModels
         public ObservableCollection<PacketViewModel> PacketObservableCollection { get; }
         public ObservableCollection<IPacket> ModelCollection { get; }
 
-        public PacketViewModel SelectedPacket { get; set; }
+        private PacketViewModel _selectedPacket;
+        public PacketViewModel SelectedPacket
+        {
+            get => _selectedPacket;
+            set
+            {
+                _selectedPacket = value;
+                OnPropertyChanged(nameof(SelectedPacket));
+            }
+        }
 
         private int _totalPacketCount;
         public int TotalPacketCount

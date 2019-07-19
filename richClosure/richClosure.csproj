@@ -97,24 +97,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Events\ConversationFilterSelectedEventArgs.cs" />
     <Compile Include="Packet Filtering\SearchQuery.cs" />
     <Compile Include="Packet Filtering\SearchQueryList.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\DhcpPacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\DnsPacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\HttpPacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\ApplicationFactories\TlsPacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\IAbstractFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\InternetFactories\IcmpPacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\InternetFactories\Ip4PacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\InternetFactories\Ip6PacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\PacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\TransportFactories\TcpPacketFactory.cs" />
-    <Compile Include="Packet Sniffing\Packet Factories\TransportFactories\UdpPacketFactory.cs" />
-    <Compile Include="Packet Sniffing\PacketQueue.cs" />
-    <Compile Include="Packet Sniffing\SnifferSocket.cs" />
-    <Compile Include="Packet Sniffing\SnifferThreads.cs" />
-    <Compile Include="Packet Sniffing\SocketConfigurator.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModels\ContextMenuViewModel.cs" />
     <Compile Include="ViewModels\InterfaceSelectionViewModel.cs" />
     <Compile Include="ViewModels\IViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -123,20 +110,8 @@
     <Compile Include="Views\InterfaceSelectionWindow.xaml.cs">
       <DependentUpon>InterfaceSelectionWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Packets\Application Layer\DhcpPacket.cs" />
-    <Compile Include="Packets\Application Layer\DnsPacket.cs" />
     <Compile Include="ErrorLoger.cs" />
-    <Compile Include="Packets\Application Layer\HttpPacket.cs" />
-    <Compile Include="Packets\CusomBool.cs" />
-    <Compile Include="Packets\IFlags.cs" />
-    <Compile Include="Packets\Internet Layer\IcmpPacket.cs" />
-    <Compile Include="Packets\Internet Layer\IpPacket.cs" />
     <Compile Include="Packet Filtering\PacketListFilter.cs" />
-    <Compile Include="Packet Sniffing\PacketSniffer.cs" />
-    <Compile Include="Packets\IPacket.cs" />
-    <Compile Include="Packets\Session Layer\TlsPacket.cs" />
-    <Compile Include="Packets\Transport Layer\TcpPacket.cs" />
-    <Compile Include="Packets\Transport Layer\UdpPacket.cs" />
     <Compile Include="Packet Filtering\SearchStringParser.cs" />
     <Compile Include="Window Services\IWindowManager.cs" />
     <Compile Include="Window Services\WindowFactory.cs" />
@@ -206,6 +181,12 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\analyzers\dotnet\cs\Humanizer.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PacketSniffer\PacketSniffer.csproj">
+      <Project>{582d5d11-71f3-405a-bf84-a099cfb1419e}</Project>
+      <Name>PacketSniffer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -29,14 +29,17 @@
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu>
+                    <!--TODO Add DataTriggers for context menu -->
                     <MenuItem x:Name="SetFilterMenuItem" Header="Set Filet" SubmenuOpened="SetFilterMenuItem_SubmenuOpened">
-                        <MenuItem x:Name="Ip4Filter" Header="IPv4" Click="MenuItem_Ip4FilterClick"/>
+                        <MenuItem x:Name="Ip4Filter" Header="IPv4" Click="MenuItem_Ip4FilterClick">
+                        </MenuItem>
                         <MenuItem x:Name="TcpFilter" Header="TCP" Click="MenuItem_TcpFilterClick"/>
                         <MenuItem x:Name="UdpFilter" Header="UDP" Click="MenuItem_UdpFilterClick"/>
                     </MenuItem>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.RowStyle>
+                <!--TODO Move this into propety in IPacket -->
                 <Style TargetType="{x:Type DataGridRow}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Path=SourcePacket.IpProtocol}" Value="TCP">
@@ -52,24 +55,38 @@
                 </Style>
             </DataGrid.RowStyle>
         </DataGrid>
+
         <TreeView x:Name="PacketTreeView" Margin="10,0,0,170" Width="832" Height="159" VerticalAlignment="Bottom"
-                  HorizontalAlignment="Left" Foreground="Black" FontSize="14" ItemsSource="{Binding Path=PacketCollectionViewModel.SelectedPacket.TreeViewItems}"/>
+                  HorizontalAlignment="Left" Foreground="Black" FontSize="14" ItemsSource="{Binding Path=PacketCollectionViewModel.SelectedPacket.TreeViewItem}"/>
 
         <Grid Margin="10,0,0,-40" HorizontalAlignment="Left" Width="832" Grid.Row="1">
             <Label x:Name="ShownPacketsLabel" Content="Shown packets:" VerticalAlignment="Top" Margin="141,0,609,0" FontSize="10"/>
             <Label x:Name="TotalPacketsLabel" Content="Total packets: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="73" FontSize="10"/>
-            <Label x:Name="TotalPacketsLabelNum" Content="{Binding Path=PacketCollectionViewModel.TotalPacketCount}" HorizontalAlignment="Left" Margin="73,0,0,0" VerticalAlignment="Top" Width="63" Height="25"/>
-            <Label x:Name="ShownPacketsLabelNum" HorizontalAlignment="Left" Margin="228,0,0,0" VerticalAlignment="Top" Width="63" Height="25" Content="{Binding Path=PacketCollectionViewModel.ShownPacketCount}"/>
+            <Label x:Name="TotalPacketsLabelNum" Content="{Binding Path=PacketCollectionViewModel.TotalPacketCount}" HorizontalAlignment="Left"
+                   Margin="73,0,0,0" VerticalAlignment="Top" Width="63" Height="25"/>
+            <Label x:Name="ShownPacketsLabelNum" HorizontalAlignment="Left" Margin="228,0,0,0" VerticalAlignment="Top" Width="63" Height="25"
+                   Content="{Binding Path=PacketCollectionViewModel.ShownPacketCount}"/>
         </Grid>
-        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding ShowAdapterSelectionCommand, Mode=OneWay}"/>
-        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="63,10,0,0" VerticalAlignment="Top" Width="48" Height="25" Command="{Binding StopSniffingPackets, Mode=OneWay}"/>
+
+        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="48" Height="25"
+                Command="{Binding ShowAdapterSelectionCommand, Mode=OneWay}"/>
+
+        <Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="63,10,0,0" VerticalAlignment="Top" Width="48" Height="25"
+                Command="{Binding StopSniffingPackets, Mode=OneWay}"/>
+
         <TextBox x:Name="SearchTextBox" Text="{Binding SearchString}" HorizontalAlignment="Left" Height="25" Margin="338,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="420">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SearchPackets, Mode=OneWay }"/>
             </TextBox.InputBindings>
         </TextBox>
-        <Button x:Name="SearchClearButton" Content="Clear" HorizontalAlignment="Left" Margin="763,10,0,0" VerticalAlignment="Top" Width="79" Height="25" Command="{Binding ClearSearchResult, Mode=OneWay}"/>
-        <TextBox x:Name="PacketHexTextBox" HorizontalAlignment="Left" Height="155" Margin="10,430,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411" FontFamily="Global Monospace" Text="{Binding HexData, Mode=OneWay}"/>
-        <TextBox x:Name="PacketAsciiTextBox" HorizontalAlignment="Left" Height="155" Margin="426,430,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="416" FontFamily="Global Monospace" Text="{Binding AsciiData, Mode=OneWay}"/>
+
+        <Button x:Name="SearchClearButton" Content="Clear" HorizontalAlignment="Left" Margin="763,10,0,0" VerticalAlignment="Top" Width="79" Height="25"
+                Command="{Binding ClearSearchResult, Mode=OneWay}"/>
+
+        <TextBox x:Name="PacketHexTextBox" HorizontalAlignment="Left" Height="155" Margin="10,430,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411"
+                 FontFamily="Global Monospace" Text="{Binding Path=PacketCollectionViewModel.SelectedPacket.HexData, Mode=OneWay}"/>
+
+        <TextBox x:Name="PacketAsciiTextBox" HorizontalAlignment="Left" Height="155" Margin="426,430,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="416"
+                 FontFamily="Global Monospace" Text="{Binding Path=PacketCollectionViewModel.SelectedPacket.AsciiData, Mode=OneWay}"/>
     </Grid>
 </Window>

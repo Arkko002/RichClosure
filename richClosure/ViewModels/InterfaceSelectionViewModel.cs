@@ -19,6 +19,7 @@ namespace richClosure.ViewModels
 
         private readonly PacketSnifferViewModel _packetSnifferViewModel;
 
+        //TODO Replace ViewModel dependency with the properties needed in this VM
         public InterfaceSelectionViewModel(PacketSnifferViewModel packetSnifferViewModel, IWindowManager windowManager)
         {
             NetworkInterfaces = new List<NetworkInterface>();

@@ -1,9 +1,6 @@
 ﻿using System.Threading;
 using System.Windows;
 using System.Windows.Data;
-using richClosure.Packets;
-using richClosure.Packets.Internet_Layer;
-using richClosure.Packets.Transport_Layer;
 using richClosure.ViewModels;
 
 namespace richClosure.Views
