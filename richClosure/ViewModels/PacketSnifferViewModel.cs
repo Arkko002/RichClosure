@@ -2,26 +2,22 @@
 using System.Collections.ObjectModel;
 using System.Net.NetworkInformation;
 using System.Windows.Input;
-using richClosure.Packet_Sniffing;
-using richClosure.Packets;
+using PacketSniffer.Packet_Sniffing;
 
 namespace richClosure.ViewModels
 {
     public class PacketSnifferViewModel : IViewModel
     {
-        private readonly PacketSniffer _packetSniffer;
-        public ObservableCollection<IPacket> ModelCollection { get; }
+        private readonly PacketSnifferService _packetSniffer;
 
         public NetworkInterface NetworkInterface { get; set; }
 
         public ICommand StartSniffingCommand { get; }
         public ICommand StopSniffingCommand { get; }
 
-        public PacketSnifferViewModel(ObservableCollection<IPacket> modelCollection)
+        public PacketSnifferViewModel(PacketSnifferService packetSniffer)
         {
-            ModelCollection = modelCollection;
-
-            _packetSniffer = new PacketSniffer(modelCollection);
+            _packetSniffer = packetSniffer;
 
             StartSniffingCommand = new RelayCommand(x => StartSniffingPackets(), x => !_packetSniffer.IsWorking);
             StopSniffingCommand = new RelayCommand(x => StopSniffingPackets(), x => _packetSniffer.IsWorking);

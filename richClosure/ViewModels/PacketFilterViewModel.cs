@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using PacketSniffer.Packets;
 using richClosure.Packet_Filtering;
-using richClosure.Packets;
 
 namespace richClosure.ViewModels
 {
@@ -19,6 +19,7 @@ namespace richClosure.ViewModels
 
         public string SearchString { get; set; }
 
+        //TODO Replace ViewModel dependency with the properties needed in this VM
         public PacketFilterViewModel(PacketCollectionViewModel packetCollectionViewModel)
         {
             _packetCollectionViewModel = packetCollectionViewModel;

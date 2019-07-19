@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Collections.Specialized;
-using richClosure.Packets;
+using System.Windows;
+using System.Windows.Threading;
+using PacketSniffer.Packets;
 using richClosure.Properties;
 
 namespace richClosure.ViewModels
@@ -14,7 +17,16 @@ namespace richClosure.ViewModels
         public ObservableCollection<PacketViewModel> PacketObservableCollection { get; }
         public ObservableCollection<IPacket> ModelCollection { get; }
 
-        public PacketViewModel SelectedPacket { get; private set; }
+        private PacketViewModel _selectedPacket;
+        public PacketViewModel SelectedPacket
+        {
+            get => _selectedPacket;
+            set
+            {
+                _selectedPacket = value;
+                OnPropertyChanged(nameof(SelectedPacket));
+            }
+        }
 
         private int _totalPacketCount;
         public int TotalPacketCount
@@ -43,12 +55,35 @@ namespace richClosure.ViewModels
             PacketObservableCollection = new ObservableCollection<PacketViewModel>();
             ModelCollection = modelCollection;
 
+            modelCollection.CollectionChanged += ModelCollection_CollectionChanged;
             PacketObservableCollection.CollectionChanged += PacketObservableCollection_CollectionChanged;
+        }
+
+        //TODO
+        private void ModelCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    AddPacketViewModelsToCollection(e.NewItems);
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         private void PacketObservableCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             UpdatePacketCount(sender as ObservableCollection<PacketViewModel>);
+        }
+
+        private void AddPacketViewModelsToCollection(IList newPackets)
+        {
+            foreach (var packet in newPackets)
+            {
+                PacketObservableCollection.Add(new PacketViewModel((IPacket)packet));
+            }
         }
 
         public void ClearPacketList()
