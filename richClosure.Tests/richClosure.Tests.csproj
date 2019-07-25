@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Packet Sniffing Tests\" />
+    <Folder Include="Window Services Tests\" />
   </ItemGroup>
 
   <ItemGroup>

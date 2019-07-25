@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-using richClosure.Packet_Sniffing;
+using PacketSniffer.Packet_Sniffing;
 
 namespace richClosure.Tests.Packet_Sniffing_Tests
 {
@@ -17,7 +17,8 @@ namespace richClosure.Tests.Packet_Sniffing_Tests
         [Test]
         public void LaunchingThreads_ThreadsOperateCorrectly()
         {
-            _threads = new SnifferThreads(ChangeFirstBool, ChangeSecondBool);
+            _threads = new SnifferThreads();
+            _threads.AssignMethodsToThreads(ChangeFirstBool, ChangeSecondBool);
 
             _threads.StartThreads();
 

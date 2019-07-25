@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-using richClosure.Packet_Sniffing;
+using PacketSniffer.Packet_Sniffing;
 
 namespace richClosure.Tests.Packet_Sniffing_Tests
 {
