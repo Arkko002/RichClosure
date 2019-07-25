@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.com/Arkko002/RichClosure.svg?branch=master)](https://travis-ci.com/Arkko002/RichClosure)
-
+[![Build Status](https://dev.azure.com/Arkko/RichClosure/_apis/build/status/Arkko002.RichClosure?branchName=master)](https://dev.azure.com/Arkko/RichClosure/_build/latest?definitionId=2&branchName=master)
 # RichClosure
 
 
