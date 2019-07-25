@@ -30,12 +30,6 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <!--TODO Add DataTriggers for context menu -->
-                    <MenuItem x:Name="SetFilterMenuItem" Header="Set Filet" SubmenuOpened="SetFilterMenuItem_SubmenuOpened">
-                        <MenuItem x:Name="Ip4Filter" Header="IPv4" Click="MenuItem_Ip4FilterClick">
-                        </MenuItem>
-                        <MenuItem x:Name="TcpFilter" Header="TCP" Click="MenuItem_TcpFilterClick"/>
-                        <MenuItem x:Name="UdpFilter" Header="UDP" Click="MenuItem_UdpFilterClick"/>
-                    </MenuItem>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.RowStyle>

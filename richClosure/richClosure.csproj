@@ -101,6 +101,11 @@
     <Compile Include="Packet Filtering\SearchQuery.cs" />
     <Compile Include="Packet Filtering\SearchQueryList.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Services\IPacketSnifferService.cs" />
+    <Compile Include="Services\Window Services\IWindowFactory.cs" />
+    <Compile Include="Services\Window Services\IWindowManager.cs" />
+    <Compile Include="Services\Window Services\WindowFactory.cs" />
+    <Compile Include="Services\Window Services\WindowManager.cs" />
     <Compile Include="ViewModels\ContextMenuViewModel.cs" />
     <Compile Include="ViewModels\InterfaceSelectionViewModel.cs" />
     <Compile Include="ViewModels\IViewModel.cs" />
@@ -113,9 +118,6 @@
     <Compile Include="ErrorLoger.cs" />
     <Compile Include="Packet Filtering\PacketListFilter.cs" />
     <Compile Include="Packet Filtering\SearchStringParser.cs" />
-    <Compile Include="Window Services\IWindowManager.cs" />
-    <Compile Include="Window Services\WindowFactory.cs" />
-    <Compile Include="Window Services\WindowManager.cs" />
     <Page Include="Views\InterfaceSelectionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -128,7 +130,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Window Services\IWindowFactory.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

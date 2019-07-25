@@ -7,8 +7,6 @@ using PacketSniffer.Packets;
 
 namespace PacketSniffer.Packet_Sniffing
 {
-    // TODO Make this highest level of abstraction (like in factories)
-    // TODO PacketFactory DI, maybe separate class for passing socket data to factory?
     // TODO Clean this up
     // TODO Remove dependency on concrete factory, DI it instead and use interface
     public class PacketSnifferService
