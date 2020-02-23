@@ -112,6 +112,11 @@
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\PacketFilterViewModel.cs" />
     <Compile Include="ViewModels\PacketSnifferViewModel.cs" />
+    <Compile Include="ViewModels\PacketViewModelFactories\ApplicationProtocolTreeViewItemFactory.cs" />
+    <Compile Include="ViewModels\PacketViewModelFactories\FrameTreeViewItemFactory.cs" />
+    <Compile Include="ViewModels\PacketViewModelFactories\IPacketTreeViewItemFactory.cs" />
+    <Compile Include="ViewModels\PacketViewModelFactories\IpTreeViewItemFactory.cs" />
+    <Compile Include="ViewModels\PacketViewModelFactories\IpProtocolTreeViewItemFactory.cs" />
     <Compile Include="Views\InterfaceSelectionWindow.xaml.cs">
       <DependentUpon>InterfaceSelectionWindow.xaml</DependentUpon>
     </Compile>
