@@ -10,6 +10,7 @@ using PacketSniffer.Packets.Session_Layer;
 using PacketSniffer.Packets.Transport_Layer;
 using richClosure.Properties;
 using richClosure.ViewModels.PacketViewModelFactories;
+using richClosure.ViewModels.PacketViewModelUtil;
 
 namespace richClosure.ViewModels
 {
@@ -29,75 +30,15 @@ namespace richClosure.ViewModels
 
         private void CreatePacketViewModel(IPacket sourcePacket)
         {
-            GetAsciiPacketData(sourcePacket);
-            GetHexPacketData(sourcePacket);
+            ParsePacketData(sourcePacket.PacketData);
             FillPacketTreeView(sourcePacket);
         }
 
-        private void GetAsciiPacketData(IPacket sourcePacket)
+        private void ParsePacketData(string packetData)
         {
-            string[] hexString = sourcePacket.PacketData.Split('-');
-
-            string tempAscii = string.Empty;
-
-            foreach (string hexval in hexString)
-            {
-                uint decval = Convert.ToUInt32(hexval, 16);
-
-                if (decval >= 33 && decval <= 126)
-                {
-                    char ch = Convert.ToChar(decval);
-                    tempAscii += ch;
-                }
-                else
-                {
-                    tempAscii += ".";
-                }
-            }
-
-            string resString = string.Empty;
-
-            for (int x = 1; x <= hexString.Length; x++)
-            {
-                if (x % 16 == 0 && x != 0)
-                {
-                    resString += tempAscii[x - 1] + "\n";
-                }
-                else if (x % 8 == 0 && x != 0)
-                {
-                    resString += tempAscii[x - 1] + "   ";
-                }
-                else
-                {
-                    resString += tempAscii[x - 1] + " ";
-                }
-            }
-
-            AsciiData = resString;
-        }
-
-        private void GetHexPacketData(IPacket sourcePacket)
-        {
-            string[] hexTempStr = sourcePacket.PacketData.Split('-');
-            string resString = string.Empty;
-
-            for (int x = 1; x <= hexTempStr.Length; x++)
-            {
-                if (x % 16 == 0 && x != 0)
-                {
-                    resString += hexTempStr[x - 1] + "\n";
-                }
-                else if (x % 8 == 0 && x != 0)
-                {
-                    resString += hexTempStr[x - 1] + "   ";
-                }
-                else
-                {
-                    resString += hexTempStr[x - 1] + " ";
-                }
-            }
-
-            HexData = resString;
+            PacketDataParser packetDataParser = new PacketDataParser(packetData);
+            AsciiData = packetDataParser.GetAsciiPacketData();
+            HexData = packetDataParser.GetHexPacketData();
         }
 
         private void FillPacketTreeView(IPacket sourcePacket)
