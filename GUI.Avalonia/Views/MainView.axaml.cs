@@ -1,6 +1,7 @@
 ﻿using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using richClosure.Avalonia.ViewModels;
+using Splat;
 
 namespace richClosure.Avalonia.Views
 {
@@ -11,11 +12,6 @@ namespace richClosure.Avalonia.Views
     {
         public MainWindow()
         {
-            //TODO
-            ViewModel = new MainWindowViewModel();
-            
-            // TODO MVVM multi-threading
-
             AvaloniaXamlLoader.Load(this);
         }
     }

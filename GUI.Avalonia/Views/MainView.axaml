@@ -53,9 +53,6 @@
             <!-- </DataGrid.RowStyle> -->
         </DataGrid>
 
-        <TreeView x:Name="PacketTreeView" Margin="10,0,0,170" Width="832" Height="159" VerticalAlignment="Bottom"
-                  HorizontalAlignment="Left" Foreground="Black" FontSize="14"
-                  Items="{Binding Path=PacketCollectionViewModel.SelectedPacket.TreeViewItem}"/>
 
         <Grid Margin="10,0,0,-40" HorizontalAlignment="Left" Width="832" Grid.Row="1">
             <Label x:Name="ShownPacketsLabel" Content="Shown packets:" VerticalAlignment="Top" Margin="141,0,609,0"
