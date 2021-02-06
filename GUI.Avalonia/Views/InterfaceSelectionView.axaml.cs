@@ -15,8 +15,6 @@ namespace richClosure.Avalonia.Views
     {
         public InterfaceSelectionWindow()
         {
-            ViewModel = new InterfaceSelectionViewModel();
-            
             this.WhenActivated(disposable =>
             {
                 this.OneWayBind(ViewModel,
