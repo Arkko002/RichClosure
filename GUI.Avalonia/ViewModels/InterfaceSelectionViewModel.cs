@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace richClosure.Avalonia.ViewModels
 {
-    public class InterfaceSelectionViewModel : ViewModelBase, IActivatableViewModel 
+    public class InterfaceSelectionViewModel : ViewModelBase
     {
         public List<NetworkInterface> NetworkInterfaces { get; set; }
 
@@ -22,14 +22,6 @@ namespace richClosure.Avalonia.ViewModels
         
         public InterfaceSelectionViewModel()
         {
-            Activator = new ViewModelActivator();
-            this.WhenActivated((disposable) =>
-            {
-                Disposable
-                    .Create(() => {})
-                    .DisposeWith(disposable);
-            });
-            
             NetworkInterfaces = new List<NetworkInterface>();
 
             PopulateInterfaceList();

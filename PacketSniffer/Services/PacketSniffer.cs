@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Threading;
 using PacketSniffer.Factories;
 using PacketSniffer.Packets;
 using PacketSniffer.Socket;
@@ -9,30 +10,29 @@ namespace PacketSniffer.Services
 {
     // TODO Clean this up
     // TODO Remove dependency on concrete factory, DI it instead and use interface
-    public class PacketSnifferService
+    //TODO Add interfaces to concrete classes, rework interfaces 
+    public class PacketSniffer : IPacketSniffer
     {
-        private readonly ObservableCollection<IPacket> _packetCollection;
-
-        private SnifferSocket _socket;
-
-        private SnifferThreads _snifferThreads;
-
         private readonly PacketQueue _packetQueue;
-
-        private IAbstractByteFactory _packetByteFactory;
-
-        public bool IsWorking { get; set; }
+        private readonly ObservableCollection<IPacket> _packetCollection;
+        
+        private SnifferSocket _socket;
+        private readonly Thread _enqueueThread;
+        private readonly Thread _dequeueThread; 
+        
+        private readonly IAbstractByteFactory _packetByteFactory;
 
         //TODO Replace usage of concrete classes with interfaces
-        public PacketSnifferService(ObservableCollection<IPacket> packetCollection,
+        public PacketSniffer(ObservableCollection<IPacket> packetCollection,
             PacketQueue packetQueue,
-            SnifferThreads snifferThreads,
             IAbstractByteFactory packetByteFactory)
         {       
             _packetCollection = packetCollection;
             _packetQueue = packetQueue;
-            _snifferThreads = snifferThreads;
             _packetByteFactory = packetByteFactory;
+
+            _enqueueThread = new Thread(EnqueueIncomingPackets);
+            _dequeueThread = new Thread(DequeuePacketBuffer);
         }
 
         public void SniffPackets(NetworkInterface networkInterface)
@@ -43,35 +43,28 @@ namespace PacketSniffer.Services
                 networkInterface,
                 _packetQueue);
 
-            IsWorking = true;
 
-            _snifferThreads = new SnifferThreads();
-            _snifferThreads.AssignMethodsToThreads(EnqueueIncomingPackets, DequeuePacketBuffer);
-            _snifferThreads.StartThreads();
+            _enqueueThread.Start();
+            _dequeueThread.Start();
         }
 
         public void StopSniffing()
         {
-            IsWorking = false;
+            _enqueueThread.Join();
+            _dequeueThread.Join();
         }
 
         private void EnqueueIncomingPackets()
         {
-            while (IsWorking)
-            {
-                _socket.ReceivePacket();
-            }
+            _socket.ReceivePacket();
         }
 
         private void DequeuePacketBuffer()
         {
-            while (IsWorking)
-            {
-                var buffer = _packetQueue.DequeuePacket();
-                
-                IPacket packet = _packetByteFactory.CreatePacket(buffer);
-                _packetCollection.Add(packet);
-            }
+            var buffer = _packetQueue.DequeuePacket();
+            
+            IPacket packet = _packetByteFactory.CreatePacket(buffer);
+            _packetCollection.Add(packet);
         }
     }
 }

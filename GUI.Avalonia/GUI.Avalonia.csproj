@@ -26,6 +26,9 @@
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="obj\**" />
+      <Compile Update="Views\PacketTreeView.axaml.cs">
+        <DependentUpon>PacketTreeUserControl.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Remove="obj\**" />

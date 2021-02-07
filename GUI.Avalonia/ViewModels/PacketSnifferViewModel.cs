@@ -8,14 +8,14 @@ namespace richClosure.Avalonia.ViewModels
 {
     public class PacketSnifferViewModel : ViewModelBase 
     {
-        private readonly PacketSnifferService _packetSniffer;
+        private readonly IPacketSniffer _packetSniffer;
 
         public NetworkInterface NetworkInterface { get; set; }
 
         public ICommand StartSniffingCommand { get; }
         public ICommand StopSniffingCommand { get; }
 
-        public PacketSnifferViewModel(IPacketSnifferService packetSniffer)
+        public PacketSnifferViewModel(IPacketSniffer packetSniffer)
         {
             _packetSniffer = packetSniffer;
 

@@ -64,25 +64,20 @@ namespace PacketSniffer.Packets.Internet_Layer
         BadLength = 2
     }
 
+    //TODO
     public class IcmpPacket : IpPacket
     {      
-        public byte IcmpType { get; private set; }
-        public byte IcmpCode { get; private set; }
-        public uint IcmpChecksum { get; private set; }
-        public string IcmpRest { get; private set; }
+        public byte Type { get;  }
+        public byte Code { get; }
+        public uint Checksum { get; }
+        public string Rest { get; }
 
         public IcmpPacket(Dictionary<string, object> valueDictionary) : base(valueDictionary) 
         {
-            SetIcmpPacketValues(valueDictionary);
-            SetDisplayedProtocol("ICMP");
-        }
-
-        private void SetIcmpPacketValues(Dictionary<string, object> valuesDictionary)
-        {
-            IcmpType = (byte)valuesDictionary["IcmpType"];
-            IcmpCode = (byte)valuesDictionary["IcmpCode"];
-            IcmpChecksum = Convert.ToUInt32(valuesDictionary["IcmpChecksum"]);
-            IcmpRest = (string)valuesDictionary["IcmpRest"];
+            Type = (byte)valueDictionary["IcmpType"];
+            Code = (byte)valueDictionary["IcmpCode"];
+            Checksum = Convert.ToUInt32(valueDictionary["IcmpChecksum"]);
+            Rest = (string)valueDictionary["IcmpRest"];
         }
     }
 }

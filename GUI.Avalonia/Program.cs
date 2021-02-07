@@ -11,6 +11,7 @@ using PacketSniffer.Packets;
 using PacketSniffer.Services;
 using ReactiveUI;
 using richClosure.Avalonia.ViewModels;
+using richClosure.Avalonia.Views;
 using Splat;
 using Splat.Autofac;
 
@@ -85,7 +86,8 @@ namespace richClosure.Avalonia
             
             var container = builder.Build();
             autofacResolver.SetLifetimeScope(container);
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);  
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
         } 
 
         // Avalonia configuration, don't remove; also used by visual designer.
