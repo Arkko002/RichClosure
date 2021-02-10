@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace richClosure.Avalonia.Packet_Filtering
+namespace Gui.PacketFilter
 {
     //TODO Make this use regular expressions
     public class SearchStringParser

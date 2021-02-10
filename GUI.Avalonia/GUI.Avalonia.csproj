@@ -19,6 +19,7 @@
         <PackageReference Include="Splat.Autofac" Version="10.0.1" />
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\PacketFilter\PacketFilter.csproj" />
       <ProjectReference Include="..\PacketSniffer\PacketSniffer.csproj" />
     </ItemGroup>
     <ItemGroup>

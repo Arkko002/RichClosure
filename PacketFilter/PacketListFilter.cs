@@ -1,13 +1,19 @@
-﻿namespace GUI.WPF.Packet_Filtering
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using PacketSniffer.Packets;
+
+namespace Gui.PacketFilter
 {
     class PacketListFilter
     {
         // TODO Write unit tests for this
-        // TODO Break down into seprate classes, one for all reflection operations
 
         private readonly List<IPacket> _mainPacketList;
         private readonly List<IPacket> _resultList;
 
+        //TODO Rework
         public PacketListFilter(List<IPacket> mainPacketList)
         {
             _mainPacketList = mainPacketList;
@@ -112,13 +118,12 @@
         // TODO Get rid of ifs
         private bool ComparePacketsAndSearchedValues(PropertyInfo searchedProperty, SearchQuery searchQuery, IPacket packet)
         {
-            if (searchedProperty.PropertyType == typeof(Dictionary<string, string>))
+            if (searchedProperty.PropertyType == typeof(bool))
             {
-                return CheckIfExistsInDictionary(searchedProperty, packet, searchQuery.SearchedValue);
+                return (bool)searchedProperty.GetValue(packet);
             }
-
-            if (searchedProperty.PropertyType == typeof(string) || searchedProperty.PropertyType.IsEnum ||
-                searchedProperty.PropertyType == typeof(CustomBool))
+            
+            if (searchedProperty.PropertyType == typeof(string) || searchedProperty.PropertyType.IsEnum) 
             {
                 string packetValue = searchedProperty.GetValue(packet).ToString();
 

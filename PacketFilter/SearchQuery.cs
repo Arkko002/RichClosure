@@ -1,4 +1,4 @@
-﻿namespace richClosure.Avalonia.Packet_Filtering
+﻿namespace Gui.PacketFilter
 {
     public class SearchQuery
     {
