@@ -1,52 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using PacketSniffer.Factories.ApplicationFactories;
-using PacketSniffer.Factories.InternetFactories;
-using PacketSniffer.Factories.TransportFactories;
+using PacketSniffer.Factories.Application;
+using PacketSniffer.Factories.Internet;
+using PacketSniffer.Factories.Internet.Ip;
+using PacketSniffer.Factories.Link;
+using PacketSniffer.Factories.Transport;
 using PacketSniffer.Packets;
+using PacketSniffer.Packets.Link;
 
 namespace PacketSniffer.Factories
 {
-    // TODO Stop returning nulls
-    // TODO Check data types, get rid of useless casting
-    // TODO Open-closed this
-    internal class PacketByteFactory : IAbstractByteFactory
+    //TODO Rework this to loop through NextProtocols and automatize creation of factories based on it
+    public class PacketFactory : IAbstractFactory
     {
         private ulong _packetId;
         private BinaryReader _binaryReader;
         private byte[] _buffer;
-        private readonly Dictionary<string, object> _valueDictionary = new Dictionary<string, object>();
 
-        public PacketByteFactory()
+        public PacketFactory(byte[] buffer)
         {
             _packetId = 0;
+            _buffer = buffer;
+
+            _binaryReader = CreateBinaryReaderFromBuffer(_buffer);
         }
-        
-        public IPacket CreatePacket(byte[] buffer)
+
+        public IPacket CreatePacket()
         {
             _packetId++;
+            var linkFactory = new LinkFactory(_binaryReader);
+            var packet = linkFactory.CreatePacket();
 
-            _buffer = buffer;
-            _binaryReader = CreateBinaryReaderFromBuffer(buffer);
-
-            byte ipVersion = GetPacketIpVersionAndResetStreamPosition();
-
-            IAbstractFactory ipByteFactory = CreateIpFactory(ipVersion);
-            IPacket ipPacket = ipByteFactory.CreatePacket();
-
-            IAbstractFactory protocolByteFactory = CreateProtocolFactory(ipPacket);
-            IPacket protocolPacket = protocolByteFactory.CreatePacket();
-
-            IAbstractFactory applicationByteFactory = CreateApplicationFactory(protocolPacket);
-
-            if (applicationByteFactory is null)
+            while (packet.NextProtocol != PacketProtocol.NoProtocol)
             {
-                return protocolPacket;
+                var factory = CreatePacketFactory(packet);
+                var newPacket = factory.CreatePacket();
+                packet = newPacket;
             }
 
-            IPacket applicationPacket = applicationByteFactory.CreatePacket();
-            return applicationPacket;
+            //TODO Wrap the packet in PacketFrame
+            return packet;
         }
 
         private BinaryReader CreateBinaryReaderFromBuffer(byte[] buffer)
@@ -57,114 +51,35 @@ namespace PacketSniffer.Factories
             return binaryReader;
         }
 
-        private byte GetPacketIpVersionAndResetStreamPosition()
+        //TODO Get rid of switch completely
+        private IAbstractFactory? CreatePacketFactory(IPacket packet)
         {
-            byte ipVersionAndHeaderLength = _binaryReader.ReadByte();
-
-            byte ipVersion = ipVersionAndHeaderLength;
-            ipVersion >>= 4;
-
-            _binaryReader.BaseStream.Position = 0;
-
-            return ipVersion;
-        }
-
-        private IAbstractFactory CreateIpFactory(byte ipVersion)
-        {
-            switch (ipVersion)
+            switch (packet.NextProtocol)
             {
-                case 4:
-                    return new Ip4PacketByteFactory(_binaryReader, _buffer, _packetId, _valueDictionary);
-
-                case 6:
-                    return new Ip6PacketByteFactory(_binaryReader, _buffer, _packetId, _valueDictionary);
-
-                default:
-                    //TODO
-//                    ErrorLogger.LogError(DateTime.Now.ToString(CultureInfo.CurrentCulture), "Unsuported IP Version(" + ipVersion + ")", GetType(),
-//                        ErrorLogger.ErrorSeverity.Low, string.Empty);
-                    throw new ArgumentException();
-            }
-        }
-
-        private IAbstractFactory CreateProtocolFactory(IPacket basePacket)
-        {
-
-            switch (basePacket.IpProtocol)
-            {
-                case IpProtocolEnum.Icmp:
-                    return new IcmpPacketByteFactory(_binaryReader, _valueDictionary);
-
-                case IpProtocolEnum.Tcp:
-                    return new TcpPacketByteFactory(_binaryReader, _valueDictionary);
-
-                case IpProtocolEnum.Udp:
-                    return new UdpPacketByteFactory(_binaryReader, _valueDictionary);
-
-                default:
-                    //TODO
-//                    ErrorLogger.LogError(DateTime.Now.ToString(CultureInfo.CurrentCulture), "Unsuported IP protocol (" + basePacket.IpProtocol + ")", GetType(),
-//                        ErrorLogger.ErrorSeverity.Low, string.Empty);
-                    throw new ArgumentException();
-            }
-        }
-
-        private IAbstractFactory CreateApplicationFactory(IPacket basePacket)
-        {
-            switch (basePacket.IpProtocol)
-            {
-                case IpProtocolEnum.Udp:
-                    return CreateUdpApplicationFactory(basePacket);
-
-                case IpProtocolEnum.Tcp:
-                    return CreateTcpApplicationFactory(basePacket);
-
-                default:
-                    //TODO
-//                    ErrorLogger.LogError(DateTime.Now.ToString(CultureInfo.CurrentCulture), "Unknown Error in PacketFactory", GetType(),
-//                        ErrorLogger.ErrorSeverity.Medium, string.Empty);
+                case PacketProtocol.Ethernet:
+                    return new EthernetPacketFactory(_binaryReader);
+                case PacketProtocol.IPv4:
+                    return new Ip4PacketFactory(_binaryReader, packet);
+                case PacketProtocol.IPv6:
+                    return new Ip6PacketFactory(_binaryReader, packet);
+                case PacketProtocol.ICMP:
+                    return new IcmpPacketFactory(_binaryReader, packet);
+                case PacketProtocol.TCP:
+                    return new TcpPacketFactory(_binaryReader, packet);
+                case PacketProtocol.UDP:
+                    return new UdpPacketFactory(_binaryReader, packet);
+                case PacketProtocol.DNS:
+                    return new DnsPacketFactory(_binaryReader, packet);
+                case PacketProtocol.DHCP:
+                    return new DhcpPacketFactory(_binaryReader, packet);
+                case PacketProtocol.HTTP:
+                    return new HttpPacketFactory(_binaryReader, packet);
+                case PacketProtocol.TLS:
+                    return new TlsPacketFactory(_binaryReader, packet);
+                case PacketProtocol.NoProtocol:
                     return null;
-            }
-        }
-
-        private IAbstractFactory CreateTcpApplicationFactory(IPacket basePacket)
-        {
-            TcpPacketByteFactory tcpByteFactory = new TcpPacketByteFactory(_binaryReader, _valueDictionary);
-            switch (tcpByteFactory.CheckForAppLayerPorts(basePacket))
-            {
-                case AppProtocolEnum.Dns:
-                    return new DnsPacketByteFactory(_binaryReader, _valueDictionary);
-
-                case AppProtocolEnum.Http:
-                    return new HttpPacketByteFactory(_binaryReader, _valueDictionary);
-
-                case AppProtocolEnum.Tls:
-                    return new TlsPacketByteFactory(_binaryReader, _valueDictionary);
-
-                case AppProtocolEnum.NoAppProtocol:
-                    return null;
-
                 default:
-                    return null;
-            }
-        }
-
-        private IAbstractFactory CreateUdpApplicationFactory(IPacket basePacket)
-        {
-            UdpPacketByteFactory udpByteFactory = new UdpPacketByteFactory(_binaryReader, _valueDictionary);
-            switch (udpByteFactory.CheckForAppLayerPorts(basePacket))
-            {
-                case AppProtocolEnum.Dns:
-                    return new DnsPacketByteFactory(_binaryReader, _valueDictionary);
-
-                case AppProtocolEnum.Dhcp:
-                    return new DhcpPacketByteFactory(_binaryReader, _valueDictionary);
-
-                case AppProtocolEnum.NoAppProtocol:
-                    return null;
-
-                default:
-                    return null;
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }

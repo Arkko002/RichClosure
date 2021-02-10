@@ -1,8 +1,7 @@
 using System;
 using System.Windows.Input;
 using PacketSniffer.Packets;
-using PacketSniffer.Packets.Internet_Layer;
-using PacketSniffer.Packets.Transport_Layer;
+using PacketSniffer.Packets.Transport;
 using richClosure.Avalonia.Commands;
 using richClosure.Avalonia.Events;
 

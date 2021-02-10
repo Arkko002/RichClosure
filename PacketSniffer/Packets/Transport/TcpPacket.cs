@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using PacketSniffer.Packets.Internet_Layer;
 
-namespace PacketSniffer.Packets.Transport_Layer
+namespace PacketSniffer.Packets.Transport
 {
     public class TcpPacket : ITransportPacket
     {
@@ -14,18 +13,46 @@ namespace PacketSniffer.Packets.Transport_Layer
         public ushort WindowSize { get; }
         public ushort Checksum { get; }
 
-        public ushort Flags { get; }
         
-        public TcpPacket(Dictionary<string, object> valuesDictionary) : base(valuesDictionary)
+        //Flags
+        public bool Fin { get; }
+        public bool Syn { get; }
+        public bool Rst { get; }
+        public bool Psh { get; }
+        public bool Ack { get; }
+        public bool Urg { get; }
+        public bool Ece { get; }
+        public bool Cwr { get; }
+        public bool Ns { get; }
+        
+        public TcpPacket(ushort destinationPort, ushort sourcePort, uint sequenceNumber, uint ackNumber, byte dataOffset,
+            ushort urgentPointer, ushort windowSize, ushort checksum, IPacket previousHeader, bool fin, bool syn,
+            bool rst, bool psh, bool ack, bool urg, bool ece, bool cwr, bool ns, PacketProtocol nextProtocol)
         {
-            SequenceNumber = (uint)valuesDictionary["TcpSequenceNumber"];
-            AckNumber = (uint)valuesDictionary["TcpAckNumber"];
-            DataOffset = (byte)valuesDictionary["TcpDataOffset"];
-            UrgentPointer = (ushort)valuesDictionary["TcpUrgentPointer"];
-            WindowSize = (ushort)valuesDictionary["TcpWindowSize"];
-            Checksum = (ushort)valuesDictionary["TcpChecksum"];
-            TcpPorts = (Dictionary<string, string>)valuesDictionary["TcpPorts"];
-            TcpFlags = (TcpFlags)valuesDictionary["TcpFlags"];
+            PacketProtocol = PacketProtocol.TCP;
+            DestinationPort = destinationPort;
+            SourcePort = sourcePort;
+            SequenceNumber = sequenceNumber;
+            AckNumber = ackNumber;
+            DataOffset = dataOffset;
+            UrgentPointer = urgentPointer;
+            WindowSize = windowSize;
+            Checksum = checksum;
+            PreviousHeader = previousHeader;
+            Fin = fin;
+            Syn = syn;
+            Rst = rst;
+            Psh = psh;
+            Ack = ack;
+            Urg = urg;
+            Ece = ece;
+            Cwr = cwr;
+            Ns = ns;
+            NextProtocol = nextProtocol;
         }
+
+        public PacketProtocol PacketProtocol { get; }
+        public IPacket? PreviousHeader { get; }
+        public PacketProtocol NextProtocol { get; }
     }
 }

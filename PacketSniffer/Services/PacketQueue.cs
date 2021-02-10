@@ -5,8 +5,8 @@ namespace PacketSniffer.Services
 {
     public class PacketQueue
     {
-        private readonly ConcurrentQueue<byte[]> _packetQueue = new ConcurrentQueue<byte[]>();
-        private readonly AutoResetEvent _queueNotifier = new AutoResetEvent(false);
+        private readonly ConcurrentQueue<byte[]> _packetQueue = new();
+        private readonly AutoResetEvent _queueNotifier = new(false);
 
         public void EnqueuePacket(byte[] buffer)
         {

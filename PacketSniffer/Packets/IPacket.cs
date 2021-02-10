@@ -1,19 +1,13 @@
-﻿using System;
+﻿#nullable enable
+using System;
+using System.Collections.Generic;
 
 namespace PacketSniffer.Packets
 {
-    //TODO
     public interface IPacket
     {
-        
-        ulong PacketId { get; }
-        string TimeDateCaptured { get; }
-        string PacketComment { get; }
-        
-        //TODO what type for universal address storing?
-        Tuple<,object> DestinationAddress { get; }
-        Tuple<,object> SourceAddress { get; }
-        
         PacketProtocol PacketProtocol { get; }
+        IPacket? PreviousHeader { get; }
+        PacketProtocol NextProtocol { get; }
     }
 }

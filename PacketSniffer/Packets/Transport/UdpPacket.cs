@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using PacketSniffer.Packets.Internet_Layer;
 
-namespace PacketSniffer.Packets.Transport_Layer
+namespace PacketSniffer.Packets.Transport
 {
     public class UdpPacket : ITransportPacket
     {
@@ -10,11 +9,18 @@ namespace PacketSniffer.Packets.Transport_Layer
         public ushort Length { get; }
         public ushort Checksum { get; }
 
-        public UdpPacket(Dictionary<string, object> valuesDictionary) : base(valuesDictionary)
+        public UdpPacket(ushort destinationPort, ushort sourcePort, ushort length, ushort checksum, IPacket? previousHeader, PacketProtocol nextProtocol)
         {
-            Length = (ushort)valuesDictionary["UdpLength"];
-            Checksum = (ushort)valuesDictionary["UdpChecksum"];
-            UdpPorts = (Dictionary<string, string>)valuesDictionary["UdpPorts"];
+            PacketProtocol = PacketProtocol.UDP;
+            DestinationPort = destinationPort;
+            SourcePort = sourcePort;
+            Length = length;
+            Checksum = checksum;
+            PreviousHeader = previousHeader;
+            NextProtocol = nextProtocol;
         }
+        public PacketProtocol PacketProtocol { get; }
+        public IPacket? PreviousHeader { get; }
+        public PacketProtocol NextProtocol { get; }
     }
 }

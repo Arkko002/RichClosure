@@ -4,10 +4,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
 using PacketSniffer.Packets;
-using PacketSniffer.Packets.Application_Layer;
-using PacketSniffer.Packets.Internet_Layer;
-using PacketSniffer.Packets.Session_Layer;
-using PacketSniffer.Packets.Transport_Layer;
 using ReactiveUI;
 
 namespace richClosure.Avalonia.ViewModels

@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
-using PacketSniffer.Packets.Transport_Layer;
+using PacketSniffer.Packets.Transport;
 
-namespace PacketSniffer.Packets.Application_Layer
+namespace PacketSniffer.Packets.Application
 {
-    public class HttpPacket : TcpPacket
+    public class HttpPacket : IApplicationPacket, IPacket
     {
-        public Dictionary<string, string> HttpFieldsDict { get; private set; }
+        public Dictionary<string, string> HttpFieldsDict { get; }
 
-        public HttpPacket(Dictionary<string, object> valuesDictionary) : base (valuesDictionary)
+        public HttpPacket(Dictionary<string, string> httpFieldsDict, IPacket? previousHeader, PacketProtocol nextProtocol)
         {
-            SetHttpPacketValues(valuesDictionary);
-            SetDisplayedProtocol("HTTP");
+            PacketProtocol = PacketProtocol.HTTP;
+            HttpFieldsDict = httpFieldsDict;
+            PreviousHeader = previousHeader;
+            NextProtocol = nextProtocol;
         }
 
-        private void SetHttpPacketValues(Dictionary<string, object> valuesDictionary)
-        {
-            HttpFieldsDict = (Dictionary<string, string>)valuesDictionary["HttpFieldsDict"];
-        }
+        public PacketProtocol PacketProtocol { get; }
+        public IPacket? PreviousHeader { get; }
+        public PacketProtocol NextProtocol { get; }
     }
 }

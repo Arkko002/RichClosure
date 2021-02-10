@@ -4,7 +4,7 @@ using PacketSniffer.Services;
 
 namespace PacketSniffer.Socket
 {
-    internal class SnifferSocket : System.Net.Sockets.Socket
+    internal class SnifferSocket : System.Net.Sockets.Socket, ISnifferSocket
     {
         private readonly PacketQueue _packetQueue;
 

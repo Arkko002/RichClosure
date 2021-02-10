@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PacketSniffer.Packets.Internet_Layer
+﻿namespace PacketSniffer.Packets.Internet
 {
 
     public enum IcmpTypeEnum
@@ -64,20 +61,26 @@ namespace PacketSniffer.Packets.Internet_Layer
         BadLength = 2
     }
 
-    //TODO
-    public class IcmpPacket : IpPacket
+    public class IcmpPacket : IInternetPacket
     {      
         public byte Type { get;  }
         public byte Code { get; }
         public uint Checksum { get; }
-        public string Rest { get; }
+        public uint Rest { get; }
 
-        public IcmpPacket(Dictionary<string, object> valueDictionary) : base(valueDictionary) 
+        public IcmpPacket(byte type, byte code, uint checksum, uint rest, IPacket? previousHeader, PacketProtocol nextProtocol)
         {
-            Type = (byte)valueDictionary["IcmpType"];
-            Code = (byte)valueDictionary["IcmpCode"];
-            Checksum = Convert.ToUInt32(valueDictionary["IcmpChecksum"]);
-            Rest = (string)valueDictionary["IcmpRest"];
+            PacketProtocol = PacketProtocol.ICMP;
+            Type = type;
+            Code = code;
+            Checksum = checksum;
+            Rest = rest;
+            PreviousHeader = previousHeader;
+            NextProtocol = nextProtocol;
         }
+
+        public PacketProtocol PacketProtocol { get; }
+        public IPacket? PreviousHeader { get; }
+        public PacketProtocol NextProtocol { get; }
     }
 }

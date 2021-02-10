@@ -16,17 +16,19 @@ namespace PacketSniffer.Services
         private readonly PacketQueue _packetQueue;
         private readonly ObservableCollection<IPacket> _packetCollection;
         
-        private SnifferSocket _socket;
+        private ISnifferSocket _socket;
         private readonly Thread _enqueueThread;
         private readonly Thread _dequeueThread; 
         
-        private readonly IAbstractByteFactory _packetByteFactory;
+        private readonly IAbstractFactory _packetByteFactory;
 
         //TODO Replace usage of concrete classes with interfaces
         public PacketSniffer(ObservableCollection<IPacket> packetCollection,
             PacketQueue packetQueue,
-            IAbstractByteFactory packetByteFactory)
-        {       
+            IAbstractFactory packetByteFactory,
+            ISnifferSocket snifferSocket)
+        {
+            _socket = snifferSocket;
             _packetCollection = packetCollection;
             _packetQueue = packetQueue;
             _packetByteFactory = packetByteFactory;
@@ -63,7 +65,7 @@ namespace PacketSniffer.Services
         {
             var buffer = _packetQueue.DequeuePacket();
             
-            IPacket packet = _packetByteFactory.CreatePacket(buffer);
+            IPacket packet = _packetByteFactory.CreatePacket();
             _packetCollection.Add(packet);
         }
     }

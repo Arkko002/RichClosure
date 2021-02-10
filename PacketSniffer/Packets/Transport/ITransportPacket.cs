@@ -1,6 +1,6 @@
-namespace PacketSniffer.Packets.Transport_Layer
+namespace PacketSniffer.Packets.Transport
 {
-    public interface ITransportPacket
+    public interface ITransportPacket : IPacket
     {
         ushort DestinationPort { get; }
         ushort SourcePort { get; }

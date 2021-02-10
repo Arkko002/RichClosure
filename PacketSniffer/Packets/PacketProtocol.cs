@@ -3,7 +3,7 @@ namespace PacketSniffer.Packets
     public enum PacketProtocol
     {
        NoProtocol,
-       MAC,
+       Ethernet, 
        ICMP,
        IPv4,
        IPv6,
