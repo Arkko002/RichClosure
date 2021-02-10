@@ -1,35 +1,13 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System;
+using System.Collections.Generic;
 
 namespace PacketSniffer.Packets
 {
-    public enum IpProtocolEnum
-    {
-        Icmp = 1,
-        Tcp = 6,
-        Udp = 17
-    };
-
-    public enum AppProtocolEnum
-    {
-        NoAppProtocol = 0,
-        Dns,
-        Dhcp,
-        Http,
-        Tls
-    };
-
     public interface IPacket
     {
-        byte IpVersion { get; }
-        string PacketData { get; }
-        ushort IpTotalLength { get; }
-        ulong PacketId { get; }
-        string TimeDateCaptured { get; }
-        IpProtocolEnum IpProtocol { get; }
-        AppProtocolEnum IpAppProtocol { get; }
-        string PacketDisplayedProtocol { get; }
-        string PacketComment { get; }
-
-        void SetPacketValues(Dictionary<string, object> valuesDictionary);
+        PacketProtocol PacketProtocol { get; }
+        IPacket? PreviousHeader { get; }
+        PacketProtocol NextProtocol { get; }
     }
 }
