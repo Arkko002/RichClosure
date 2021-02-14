@@ -2,6 +2,7 @@
 RichClosure
 ===========
 [![Build Status](https://travis-ci.com/Arkko002/RichClosure.svg?branch=master)](https://travis-ci.com/Arkko002/RichClosure)
+[![Build Status](https://dev.azure.com/arkko002/RichClosure/_apis/build/status/Arkko002.RichClosure?branchName=master)](https://dev.azure.com/arkko002/RichClosure/_build/latest?definitionId=1&branchName=master)
 
 Cross platform protocol analyzer written in C#.
 
