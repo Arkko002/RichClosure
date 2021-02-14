@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Gui.PacketFilter
+namespace PacketFilter
 {
     //TODO Make this use regular expressions
     public class SearchStringParser

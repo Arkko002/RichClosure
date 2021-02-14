@@ -2,7 +2,7 @@
 
 namespace PacketSniffer.Factories
 {
-    public interface IAbstractFactory
+    public interface IAbstractPacketFactory
     {
         IPacket CreatePacket();
     }

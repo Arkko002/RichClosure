@@ -6,6 +6,8 @@ namespace PacketSniffer.Packets.Internet.Ip
     {
         public byte HeaderLength { get; }
         public byte Dscp { get; }
+        //TODO
+        //public byte Ecn { get; }
         public ushort Identification { get; }
         public ushort Offset { get; }
         public byte Flags { get; }
@@ -24,8 +26,13 @@ namespace PacketSniffer.Packets.Internet.Ip
         public IPAddress SourceAddress { get; }
         public IPAddress DestinationAddress { get; }
 
+        //TODO
+        // public bool Df { get; }
+        // public bool Mf { get; }
+        
         public Ip4Packet(byte headerLength, byte dscp, ushort identification, ushort offset, byte flags, byte timeToLive,
-            uint headerChecksum, byte version, IPacket? previousHeader, IPAddress sourceAddress, IPAddress destinationAddress, IpProtocol nextHeaderProtocol, ushort totalLength, PacketProtocol nextProtocol)
+            uint headerChecksum, byte version, IPacket? previousHeader, IPAddress sourceAddress, IPAddress destinationAddress,
+            IpProtocol nextHeaderProtocol, ushort totalLength, PacketProtocol nextProtocol)
         {
             PacketProtocol = PacketProtocol.IPv4;
             HeaderLength = headerLength;
@@ -42,6 +49,9 @@ namespace PacketSniffer.Packets.Internet.Ip
             NextHeaderProtocol = nextHeaderProtocol;
             TotalLength = totalLength;
             NextProtocol = nextProtocol;
+            // Ecn = ecn;
+            // Df = df;
+            // Mf = mf;
         }
     }
 }

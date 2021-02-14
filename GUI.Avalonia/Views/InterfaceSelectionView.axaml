@@ -1,5 +1,5 @@
 ﻿<reactiveui:ReactiveWindow
-        x:Class="richClosure.Avalonia.Views.InterfaceSelectionWindow"
+        x:Class="richClosure.Avalonia.Views.InterfaceSelectionView"
         x:TypeArguments="viewmodel:InterfaceSelectionViewModel"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,19 +9,18 @@
         xmlns:reactiveui="http://reactiveui.net"
         mc:Ignorable="d"
         Title="InterfaceSelectionWindow" Height="328.283" Width="453.535" CanResize="False">
-    <Grid>
-        <Button Content="OK" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Width="100" Height="34"
-                Command="{Binding ChooseInterfaceCommand, Mode=OneWay}"/>
-        <Button Content="Cancel" HorizontalAlignment="Left" Margin="336,240,0,0" VerticalAlignment="Top" Width="100"  Height="34"
-                Command="{Binding CloseRequestCommand, Mode=OneWay}"/>
-        <DataGrid x:Name="InterfaceDataGrid" AutoGenerateColumns="False"  
-                  HorizontalAlignment="Left" Height="210" Margin="10,10,0,0" VerticalAlignment="Top" Width="426" IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Id}" Header="ID"/>
-                <DataGridTextColumn Binding="{Binding Name}" Header="Name"/>
-                <DataGridTextColumn Binding="{Binding Description}" Header="Description"/>
-            </DataGrid.Columns>
-        </DataGrid>
-
-    </Grid>
+        <DockPanel>
+                <Button Content="OK" DockPanel.Dock="Bottom" Command="{Binding Ok}"/> 
+                
+                <Button Content="Cancel" DockPanel.Dock="Bottom" Command="{Binding Cancel}"/> 
+                
+                <DataGrid x:Name="InterfaceDataGrid" AutoGenerateColumns="False"  
+                          HorizontalAlignment="Left" Height="210" Margin="10,10,0,0" VerticalAlignment="Top" Width="426" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Id}" Header="ID"/>
+                        <DataGridTextColumn Binding="{Binding Name}" Header="Name"/>
+                        <DataGridTextColumn Binding="{Binding Description}" Header="Description"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+        </DockPanel>
 </reactiveui:ReactiveWindow>

@@ -6,7 +6,7 @@ using PacketSniffer.Packets.Internet.Ip;
 
 namespace PacketSniffer.Factories.Internet.Ip
 {
-    public interface IIpPacketFactory : IAbstractFactory
+    public interface IIpPacketFactory : IAbstractPacketFactory
     {
     }
 }

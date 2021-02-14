@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Gui.PacketFilter
+namespace PacketFilter
 {
     public class SearchQueryList
     {

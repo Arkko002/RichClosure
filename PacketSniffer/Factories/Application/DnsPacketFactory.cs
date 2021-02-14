@@ -13,12 +13,14 @@ namespace PacketSniffer.Factories.Application
     internal class DnsPacketFactory : IApplicationPacketFactory
     {
         private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
 
-        public DnsPacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        public DnsPacketFactory(BinaryReader binaryReader, IPacket previousHeader, IPacketFrame frame)
         {
             _binaryReader = binaryReader;
             _previousHeader = previousHeader;
+            _frame = frame;
         }
 
         public IPacket CreatePacket()
@@ -110,12 +112,11 @@ namespace PacketSniffer.Factories.Application
             var auth = dnsAuths;
             var additionals = dnsAdditionals;
 
-            return new DnsPacket(identification, qr, opcode, rcode, questions, answersRr, authRr, additionalRr,
+            var packet = new DnsPacket(identification, qr, opcode, rcode, questions, answersRr, authRr, additionalRr,
                 dnsQueries, dnsAnswers, dnsAuths, dnsAdditionals, _previousHeader, PacketProtocol.NoProtocol);
-        }
-        
-        private void ReadPacketDataFromStream()
-        {
+            _frame.Packet = packet;
+
+            return packet;
         }
 
         private void ParseDnsRecordHeader(List<DnsRecord> recordList, int recordsCount, string queryName)

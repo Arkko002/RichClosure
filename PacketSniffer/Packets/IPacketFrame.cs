@@ -1,15 +1,23 @@
+using System;
+
 namespace PacketSniffer.Packets
 {
     public interface IPacketFrame
     {
         ulong PacketId { get; }
-        string TimeDateCaptured { get; }
-        string PacketComment { get; }
+        DateTime DateTimeCaptured { get; }
+        
+        //TODO Set comment in factories
+        string PacketComment { get; set; }
         
         //TODO what type for universal address storing?
-        string DestinationAddress { get; }
-        string SourceAddress { get; }
+        //TODO Gather the highest layers addresses
+        string DestinationAddress { get; set; }
+        string SourceAddress { get; set; }
         
-        IPacket Packet { get; }
+        ushort DestinationPort { get; set; }
+        ushort SourcePort { get; set; }
+        
+        IPacket Packet { get; set; }
     }
 }

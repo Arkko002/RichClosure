@@ -12,12 +12,14 @@ namespace PacketSniffer.Factories.Internet.Ip
     internal class Ip6PacketFactory : IIpPacketFactory
     {
         private readonly BinaryReader _binaryReader;
+        private readonly IPacketFrame _frame;
         private readonly IPacket _previousHeader;
 
-        public Ip6PacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        public Ip6PacketFactory(BinaryReader binaryReader, IPacket previousHeader, IPacketFrame frame)
         {
             _binaryReader = binaryReader;
             _previousHeader = previousHeader;
+            _frame = frame;
         }
 
         public IPacket CreatePacket()
@@ -40,8 +42,13 @@ namespace PacketSniffer.Factories.Internet.Ip
 
             var nextProtocol = (PacketProtocol)Enum.Parse(typeof(PacketProtocol), Enum.GetName(nextHeader));
             
-            return new Ip6Packet(trafficClass, flowLabel, hopLimit, version, _previousHeader, sourceAdr, destinationAdr,
+            var packet = new Ip6Packet(trafficClass, flowLabel, hopLimit, version, _previousHeader, sourceAdr, destinationAdr,
                 nextHeader, payloadLength, nextProtocol);
+            _frame.Packet = packet;
+            _frame.DestinationAddress = destinationAdr.ToString();
+            _frame.SourceAddress = sourceAdr.ToString();
+
+            return packet;
         }
     }
 }

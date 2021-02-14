@@ -10,11 +10,13 @@ namespace PacketSniffer.Factories.Internet.Ip
     internal class Ip4PacketFactory : IIpPacketFactory
     {
         private BinaryReader _binaryReader;
-        private IPacket? _previousHeader;
+        private IPacketFrame _frame;
+        private IPacket _previousHeader;
         
-        public Ip4PacketFactory(BinaryReader binaryReader, IPacket? previousHeader)
+        public Ip4PacketFactory(BinaryReader binaryReader, IPacket previousHeader, IPacketFrame frame)
         {
             _previousHeader = previousHeader;
+            _frame = frame;
             _binaryReader = binaryReader;
         }
         
@@ -47,8 +49,13 @@ namespace PacketSniffer.Factories.Internet.Ip
 
             var nextProtocol = (PacketProtocol)Enum.Parse(typeof(PacketProtocol), Enum.GetName(protocol));
             
-            return new Ip4Packet((byte) headerLength, dscp, identification, offset, ipFlags, timeToLive, headerChecksum,
+            var packet = new Ip4Packet((byte) headerLength, dscp, identification, offset, ipFlags, timeToLive, headerChecksum,
                 (byte) ipVersion, _previousHeader, sourceIpAddress, destinationIpAddress, protocol, totalLength, nextProtocol);
+            _frame.Packet = packet;
+            _frame.DestinationAddress = destinationIpAddress.ToString();
+            _frame.SourceAddress = sourceIpAddress.ToString();
+
+            return packet;
         }
 
         private byte GetIpFlags(BinaryReader binaryReader)

@@ -14,12 +14,14 @@ namespace PacketSniffer.Factories.Application
     internal class DhcpPacketFactory : IApplicationPacketFactory
     {
         private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
 
-        public DhcpPacketFactory(BinaryReader binaryReader, IPacket previousHeader) 
+        public DhcpPacketFactory(BinaryReader binaryReader, IPacket previousHeader, IPacketFrame frame) 
         {
             _binaryReader = binaryReader;
             _previousHeader = previousHeader;
+            _frame = frame;
         }
 
         //TODO Cleanup / rework
@@ -63,10 +65,13 @@ namespace PacketSniffer.Factories.Application
             // TODO
             string dhcpOptions;
 
-            return new DhcpPacket(opcode, hardType, hardAdrLength, hops, transId, seconds, flags, clientIp, yourIp,
+            var packet = new DhcpPacket(opcode, hardType, hardAdrLength, hops, transId, seconds, flags, clientIp, yourIp,
                 serverIp, gatewayIp, clientHardAdr, serverName, bootFilename, _previousHeader, PacketProtocol.NoProtocol);
+            _frame.Packet = packet;
+
+            return packet;
         }
-        
+
         private string ConvertNameToString(byte[] dhcpServerName)
         {
             //TODO

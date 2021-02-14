@@ -10,12 +10,14 @@ namespace PacketSniffer.Factories.Transport
     internal class UdpPacketFactory : ITransportPacketFactory
     {
         private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
 
-        public UdpPacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        public UdpPacketFactory(BinaryReader binaryReader, IPacket previousHeader, IPacketFrame frame)
         {
             _binaryReader = binaryReader;
             _previousHeader = previousHeader;
+            _frame = frame;
         }
 
         public IPacket CreatePacket()
@@ -30,7 +32,13 @@ namespace PacketSniffer.Factories.Transport
                                             _binaryReader.ReadUInt16());
             
             //TODO Port heuristics for NextProtocol
-            return new UdpPacket(destinationPort, sourcePort, length, checksum, _previousHeader, PacketProtocol.NoProtocol);
+            var packet = new UdpPacket(destinationPort, sourcePort, length, checksum, _previousHeader, PacketProtocol.NoProtocol);
+            
+            _frame.Packet = packet;
+            _frame.DestinationPort = destinationPort;
+            _frame.SourcePort = sourcePort;
+
+            return packet;
         }
     }
 }

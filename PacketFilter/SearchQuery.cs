@@ -1,4 +1,4 @@
-﻿namespace Gui.PacketFilter
+﻿namespace PacketFilter
 {
     public class SearchQuery
     {

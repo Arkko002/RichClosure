@@ -11,12 +11,14 @@ namespace PacketSniffer.Factories.Application
     internal class TlsPacketFactory : IApplicationPacketFactory
     {
         private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
 
-        public TlsPacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        public TlsPacketFactory(BinaryReader binaryReader, IPacket previousHeader, IPacketFrame frame)
         {
             _binaryReader = binaryReader;
             _previousHeader = previousHeader;
+            _frame = frame;
         }
 
         public IPacket CreatePacket()
@@ -49,8 +51,11 @@ namespace PacketSniffer.Factories.Application
 
             StringBuilder tlsData = new StringBuilder();
             tlsData.Append(BitConverter.ToString(_binaryReader.ReadBytes(DataLength)));
+            
+            var packet = new TlsPacket(Type, Version, DataLength, tlsData.ToString(), _previousHeader, PacketProtocol.NoProtocol);
+            _frame.Packet = packet;
 
-            return new TlsPacket(Type, Version, DataLength, tlsData.ToString(), _previousHeader, PacketProtocol.NoProtocol);
+            return packet;
         }
     }
 }

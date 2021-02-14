@@ -9,7 +9,6 @@
     xmlns="https://github.com/avaloniaui"
     mc:Ignorable="d">
     
-    <TreeView x:Name="PacketTreeView" Margin="10,0,0,170" Width="832" Height="159" VerticalAlignment="Bottom"
-              HorizontalAlignment="Left" Foreground="Black" FontSize="14"
-              Items="{Binding Path=PacketCollectionViewModel.SelectedPacket.TreeViewItem}"/>
+    <TreeView x:Name="PacketTree" Margin="10,0,0,170" Width="832" Height="159" VerticalAlignment="Bottom"
+              HorizontalAlignment="Left" Foreground="Black" FontSize="14"/>
 </rxui:ReactiveUserControl>

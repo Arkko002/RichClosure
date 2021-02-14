@@ -25,22 +25,13 @@ namespace PacketSniffer.Socket
             SetSocketConfiguration();
         }
 
-        private void SetSocketConfiguration()
-        {
-            _socket.Bind(_endPoint);
-            _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.HeaderIncluded, true);
-
-            byte[] inValue = new byte[] { 1, 0, 0, 0 };
-            byte[] outValue = new byte[] { 0, 0, 0, 0 };
-            _socket.IOControl(IOControlCode.ReceiveAll, inValue, outValue);
-        }
 
         private UnicastIPAddressInformationCollection GetInterfaceIpInfromation()
         {
             IPInterfaceProperties adapterProperties = _networkInterface.GetIPProperties();
             return adapterProperties.UnicastAddresses;
         }
-
+        
         private void GetInterfaceEndpoints(UnicastIPAddressInformationCollection unicastIps)
         {
             foreach (var adr in unicastIps)
@@ -51,6 +42,16 @@ namespace PacketSniffer.Socket
                     break;
                 }
             }
+        }
+
+        private void SetSocketConfiguration()
+        {
+            _socket.Bind(_endPoint);
+            _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.HeaderIncluded, true);
+
+            byte[] inValue = new byte[] { 1, 0, 0, 0 };
+            byte[] outValue = new byte[] { 0, 0, 0, 0 };
+            _socket.IOControl(IOControlCode.ReceiveAll, inValue, outValue);
         }
     }
 }

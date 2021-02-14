@@ -9,11 +9,13 @@ namespace PacketSniffer.Factories.Transport
     internal class TcpPacketFactory : ITransportPacketFactory 
     {
         private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
 
-        public TcpPacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        public TcpPacketFactory(BinaryReader binaryReader, IPacketFrame frame, IPacket previousHeader)
         {
             _binaryReader = binaryReader;
+            _frame = frame;
             _previousHeader = previousHeader;
         }
 
@@ -60,8 +62,14 @@ namespace PacketSniffer.Factories.Transport
             }
 
             //TODO Port heuristics for NextProtocol
-            return new TcpPacket(destinationPort, sourcePort, sequenceNumber, ackNumber, dataOffset,
+            var packet = new TcpPacket(destinationPort, sourcePort, sequenceNumber, ackNumber, dataOffset,
                 urgentPointer, windowSize, checksum, _previousHeader, fin, syn, rst, psh, ack, urg, ece, cwr, ns, PacketProtocol.NoProtocol);
+
+            _frame.Packet = packet;
+            _frame.DestinationPort = destinationPort;
+            _frame.SourcePort = sourcePort;
+
+            return packet;
         }
     }
 }

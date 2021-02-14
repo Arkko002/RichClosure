@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using PacketSniffer.Packets;
 
-namespace Gui.PacketFilter
+namespace PacketFilter
 {
     class PacketListFilter
     {
