@@ -15,6 +15,7 @@ namespace PacketSniffer.Services
     {
         public ObservableCollection<IPacketFrame> Packets { get; }
         private readonly PacketQueue _packetQueue;
+        private readonly IAbstractFrameFactory _frameFactory;
         
         private ISnifferSocket _socket;
         private readonly Thread _enqueueThread;
@@ -22,11 +23,12 @@ namespace PacketSniffer.Services
         
 
         //TODO Replace usage of concrete classes with interfaces
-        public PacketSniffer(PacketQueue packetQueue)
+        public PacketSniffer(PacketQueue packetQueue, IAbstractFrameFactory frameFactory)
         {
             Packets = new ObservableCollection<IPacketFrame>();
             
             _packetQueue = packetQueue;
+            _frameFactory = frameFactory;
 
             _enqueueThread = new Thread(EnqueueIncomingPackets);
             _dequeueThread = new Thread(DequeuePacketBuffer);
@@ -60,8 +62,7 @@ namespace PacketSniffer.Services
         {
             var buffer = _packetQueue.DequeuePacket();
 
-            IAbstractFrameFactory packetFactory = new PacketFactory(buffer);
-            IPacketFrame packet = packetFactory.CreatePacketFrame();
+            IPacketFrame packet = _frameFactory.CreatePacketFrame(buffer);
             Packets.Add(packet);
         }
     }

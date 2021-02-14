@@ -4,6 +4,6 @@ namespace PacketSniffer.Factories
 {
     public interface IAbstractFrameFactory
     {
-        IPacketFrame CreatePacketFrame();
+        IPacketFrame CreatePacketFrame(byte[] buffer);
     }
 }

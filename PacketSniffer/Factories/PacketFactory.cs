@@ -15,41 +15,31 @@ namespace PacketSniffer.Factories
     public class PacketFactory : IAbstractFrameFactory
     {
         private ulong _packetId;
-        private BinaryReader _binaryReader;
-        private byte[] _buffer;
 
-        public PacketFactory(byte[] buffer)
+        public PacketFactory()
         {
             _packetId = 0;
-            _buffer = buffer;
-
-            _binaryReader = CreateBinaryReaderFromBuffer(_buffer);
         }
 
-        public IPacketFrame CreatePacketFrame()
+        public IPacketFrame CreatePacketFrame(byte[] buffer)
         {
             _packetId++;
+            var stream = new MemoryStream(buffer);
+            var binaryReader = new BinaryReader(stream);
+            
             var packetFrame = new PacketFrame(_packetId, DateTime.Now);
             
-            var linkFactory = new LinkFactory(_binaryReader, packetFrame);
-            var packet = linkFactory.CreatePacket();
+            var linkFactory = new LinkFactory(packetFrame);
+            var packet = linkFactory.CreatePacket(binaryReader);
 
             while (packet.NextProtocol != PacketProtocol.NoProtocol)
             {
                 var factory = CreatePacketFactory(packet, packetFrame);
-                var newPacket = factory.CreatePacket();
+                var newPacket = factory.CreatePacket(binaryReader);
                 packet = newPacket;
             }
 
             return packetFrame;
-        }
-
-        private BinaryReader CreateBinaryReaderFromBuffer(byte[] buffer)
-        {
-            MemoryStream memoryStream = new(buffer);
-            BinaryReader binaryReader = new(memoryStream);
-
-            return binaryReader;
         }
 
         //TODO Get rid of switch completely
@@ -58,25 +48,25 @@ namespace PacketSniffer.Factories
             switch (packet.NextProtocol)
             {
                 case PacketProtocol.Ethernet:
-                    return new EthernetPacketFactory(_binaryReader);
+                    return new EthernetPacketFactory();
                 case PacketProtocol.IPv4:
-                    return new Ip4PacketFactory(_binaryReader, packet, frame);
+                    return new Ip4PacketFactory(packet, frame);
                 case PacketProtocol.IPv6:
-                    return new Ip6PacketFactory(_binaryReader, packet, frame);
+                    return new Ip6PacketFactory(packet, frame);
                 case PacketProtocol.ICMP:
-                    return new IcmpPacketFactory(_binaryReader, packet, frame);
+                    return new IcmpPacketFactory(packet, frame);
                 case PacketProtocol.TCP:
-                    return new TcpPacketFactory(_binaryReader, frame, packet);
+                    return new TcpPacketFactory(frame, packet);
                 case PacketProtocol.UDP:
-                    return new UdpPacketFactory(_binaryReader, packet, frame);
+                    return new UdpPacketFactory(packet, frame);
                 case PacketProtocol.DNS:
-                    return new DnsPacketFactory(_binaryReader, packet, frame);
+                    return new DnsPacketFactory(packet, frame);
                 case PacketProtocol.DHCP:
-                    return new DhcpPacketFactory(_binaryReader, packet, frame);
+                    return new DhcpPacketFactory(packet, frame);
                 case PacketProtocol.HTTP:
-                    return new HttpPacketFactory(_binaryReader, packet, frame);
+                    return new HttpPacketFactory(packet, frame);
                 case PacketProtocol.TLS:
-                    return new TlsPacketFactory(_binaryReader, packet, frame);
+                    return new TlsPacketFactory(packet, frame);
                 case PacketProtocol.NoProtocol:
                     return null;
                 default:

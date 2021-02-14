@@ -11,20 +11,18 @@ namespace PacketSniffer.Factories.Internet.Ip
 {
     internal class Ip6PacketFactory : IIpPacketFactory
     {
-        private readonly BinaryReader _binaryReader;
         private readonly IPacketFrame _frame;
         private readonly IPacket _previousHeader;
 
-        public Ip6PacketFactory(BinaryReader binaryReader, IPacket previousHeader, IPacketFrame frame)
+        public Ip6PacketFactory(IPacket previousHeader, IPacketFrame frame)
         {
-            _binaryReader = binaryReader;
             _previousHeader = previousHeader;
             _frame = frame;
         }
 
-        public IPacket CreatePacket()
+        public IPacket CreatePacket(BinaryReader binaryReader)
         {
-            UInt32 dataBatch = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
+            UInt32 dataBatch = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
 
             string dataBatchBin = Convert.ToString(dataBatch, 2);
 
@@ -33,12 +31,12 @@ namespace PacketSniffer.Factories.Internet.Ip
             var flowLabel = Convert.ToUInt32(dataBatchBin.Substring(12, 20), 10);
 
             var payloadLength = (UInt16)IPAddress.NetworkToHostOrder(
-                          _binaryReader.ReadInt16());
-            var nextHeader = (IpProtocol)_binaryReader.ReadByte();
-            var hopLimit = _binaryReader.ReadByte();
+                          binaryReader.ReadInt16());
+            var nextHeader = (IpProtocol)binaryReader.ReadByte();
+            var hopLimit = binaryReader.ReadByte();
 
-            var sourceAdr = new IPAddress(_binaryReader.ReadBytes(16));
-            var destinationAdr = new IPAddress(_binaryReader.ReadBytes(16));
+            var sourceAdr = new IPAddress(binaryReader.ReadBytes(16));
+            var destinationAdr = new IPAddress(binaryReader.ReadBytes(16));
 
             var nextProtocol = (PacketProtocol)Enum.Parse(typeof(PacketProtocol), Enum.GetName(nextHeader));
             

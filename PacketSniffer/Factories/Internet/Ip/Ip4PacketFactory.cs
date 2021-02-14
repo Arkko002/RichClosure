@@ -9,43 +9,41 @@ namespace PacketSniffer.Factories.Internet.Ip
 {
     internal class Ip4PacketFactory : IIpPacketFactory
     {
-        private BinaryReader _binaryReader;
         private IPacketFrame _frame;
         private IPacket _previousHeader;
         
-        public Ip4PacketFactory(BinaryReader binaryReader, IPacket previousHeader, IPacketFrame frame)
+        public Ip4PacketFactory(IPacket previousHeader, IPacketFrame frame)
         {
             _previousHeader = previousHeader;
             _frame = frame;
-            _binaryReader = binaryReader;
         }
         
 
-        public IPacket CreatePacket()
+        public IPacket CreatePacket(BinaryReader binaryReader)
         {
-            var ipVersionAndHeaderLength = _binaryReader.ReadByte();
+            var ipVersionAndHeaderLength = binaryReader.ReadByte();
             var ipVersion = ipVersionAndHeaderLength >> 4;
 
             var headerLength = ipVersionAndHeaderLength << 4;
             headerLength >>= 4;
             headerLength *= 4;
 
-            var dscp = _binaryReader.ReadByte();
+            var dscp = binaryReader.ReadByte();
 
             var totalLength = (ushort)IPAddress.NetworkToHostOrder(
-                _binaryReader.ReadUInt16());
+                binaryReader.ReadUInt16());
             var identification = (ushort)IPAddress.NetworkToHostOrder(
-                _binaryReader.ReadUInt16());
+                binaryReader.ReadUInt16());
 
-            var timeToLive = _binaryReader.ReadByte();
-            var protocol = (IpProtocol) _binaryReader.ReadByte();
-            var headerChecksum = (ushort)IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            var timeToLive = binaryReader.ReadByte();
+            var protocol = (IpProtocol) binaryReader.ReadByte();
+            var headerChecksum = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadUInt16());
 
-            IPAddress sourceIpAddress = IPAddress.Parse(_binaryReader.ReadUInt32().ToString()); 
-            IPAddress destinationIpAddress = IPAddress.Parse(_binaryReader.ReadUInt32().ToString());
+            IPAddress sourceIpAddress = IPAddress.Parse(binaryReader.ReadUInt32().ToString()); 
+            IPAddress destinationIpAddress = IPAddress.Parse(binaryReader.ReadUInt32().ToString());
 
-            var ipFlags = GetIpFlags(_binaryReader);
-            var offset = GetOffset(_binaryReader);
+            var ipFlags = GetIpFlags(binaryReader);
+            var offset = GetOffset(binaryReader);
 
             var nextProtocol = (PacketProtocol)Enum.Parse(typeof(PacketProtocol), Enum.GetName(protocol));
             

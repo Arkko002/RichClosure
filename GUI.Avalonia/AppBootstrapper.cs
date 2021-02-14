@@ -13,7 +13,7 @@ namespace richClosure.Avalonia
         public AppBootstrapper()
         {
             Locator.CurrentMutable.RegisterConstant(new PacketDataGridViewModel());
-            Locator.CurrentMutable.RegisterConstant(new global::PacketSniffer.Services.PacketSniffer(new PacketQueue()), typeof(IPacketSniffer));
+            Locator.CurrentMutable.RegisterConstant(new global::PacketSniffer.Services.PacketSniffer(new PacketQueue(), new PacketFactory()), typeof(IPacketSniffer));
         }
     }
 }

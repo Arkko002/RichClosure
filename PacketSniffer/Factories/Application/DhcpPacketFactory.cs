@@ -13,53 +13,51 @@ namespace PacketSniffer.Factories.Application
     //TODO support for all DHCP operations (Request, offer, acknowledgment etc.)
     internal class DhcpPacketFactory : IApplicationPacketFactory
     {
-        private readonly BinaryReader _binaryReader;
         private readonly IPacketFrame _frame;
         private readonly IPacket _previousHeader;
 
-        public DhcpPacketFactory(BinaryReader binaryReader, IPacket previousHeader, IPacketFrame frame) 
+        public DhcpPacketFactory(IPacket previousHeader, IPacketFrame frame) 
         {
-            _binaryReader = binaryReader;
             _previousHeader = previousHeader;
             _frame = frame;
         }
 
         //TODO Cleanup / rework
-        public IPacket CreatePacket()
+        public IPacket CreatePacket(BinaryReader binaryReader)
         {
-            var opcode = (DhcpOpcode)_binaryReader.ReadByte();
-            var hardType = (DhcpHardwareType)_binaryReader.ReadByte();
-            var hardAdrLength= _binaryReader.ReadByte();
-            var hops = _binaryReader.ReadByte();
+            var opcode = (DhcpOpcode)binaryReader.ReadByte();
+            var hardType = (DhcpHardwareType)binaryReader.ReadByte();
+            var hardAdrLength= binaryReader.ReadByte();
+            var hops = binaryReader.ReadByte();
 
-            var transId = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
-            var seconds = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-            UInt16 dhcpFlags = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+            var transId = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
+            var seconds = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            UInt16 dhcpFlags = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
             string flagsFinal;
             flagsFinal = dhcpFlags > 0 ? "Broadcast" : "No Flags";
 
             var flags = flagsFinal;
 
-            UInt32 dhcpClientIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
-            UInt32 dhcpYourIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
-            UInt32 dhcpServerIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
-            UInt32 dhcpGatewayIp = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
+            UInt32 dhcpClientIp = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
+            UInt32 dhcpYourIp = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
+            UInt32 dhcpServerIp = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
+            UInt32 dhcpGatewayIp = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
 
             var clientIp = new IPAddress(dhcpClientIp).ToString();
             var yourIp = new IPAddress(dhcpYourIp).ToString();
             var serverIp = new IPAddress(dhcpServerIp).ToString();
             var gatewayIp = new IPAddress(dhcpGatewayIp).ToString();
 
-            byte[] dhcpClientHardAdr = _binaryReader.ReadBytes(hardAdrLength);
+            byte[] dhcpClientHardAdr = binaryReader.ReadBytes(hardAdrLength);
             var clientHardAdr = BitConverter.ToString(dhcpClientHardAdr);
 
-            byte[] dhcpServerName = _binaryReader.ReadBytes(64);
+            byte[] dhcpServerName = binaryReader.ReadBytes(64);
             var serverName = ConvertNameToString(dhcpServerName);
 
-            byte[] padding = _binaryReader.ReadBytes(16 - hardAdrLength);
+            byte[] padding = binaryReader.ReadBytes(16 - hardAdrLength);
 
-            byte[] dhcpBootFilename = _binaryReader.ReadBytes(128);
+            byte[] dhcpBootFilename = binaryReader.ReadBytes(128);
             var bootFilename = ConvertNameToString(dhcpBootFilename);
 
             // TODO
