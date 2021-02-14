@@ -1,31 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using PacketSniffer.Packets;
 using PacketSniffer.Packets.Internet;
+using PacketSniffer.Packets.Internet.Icmp;
 
 namespace PacketSniffer.Factories.Internet
 {
     internal class IcmpPacketFactory : IInternetPacketFactory
     {
-        private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
-        
-        public IcmpPacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
+
+        public IcmpPacketFactory(IPacket previousHeader, IPacketFrame frame)
         {
-            _binaryReader = binaryReader;
             _previousHeader = previousHeader;
+            _frame = frame;
         }
 
-        public IPacket CreatePacket()
+        public IPacket CreatePacket(BinaryReader binaryReader)
         {
-            var type = _binaryReader.ReadByte();
-            var code = _binaryReader.ReadByte();
-            var checksum = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-            var rest = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
+            //TODO Extract data from the rest of the header
+            var type = (IcmpType)binaryReader.ReadByte();
+            var code = binaryReader.ReadByte();
+            var checksum = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            var rest = (uint)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
 
-            return new IcmpPacket(type, code, checksum, rest, _previousHeader, PacketProtocol.NoProtocol);
+
+            var packet = new IcmpPacket(type, code, checksum, rest, _previousHeader, PacketProtocol.NoProtocol);
+            _frame.Packet = packet;
+
+            return packet;
         }
     }
 }

@@ -10,21 +10,21 @@ namespace PacketSniffer.Factories.Application
 {
     internal class TlsPacketFactory : IApplicationPacketFactory
     {
-        private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
 
-        public TlsPacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        public TlsPacketFactory(IPacket previousHeader, IPacketFrame frame)
         {
-            _binaryReader = binaryReader;
             _previousHeader = previousHeader;
+            _frame = frame;
         }
 
-        public IPacket CreatePacket()
+        public IPacket CreatePacket(BinaryReader binaryReader)
         {
             //TODO
-            var Type = (TlsContentType)_binaryReader.ReadByte();
+            var Type = (TlsContentType)binaryReader.ReadByte();
 
-            UInt16 tlsVersion = (UInt16) IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+            UInt16 tlsVersion = (UInt16) IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
             //Todo ???
             string tlsVersionFinal;
@@ -45,12 +45,15 @@ namespace PacketSniffer.Factories.Application
 
             var Version = tlsVersionFinal;
 
-            var DataLength = (UInt16) IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16());
+            var DataLength = (UInt16) IPAddress.NetworkToHostOrder(binaryReader.ReadUInt16());
 
-            StringBuilder tlsData = new StringBuilder();
-            tlsData.Append(BitConverter.ToString(_binaryReader.ReadBytes(DataLength)));
+            var tlsData = new StringBuilder();
+            tlsData.Append(BitConverter.ToString(binaryReader.ReadBytes(DataLength)));
+            
+            var packet = new TlsPacket(Type, Version, DataLength, tlsData.ToString(), _previousHeader, PacketProtocol.NoProtocol);
+            _frame.Packet = packet;
 
-            return new TlsPacket(Type, Version, DataLength, tlsData.ToString(), _previousHeader, PacketProtocol.NoProtocol);
+            return packet;
         }
     }
 }

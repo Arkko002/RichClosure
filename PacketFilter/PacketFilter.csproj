@@ -3,7 +3,10 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <LangVersion>9</LangVersion>
-        <RootNamespace>Gui.PacketFilter</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PacketSniffer\PacketSniffer.csproj" />
+    </ItemGroup>
 
 </Project>

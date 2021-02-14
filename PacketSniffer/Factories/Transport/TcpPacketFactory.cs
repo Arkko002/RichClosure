@@ -8,33 +8,33 @@ namespace PacketSniffer.Factories.Transport
 {
     internal class TcpPacketFactory : ITransportPacketFactory 
     {
-        private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
 
-        public TcpPacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        public TcpPacketFactory(IPacketFrame frame, IPacket previousHeader)
         {
-            _binaryReader = binaryReader;
+            _frame = frame;
             _previousHeader = previousHeader;
         }
 
 
-        public IPacket CreatePacket()
+        public IPacket CreatePacket(BinaryReader binaryReader)
         {
             var sourcePort = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+                                            binaryReader.ReadUInt16());
             var destinationPort = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+                                            binaryReader.ReadUInt16());
 
             var sequenceNumber = (UInt32)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt32());
+                                            binaryReader.ReadUInt32());
             var ackNumber = (UInt32)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt32());
+                                            binaryReader.ReadUInt32());
 
-            byte dataOffsetAndNs = _binaryReader.ReadByte();
+            byte dataOffsetAndNs = binaryReader.ReadByte();
 
             var dataOffset = dataOffsetAndNs <<= 4;
 
-            byte tcpFlags = _binaryReader.ReadByte();
+            byte tcpFlags = binaryReader.ReadByte();
             bool ns = (dataOffsetAndNs & 1) == 0;
             bool fin = (tcpFlags & 1) == 0;
             bool syn = (tcpFlags & 2) == 0;
@@ -47,11 +47,11 @@ namespace PacketSniffer.Factories.Transport
 
 
             var windowSize = (UInt16)IPAddress.NetworkToHostOrder(
-                                _binaryReader.ReadUInt16());
+                                binaryReader.ReadUInt16());
             var checksum = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+                                            binaryReader.ReadUInt16());
             var urgentPointer = (UInt16)IPAddress.NetworkToHostOrder(
-                                            _binaryReader.ReadUInt16());
+                                            binaryReader.ReadUInt16());
 
             // TODO
             if (dataOffset > 5)
@@ -60,8 +60,14 @@ namespace PacketSniffer.Factories.Transport
             }
 
             //TODO Port heuristics for NextProtocol
-            return new TcpPacket(destinationPort, sourcePort, sequenceNumber, ackNumber, dataOffset,
+            var packet = new TcpPacket(destinationPort, sourcePort, sequenceNumber, ackNumber, dataOffset,
                 urgentPointer, windowSize, checksum, _previousHeader, fin, syn, rst, psh, ack, urg, ece, cwr, ns, PacketProtocol.NoProtocol);
+
+            _frame.Packet = packet;
+            _frame.DestinationPort = destinationPort;
+            _frame.SourcePort = sourcePort;
+
+            return packet;
         }
     }
 }

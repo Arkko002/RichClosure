@@ -2,7 +2,7 @@ using PacketSniffer.Packets.Application;
 
 namespace PacketSniffer.Factories.Application
 {
-    public interface IApplicationPacketFactory : IAbstractFactory
+    public interface IApplicationPacketFactory : IAbstractPacketFactory
     {
     }
 }

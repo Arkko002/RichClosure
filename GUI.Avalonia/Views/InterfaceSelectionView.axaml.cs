@@ -1,8 +1,8 @@
 ﻿using System.Reactive.Disposables;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ReactiveUI;
 using richClosure.Avalonia.ViewModels;
 
@@ -11,20 +11,22 @@ namespace richClosure.Avalonia.Views
     /// <summary>
     /// Interaction logic for InterfaceSelectionWindow.xaml
     /// </summary>
-    public partial class InterfaceSelectionWindow : ReactiveWindow<InterfaceSelectionViewModel>
+    public partial class InterfaceSelectionView : ReactiveWindow<InterfaceSelectionViewModel>
     {
-        public InterfaceSelectionWindow()
+        public DataGrid AdapterDataGrid => this.FindControl<DataGrid>("AdapterDataGrid");
+
+        public InterfaceSelectionView()
         {
             this.WhenActivated(disposable =>
             {
                 this.OneWayBind(ViewModel,
                         model => model.NetworkInterfaces,
-                        view => view.FindControl<DataGrid>("AdapterDataGrid").Items)
+                        view => view.AdapterDataGrid.Items)
                     .DisposeWith(disposable);
 
                 this.Bind(ViewModel,
                         model => model.SelectedInterface,
-                        view => view.FindControl<DataGrid>("AdapterDataGrid").SelectedItem)
+                        view => view.AdapterDataGrid.SelectedItem)
                     .DisposeWith(disposable);
 
             });

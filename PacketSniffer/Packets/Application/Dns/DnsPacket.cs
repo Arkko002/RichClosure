@@ -16,7 +16,7 @@ namespace PacketSniffer.Packets.Application.Dns
         public ushort AnswersRr { get; }
         public ushort AuthRr { get; }
         public ushort AdditionalRr { get; }
-        public List<DnsQuery> QuerryList { get; }
+        public List<DnsQuery> QuestionList { get; }
         public List<DnsRecord> AnswerList { get; }
         public List<DnsRecord> AuthList { get; }
         public List<DnsRecord> AdditionalList { get; }
@@ -33,7 +33,7 @@ namespace PacketSniffer.Packets.Application.Dns
        
        
         public DnsPacket(ushort identification, DnsQr qr, DnsOpcode opcode, DnsRcode rcode, ushort questions,
-            ushort answersRr, ushort authRr, ushort additionalRr, List<DnsQuery> querryList, List<DnsRecord> answerList,
+            ushort answersRr, ushort authRr, ushort additionalRr, List<DnsQuery> questionList, List<DnsRecord> answerList,
             List<DnsRecord> authList, List<DnsRecord> additionalList, IPacket? previousHeader, PacketProtocol nextProtocol)
         {
             PacketProtocol = PacketProtocol.DNS;
@@ -45,7 +45,7 @@ namespace PacketSniffer.Packets.Application.Dns
             AnswersRr = answersRr;
             AuthRr = authRr;
             AdditionalRr = additionalRr;
-            QuerryList = querryList;
+            QuestionList = questionList;
             AnswerList = answerList;
             AuthList = authList;
             AdditionalList = additionalList;

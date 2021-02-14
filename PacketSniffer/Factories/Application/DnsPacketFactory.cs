@@ -12,19 +12,19 @@ namespace PacketSniffer.Factories.Application
 {
     internal class DnsPacketFactory : IApplicationPacketFactory
     {
-        private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
 
-        public DnsPacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        public DnsPacketFactory(IPacket previousHeader, IPacketFrame frame)
         {
-            _binaryReader = binaryReader;
             _previousHeader = previousHeader;
+            _frame = frame;
         }
 
-        public IPacket CreatePacket()
+        public IPacket CreatePacket(BinaryReader binaryReader)
         {
-            var identification = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-            var flagsAndCodes = new BitArray(IPAddress.NetworkToHostOrder(_binaryReader.ReadUInt16()));
+            var identification = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            var flagsAndCodes = new BitArray(IPAddress.NetworkToHostOrder(binaryReader.ReadUInt16()));
 
             var qr = flagsAndCodes[0] ? DnsQr.Query : DnsQr.Response;
 
@@ -54,10 +54,10 @@ namespace PacketSniffer.Factories.Application
             }
             var rcode = (DnsRcode) rcodeInt;
 
-            var questions = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-            var answersRr = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-            var authRr = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-            var additionalRr = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+            var questions = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            var answersRr = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            var authRr = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            var additionalRr = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
             List<DnsQuery> dnsQueries = new List<DnsQuery>();
 
@@ -69,7 +69,7 @@ namespace PacketSniffer.Factories.Application
 
                 while (reading)
                 {
-                    byte ch = _binaryReader.ReadByte();
+                    byte ch = binaryReader.ReadByte();
 
                     if (ch >= 33 && ch <= 126)
                     {
@@ -86,8 +86,8 @@ namespace PacketSniffer.Factories.Application
                     }
                 }
                 string dnsQueryName = stringBuilder.ToString();
-                UInt16 dnsQueryType = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-                UInt16 dnsQueryClass = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+                UInt16 dnsQueryType = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+                UInt16 dnsQueryClass = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
                 dnsQueries.Add(new DnsQuery
                 {
@@ -98,33 +98,29 @@ namespace PacketSniffer.Factories.Application
             }
 
             var dnsAnswers = new List<DnsRecord>();
-            ParseDnsRecordHeader(dnsAnswers, answersRr, dnsQueries[dnsQueries.Count - 1].QueryName);
+            ParseDnsRecordHeader(binaryReader, dnsAnswers, answersRr, dnsQueries[dnsQueries.Count - 1].QueryName);
 
             var dnsAuths = new List<DnsRecord>();
-            ParseDnsRecordHeader(dnsAuths, authRr, dnsQueries[dnsQueries.Count - 1].QueryName);
+            ParseDnsRecordHeader(binaryReader, dnsAuths, authRr, dnsQueries[dnsQueries.Count - 1].QueryName);
 
             var dnsAdditionals = new List<DnsRecord>();
-            ParseDnsRecordHeader(dnsAdditionals, additionalRr, dnsQueries[dnsQueries.Count - 1].QueryName);
+            ParseDnsRecordHeader(binaryReader, dnsAdditionals, additionalRr, dnsQueries[dnsQueries.Count - 1].QueryName);
 
-            var answers = dnsAnswers;
-            var auth = dnsAuths;
-            var additionals = dnsAdditionals;
-
-            return new DnsPacket(identification, qr, opcode, rcode, questions, answersRr, authRr, additionalRr,
+            var packet = new DnsPacket(identification, qr, opcode, rcode, questions, answersRr, authRr, additionalRr,
                 dnsQueries, dnsAnswers, dnsAuths, dnsAdditionals, _previousHeader, PacketProtocol.NoProtocol);
-        }
-        
-        private void ReadPacketDataFromStream()
-        {
+            _frame.Packet = packet;
+
+            return packet;
         }
 
-        private void ParseDnsRecordHeader(List<DnsRecord> recordList, int recordsCount, string queryName)
+        //TODO
+        private void ParseDnsRecordHeader(BinaryReader binaryReader, List<DnsRecord> recordList, int recordsCount, string queryName)
         {
             for (int procRecIndex = 1; procRecIndex <= recordsCount; procRecIndex++)
             {
                 string dnsRecordName;
 
-                byte[] byteChar = _binaryReader.ReadBytes(2);
+                byte[] byteChar = binaryReader.ReadBytes(2);
 
                 if (procRecIndex == 1)
                 {
@@ -135,12 +131,12 @@ namespace PacketSniffer.Factories.Application
                     dnsRecordName = recordList[procRecIndex - 2].RecordType == DnsType.Cname ? recordList[procRecIndex - 2].Rdata : recordList[procRecIndex - 2].RecordName;
                 }
 
-                DnsType recordType = (DnsType)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-                DnsClass recordClass = (DnsClass)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
-                UInt32 recordTtl = (UInt32)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt32());
-                UInt16 rDataLength = (UInt16)IPAddress.NetworkToHostOrder(_binaryReader.ReadInt16());
+                DnsType recordType = (DnsType)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+                DnsClass recordClass = (DnsClass)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+                UInt32 recordTtl = (UInt32)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
+                UInt16 rDataLength = (UInt16)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
-                byte[] byteData = _binaryReader.ReadBytes(rDataLength);
+                byte[] byteData = binaryReader.ReadBytes(rDataLength);
                 StringBuilder dataBuilder = new StringBuilder();
 
                 switch (recordType)

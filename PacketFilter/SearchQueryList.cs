@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace richClosure.Avalonia.Packet_Filtering
+namespace PacketFilter
 {
     public class SearchQueryList
     {

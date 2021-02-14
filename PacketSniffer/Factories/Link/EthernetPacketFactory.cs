@@ -6,14 +6,12 @@ namespace PacketSniffer.Factories.Link
 {
     public class EthernetPacketFactory : ILinkFactory
     {
-        private readonly BinaryReader _binaryReader;
 
-        public EthernetPacketFactory(BinaryReader binaryReader)
+        public EthernetPacketFactory()
         {
-            _binaryReader = binaryReader;
         }
 
-        public IPacket CreatePacket()
+        public IPacket CreatePacket(BinaryReader binaryReader)
         {
             throw new System.NotImplementedException();
         }

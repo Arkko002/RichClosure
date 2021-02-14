@@ -10,18 +10,18 @@ namespace PacketSniffer.Factories.Application
 {
     internal class HttpPacketFactory : IApplicationPacketFactory
     {
-        private readonly BinaryReader _binaryReader;
-        private IPacket _previousHeader;
+        private readonly IPacketFrame _frame;
+        private readonly IPacket _previousHeader;
 
-        public HttpPacketFactory(BinaryReader binaryReader, IPacket previousHeader)
+        public HttpPacketFactory(IPacket previousHeader, IPacketFrame frame)
 
         {
-            _binaryReader = binaryReader;
             _previousHeader = previousHeader;
+            _frame = frame;
         }
 
         
-        public IPacket CreatePacket()
+        public IPacket CreatePacket(BinaryReader binaryReader)
         {
             Dictionary<string, string> fields = new Dictionary<string, string>();
             List<byte> byteList = new List<byte>();
@@ -31,9 +31,9 @@ namespace PacketSniffer.Factories.Application
             //TODO Ipv6 support
 
             //TODO
-            while (_binaryReader.BaseStream.Position < ipHeader.TotalLength)
+            while (binaryReader.BaseStream.Position < ipHeader.TotalLength)
             {
-                byteList.Add(_binaryReader.ReadByte());
+                byteList.Add(binaryReader.ReadByte());
             }
 
             for (int i = 0; i < byteList.Count; i++)
@@ -71,7 +71,10 @@ namespace PacketSniffer.Factories.Application
                 }
             }
 
-            return new HttpPacket(fields, _previousHeader, PacketProtocol.NoProtocol);
+            var packet = new HttpPacket(fields, _previousHeader, PacketProtocol.NoProtocol);
+            _frame.Packet = packet;
+
+            return packet;
         }
     }
 }

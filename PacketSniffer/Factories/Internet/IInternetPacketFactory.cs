@@ -3,7 +3,7 @@ using PacketSniffer.Packets.Internet;
 
 namespace PacketSniffer.Factories.Internet
 {
-    public interface IInternetPacketFactory : IAbstractFactory
+    public interface IInternetPacketFactory : IAbstractPacketFactory
     {
     }
 }
