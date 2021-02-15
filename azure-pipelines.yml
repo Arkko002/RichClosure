@@ -1,8 +1,8 @@
 # ASP.NET Core (.NET Framework)
+
 # Build and test ASP.NET Core projects targeting the full .NET Framework.
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core 
-
 strategy:
   matrix:
     linux:
@@ -30,6 +30,11 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- task: VSTest@2
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
 - task: DockerInstaller@0
   inputs:
     dockerVersion: '17.09.0-ce'
@@ -39,14 +44,7 @@ steps:
     command: 'build'
     Dockerfile: '**/Dockerfile'
 
-- task: VSBuild@1
+- task: Docker@2
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'push'
