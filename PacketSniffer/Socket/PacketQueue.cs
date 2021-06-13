@@ -1,12 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 
-namespace PacketSniffer.Services
+namespace PacketSniffer.Socket
 {
-    public class PacketQueue
+    public class PacketQueue : IPacketQueue
     {
         private readonly ConcurrentQueue<byte[]> _packetQueue = new();
         private readonly AutoResetEvent _queueNotifier = new(false);
+        private object _lock;
 
         public void EnqueuePacket(byte[] buffer)
         {
@@ -20,6 +21,12 @@ namespace PacketSniffer.Services
 
             _packetQueue.TryDequeue(out var buffer);            
             return buffer;                        
+        }
+
+        public void Clear()
+        {
+            _queueNotifier.Close();
+            _packetQueue.Clear();
         }
     }
 }

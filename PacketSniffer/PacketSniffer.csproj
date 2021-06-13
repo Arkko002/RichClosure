@@ -18,4 +18,8 @@
       <None Remove="obj\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="SharpPcap" Version="6.0.0" />
+    </ItemGroup>
+
 </Project>

@@ -1,27 +1,23 @@
+
+RichClosure
+===========
 [![Build Status](https://travis-ci.com/Arkko002/RichClosure.svg?branch=master)](https://travis-ci.com/Arkko002/RichClosure)
+[![Build Status](https://dev.azure.com/arkko002/RichClosure/_apis/build/status/Arkko002.RichClosure?branchName=master)](https://dev.azure.com/arkko002/RichClosure/_build/latest?definitionId=1&branchName=master)
 
-# RichClosure
+Cross platform protocol analyzer written in C#.
 
-
-## Description
-RichClosure is a packet analyzing tool written in C# using the WPF framework and implements the MVVM design patter. It allows user to capture packets from a selected adapter, view the packet's detail including hex and ASCII values. The main element of the GUI is packet list, which can be filtered using the search function, or by the use of context menu which includes creating conversation filters.
-
-#### Search function
-The search function uses queries provided by the user in the search box on the top right of the GUI. Search class uses reflection to find the data provided by the user in the main packet list and compares it with values provided in the query according to the provided comparision operators. It also allows user to query few values at once with the use of logical operators AND and OR.
-
-#### Suported packet types:
-- IPv4
-- IPv6
-- ICMP
-- TCP
-- UDP
-- DHCP
-- DNS
-- HTTP
-- TLS
+## Table of Contents
+1. [Table of Contents](#table-of-contents)
+2. [Screenshots](#screenshots)
+3. [Description](#description)   
+4. [Getting Started](#getting-started)
+    * [Prerequisites](#prerequisites)
+    * [Installation](#installation)
+5. [Usage](#usage)
+6. [Documentation](#documentation)
 
 ## Screenshots
-
+//TODO Style screenshots with CSS to make them smaller
 ![alt text](https://i.imgur.com/8wy0g4p.png) *Network adapter selection*
 
 
@@ -35,3 +31,36 @@ The search function uses queries provided by the user in the search box on the t
 
 
 ![alt text](https://i.imgur.com/lFvoozi.png) *Quick filter result*
+
+## Description
+RichClosure is a protocol analyzer written in C#. It comes with two GUI front-ends written in WPF and AvaloniaUI.
+It provides the user with ability to sniff packets on selected network interfaces, view their headers and internal data,
+and filter them based on their properties.
+
+## Getting Started
+
+### Prerequisites 
+
+RichClosure uses raw sockets for packet sniffing, therefore it requires administrative privileges
+to run.
+
+### Installation
+
+#### Building from source
+
+You need .NET 5 SDK to build the source. After installing .NET 5 you can build the whole solution with
+
+```dotnet build richClosure.sln```
+
+The program can be then accessed through one of the GUI exes.
+
+#### Docker
+
+TODO
+
+## Usage
+
+
+## Documentation
+
+TODO

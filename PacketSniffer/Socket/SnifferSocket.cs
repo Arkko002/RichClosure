@@ -1,14 +1,13 @@
 ﻿using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using PacketSniffer.Services;
 
 namespace PacketSniffer.Socket
 {
     internal class SnifferSocket : System.Net.Sockets.Socket, ISnifferSocket
     {
-        private readonly PacketQueue _packetQueue;
+        private readonly IPacketQueue _packetQueue;
 
-        public SnifferSocket(SocketType socketType, ProtocolType protocolType, NetworkInterface networkInterface, PacketQueue packetQueue)
+        public SnifferSocket(SocketType socketType, ProtocolType protocolType, NetworkInterface networkInterface, IPacketQueue packetQueue)
             : base(socketType, protocolType)
         {
             var socketConfigurator = CreateSocketConfigurator(networkInterface);
@@ -18,7 +17,7 @@ namespace PacketSniffer.Socket
         }
 
         public SnifferSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, NetworkInterface networkInterface,
-            PacketQueue packetQueue)
+            IPacketQueue packetQueue)
             : base(addressFamily, socketType, protocolType)
         {
             var socketConfigurator = CreateSocketConfigurator(networkInterface);
@@ -27,7 +26,7 @@ namespace PacketSniffer.Socket
             _packetQueue = packetQueue;
         }
 
-        public SnifferSocket(SocketInformation socketInformation, NetworkInterface networkInterface, PacketQueue packetQueue)
+        public SnifferSocket(SocketInformation socketInformation, NetworkInterface networkInterface, IPacketQueue packetQueue)
             : base(socketInformation)
         {
             var socketConfigurator = CreateSocketConfigurator(networkInterface);

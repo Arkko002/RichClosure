@@ -1,0 +1,20 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY GUI.Avalonia/*.csproj ./GUI.Avalonia/
+COPY PacketSniffer/*.csproj ./PacketSniffer/
+COPY PacketFilter/*.csproj ./PacketFilter/
+RUN dotnet restore GUI.Avalonia/GUI.Avalonia.csproj
+
+# Copy everything else and build
+COPY GUI.Avalonia ./GUI.Avalonia/
+COPY PacketSniffer ./PacketSniffer/
+COPY PacketFilter ./PacketFilter/
+RUN dotnet publish GUI.Avalonia/*.csproj -c Release -o out
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/runtime:5.0
+WORKDIR /app
+COPY --from=build-env /app/out .
+ENTRYPOINT ["dotnet", "GUI.Avalonia.dll"]
