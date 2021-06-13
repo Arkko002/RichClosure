@@ -1,4 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
@@ -10,13 +13,13 @@ using PacketSniffer.Socket;
 namespace PacketSniffer
 {
     // TODO Clean this up
-    // TODO Remove dependency on concrete factory, DI it instead and use interface
-    //TODO Add interfaces to concrete classes, rework interfaces 
     public class PacketSniffer : IPacketSniffer
     {
         public ObservableCollection<IPacketFrame> Packets { get; }
+        public IObservable<NetworkInterface> SelectedNetworkInterface { get; set; }
         private readonly IPacketQueue _packetQueue;
         private readonly IAbstractFrameFactory _frameFactory;
+
 
         private Task _ip6SnifferTask;
         private Task _ip4SnifferTask;
@@ -25,7 +28,6 @@ namespace PacketSniffer
         private readonly CancellationTokenSource _tokenSource;
         
 
-        //TODO Replace usage of concrete classes with interfaces
         public PacketSniffer()
         {
             Packets = new ObservableCollection<IPacketFrame>();
@@ -34,6 +36,11 @@ namespace PacketSniffer
         
             _tokenSource = new CancellationTokenSource();
             _dequeueTask = new Task(DequeuePacketBuffer, _tokenSource.Token);
+        }
+
+        public IEnumerable<NetworkInterface> GetAvailableNetworkInterfaces()
+        {
+            return NetworkInterface.GetAllNetworkInterfaces();
         }
 
         public void SniffPackets(NetworkInterface networkInterface)
