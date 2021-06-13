@@ -1,7 +1,7 @@
 using System.Reflection;
 using Avalonia;
 using Avalonia.Markup.Xaml;
-using PacketSniffer.Services;
+using PacketSniffer;
 using ReactiveUI;
 using richClosure.Avalonia.ViewModels;
 using richClosure.Avalonia.Views;

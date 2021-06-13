@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Net.NetworkInformation;
 using PacketSniffer.Packets;
 
-namespace PacketSniffer.Services
+namespace PacketSniffer
 {
     //TODO
     public interface IPacketSniffer

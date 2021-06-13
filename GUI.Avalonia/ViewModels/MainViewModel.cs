@@ -1,19 +1,19 @@
 ﻿using System.Reactive;
+using PacketSniffer;
 using ReactiveUI;
-using PacketSniffer.Services;
 
 namespace richClosure.Avalonia.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public InterfaceSelectionViewModel InterfaceSelectionViewModel { get; } 
+        public InterfaceSelectionViewModel InterfaceSelectionViewModel { get; }
         public PacketDataGridViewModel PacketDataGridViewModel { get; set; }
         public IPacketSniffer PacketSniffer { get; }
         public ReactiveCommand<Unit, Unit> StartSniffingCommand { get; }
         
         public MainWindowViewModel(PacketDataGridViewModel packetDataGridViewModel,
-            InterfaceSelectionViewModel interfaceSelectionViewModel, 
-            IPacketSniffer packetSniffer) 
+            InterfaceSelectionViewModel interfaceSelectionViewModel,
+            IPacketSniffer packetSniffer)
         {
             PacketDataGridViewModel = packetDataGridViewModel;
             InterfaceSelectionViewModel = interfaceSelectionViewModel;
