@@ -25,8 +25,9 @@
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="obj\**" />
-      <Compile Update="Views\PacketTreeView.axaml.cs">
-        <DependentUpon>PacketTreeUserControl.axaml</DependentUpon>
+      <Compile Update="Views\InterfaceSelectionWindow.axaml.cs">
+        <DependentUpon>InterfaceSelectionWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
       </Compile>
     </ItemGroup>
     <ItemGroup>
@@ -34,5 +35,11 @@
     </ItemGroup>
     <ItemGroup>
       <None Remove="obj\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <UpToDateCheckInput Remove="UserControls\ControlBarUserControl.axaml" />
+      <UpToDateCheckInput Remove="UserControls\PacketGridUserControl.axaml" />
+      <UpToDateCheckInput Remove="UserControls\PacketHexUserControl.axaml" />
+      <UpToDateCheckInput Remove="UserControls\PacketTreeUserControl.axaml" />
     </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@ using Splat;
 
 namespace richClosure.Avalonia.ViewModels
 {
-    public class PacketViewModel : ViewModelBase, IActivatableViewModel
+    public class PacketViewModel : ViewModelBase
     {
         public ulong Id { get; private set; }
         public string DateTimeCaptured { get; private set; }
@@ -31,8 +31,6 @@ namespace richClosure.Avalonia.ViewModels
         public PacketTreeViewModel PacketTreeViewModel { get; private set; }
         public PacketHexViewModel PacketHexViewModel { get; private set; }
         
-        public ViewModelActivator Activator { get; }
-
         public PacketViewModel(IPacketFrame packetFrame)
         {
             Activator = new ViewModelActivator();
@@ -47,9 +45,9 @@ namespace richClosure.Avalonia.ViewModels
                 DestPort = packetFrame.DestinationPort.ToString();
                 SrcPort = packetFrame.SourcePort.ToString();
 
-                PacketTreeViewModel =
-                    new PacketTreeViewModel(packetFrame, Locator.Current.GetService<IAbstractTreeItemFactory>());
-                PacketHexViewModel = new PacketHexViewModel(packetFrame);
+                // PacketTreeViewModel =
+                //     new PacketTreeViewModel(packetFrame, Locator.Current.GetService<IAbstractTreeItemFactory>());
+                // PacketHexViewModel = new PacketHexViewModel(packetFrame);
 
                 Disposable
                 .Create(() => { })

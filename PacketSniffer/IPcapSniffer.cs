@@ -1,5 +1,6 @@
 using SharpPcap;
 
+//TODO Create an interface for network devices to merge NetworkInterface and CaptureDevice
 namespace PacketSniffer
 {
     public interface IPcapSniffer

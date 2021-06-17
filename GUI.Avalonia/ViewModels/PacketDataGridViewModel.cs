@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace richClosure.Avalonia.ViewModels
 {
-    public class PacketDataGridViewModel : ViewModelBase, IActivatableViewModel
+    public class PacketDataGridViewModel : ViewModelBase
     {
         public ObservableCollection<PacketViewModel> PacketViewModels { get; private set; }
 
@@ -19,7 +19,6 @@ namespace richClosure.Avalonia.ViewModels
         }
         
         public ObservableCollection<DataGridColumn> DataGridColumns { get; private set; }
-        public ViewModelActivator Activator { get; }
 
         public PacketDataGridViewModel()
         {

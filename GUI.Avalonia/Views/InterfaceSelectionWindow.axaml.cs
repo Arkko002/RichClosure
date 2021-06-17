@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ReactiveUI;
 using richClosure.Avalonia.ViewModels;
 
@@ -13,7 +12,7 @@ namespace richClosure.Avalonia.Views
     /// </summary>
     public partial class InterfaceSelectionView : ReactiveWindow<InterfaceSelectionViewModel>
     {
-        public DataGrid AdapterDataGrid => this.FindControl<DataGrid>("AdapterDataGrid");
+        public DataGrid NetworkDeviceDataGrid => this.FindControl<DataGrid>("NetworkDeviceDataGrid");
 
         public InterfaceSelectionView()
         {
@@ -21,12 +20,12 @@ namespace richClosure.Avalonia.Views
             {
                 this.OneWayBind(ViewModel,
                         model => model.NetworkInterfaces,
-                        view => view.AdapterDataGrid.Items)
+                        view => view.NetworkDeviceDataGrid.Items)
                     .DisposeWith(disposable);
 
                 this.Bind(ViewModel,
                         model => model.SelectedInterface,
-                        view => view.AdapterDataGrid.SelectedItem)
+                        view => view.NetworkDeviceDataGrid.SelectedItem)
                     .DisposeWith(disposable);
 
             });

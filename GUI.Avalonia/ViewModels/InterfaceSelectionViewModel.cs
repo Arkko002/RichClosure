@@ -7,7 +7,7 @@ using ReactiveUI;
 
 namespace richClosure.Avalonia.ViewModels
 {
-    public class InterfaceSelectionViewModel : ViewModelBase, IActivatableViewModel
+    public class InterfaceSelectionViewModel : ViewModelBase
     {
         public List<NetworkInterface> NetworkInterfaces { get; private set; }
 

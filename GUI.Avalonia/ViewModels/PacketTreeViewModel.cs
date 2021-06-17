@@ -7,25 +7,22 @@ using richClosure.Avalonia.Services.TreeItemFactories;
 
 namespace richClosure.Avalonia.ViewModels
 {
-    public class PacketTreeViewModel : ViewModelBase, IActivatableViewModel
+    public class PacketTreeViewModel : ViewModelBase
     {
         //TODO break PacketViewModel into submodels
         public ObservableCollection<TreeViewItem> TreeViewItems { get; private set; }
 
-        public ViewModelActivator Activator { get; }
-
         private IPacketFrame _packetFrame;
         private IAbstractTreeItemFactory _treeItemFactory;
         
-        public PacketTreeViewModel(IPacketFrame packetFrame, IAbstractTreeItemFactory treeItemFactory)
+        public PacketTreeViewModel(IPacketFrame packetFrame)
         {
             Activator = new ViewModelActivator();
             this.WhenActivated(disposable =>
             {
-                CreateTreeViewItems();
+                //CreateTreeViewItems();
                 
                 _packetFrame = packetFrame;
-                _treeItemFactory = treeItemFactory;
                 Disposable
                     .Create(() => { })
                     .DisposeWith(disposable);

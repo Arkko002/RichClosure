@@ -14,7 +14,7 @@
                 
                 <Button Content="Cancel" DockPanel.Dock="Bottom" Command="{Binding Cancel}"/> 
                 
-                <DataGrid x:Name="InterfaceDataGrid" AutoGenerateColumns="False"  
+                <DataGrid x:Name="NetworkDeviceDataGrid" AutoGenerateColumns="False"  
                           HorizontalAlignment="Left" Height="210" Margin="10,10,0,0" VerticalAlignment="Top" Width="426" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Id}" Header="ID"/>

@@ -16,7 +16,9 @@ namespace richClosure.Avalonia
     {
         public App()
         {
+            Locator.CurrentMutable.Register(() => new InterfaceSelectionViewModel(), typeof(IViewFor<InterfaceSelectionView>));
             Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetCallingAssembly());
+            AppBootstrapper bootstrapper = new();
         }
 
         public override void Initialize()
@@ -27,10 +29,9 @@ namespace richClosure.Avalonia
         public override void OnFrameworkInitializationCompleted()
         {
             base.OnFrameworkInitializationCompleted();
-            var mainWindow = new MainView()
+            var mainWindow = new MainWindow()
             {
-                DataContext = new MainWindowViewModel(Locator.Current.GetService<PacketDataGridViewModel>(),
-                    Locator.Current.GetService<InterfaceSelectionViewModel>(), Locator.Current.GetService<IPacketSniffer>())
+                DataContext = new MainWindowViewModel( Locator.Current.GetService<IPacketSniffer>())
             };
             mainWindow.Show();
         }
