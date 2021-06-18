@@ -1,13 +1,14 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Collections.Concurrent;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
 namespace PacketSniffer.Socket
 {
     internal class SnifferSocket : System.Net.Sockets.Socket, ISnifferSocket
     {
-        private readonly IPacketQueue _packetQueue;
+        private readonly BlockingCollection<byte[]> _packetQueue;
 
-        public SnifferSocket(SocketType socketType, ProtocolType protocolType, NetworkInterface networkInterface, IPacketQueue packetQueue)
+        public SnifferSocket(SocketType socketType, ProtocolType protocolType, NetworkInterface networkInterface, BlockingCollection<byte[]> packetQueue)
             : base(socketType, protocolType)
         {
             var socketConfigurator = CreateSocketConfigurator(networkInterface);
@@ -17,7 +18,7 @@ namespace PacketSniffer.Socket
         }
 
         public SnifferSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, NetworkInterface networkInterface,
-            IPacketQueue packetQueue)
+            BlockingCollection<byte[]> packetQueue)
             : base(addressFamily, socketType, protocolType)
         {
             var socketConfigurator = CreateSocketConfigurator(networkInterface);
@@ -26,7 +27,7 @@ namespace PacketSniffer.Socket
             _packetQueue = packetQueue;
         }
 
-        public SnifferSocket(SocketInformation socketInformation, NetworkInterface networkInterface, IPacketQueue packetQueue)
+        public SnifferSocket(SocketInformation socketInformation, NetworkInterface networkInterface, BlockingCollection<byte[]> packetQueue)
             : base(socketInformation)
         {
             var socketConfigurator = CreateSocketConfigurator(networkInterface);
@@ -48,7 +49,7 @@ namespace PacketSniffer.Socket
             byte[] buffer = new byte[65565];
             Receive(buffer);
 
-            _packetQueue.EnqueuePacket(buffer);
+            _packetQueue.Add(buffer);
         }
     }
 }

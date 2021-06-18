@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 using richClosure.Avalonia.ViewModels;
+using SharpPcap;
 
 namespace richClosure.Avalonia.Views
 {
@@ -19,6 +20,7 @@ namespace richClosure.Avalonia.Views
     {
         public Button StartSniffingButton => this.FindControl<Button>("StartButton");
         public Button StopSniffingButton => this.FindControl<Button>("StopButton");
+        public DataGrid PacketDataGrid => this.FindControl<DataGrid>("PacketDataGrid");
         
         public MainWindow()
         {
@@ -41,20 +43,20 @@ namespace richClosure.Avalonia.Views
                         view => view.StopSniffingButton)
                     .DisposeWith(d);
 
-            //     this.BindCommand(ViewModel!, vm => vm.StopSniffingCommand,
-            //             view => view.StopSniffingButton)
-            //         .DisposeWith(disposable);
+                this.OneWayBind(ViewModel!, vm => vm.PacketSniffer.Packets,
+                        view => view.PacketDataGrid.Items)
+                    .DisposeWith(d);
             });
         }
         
-        private async Task DoShowDialogAsync(InteractionContext<InterfaceSelectionViewModel, NetworkInterface?> interaction)
+        private async Task DoShowDialogAsync(InteractionContext<InterfaceSelectionViewModel, ICaptureDevice?> interaction)
         {
-            var dialog = new InterfaceSelectionView
+            var dialog = new InterfaceSelectionWindow
             {
                 DataContext = interaction.Input
             };
 
-            var result = await dialog.ShowDialog<NetworkInterface>(this);
+            var result = await dialog.ShowDialog<ICaptureDevice>(this);
             interaction.SetOutput(result);
         }
     }

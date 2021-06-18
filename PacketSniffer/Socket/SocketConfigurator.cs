@@ -51,7 +51,8 @@ namespace PacketSniffer.Socket
 
             byte[] inValue = new byte[] { 1, 0, 0, 0 };
             byte[] outValue = new byte[] { 0, 0, 0, 0 };
-            _socket.IOControl(IOControlCode.ReceiveAll, inValue, outValue);
+            // TODO Not supported on linux
+            //_socket.IOControl(IOControlCode.ReceiveAll, inValue, outValue);
         }
     }
 }

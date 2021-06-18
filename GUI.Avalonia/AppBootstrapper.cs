@@ -10,6 +10,7 @@ namespace richClosure.Avalonia
     {
         public AppBootstrapper()
         {
+            Locator.CurrentMutable.RegisterConstant(new PacketSnifferPcap(), typeof(IPcapSniffer));
             Locator.CurrentMutable.RegisterConstant(new PacketSniffer.PacketSniffer(), typeof(IPacketSniffer));
         }
     }

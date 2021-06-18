@@ -6,7 +6,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:viewmodel="clr-namespace:richClosure.Avalonia.ViewModels"
         xmlns:reactiveui="http://reactiveui.net"
-        xmlns:userControls="clr-namespace:richClosure.Avalonia.UserControls"
         mc:Ignorable="d"
         x:Class="richClosure.Avalonia.Views.MainWindow"
         Title="MainWindow" Height="659.833" Width="862.5" CanResize="False" >
@@ -41,7 +40,7 @@
     </Grid>
         
     <Grid Grid.Row="1">
-        <DataGrid x:Name="PacketDataGrid">
+        <DataGrid Name="PacketDataGrid">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <!--TODO Add DataTriggers for context menu -->

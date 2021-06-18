@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.NetworkInformation;
@@ -17,7 +18,8 @@ namespace PacketSniffer
     {
         public ObservableCollection<IPacketFrame> Packets { get; }
         public IObservable<NetworkInterface> SelectedNetworkInterface { get; set; }
-        private readonly IPacketQueue _packetQueue;
+
+        private readonly BlockingCollection<byte[]> _packetQueue;
         private readonly IAbstractFrameFactory _frameFactory;
 
 
@@ -31,7 +33,7 @@ namespace PacketSniffer
         public PacketSniffer()
         {
             Packets = new ObservableCollection<IPacketFrame>();
-            _packetQueue = new PacketQueue();
+            _packetQueue = new(new ConcurrentQueue<byte[]>());
             _frameFactory = new PacketFactory();
         
             _tokenSource = new CancellationTokenSource();
@@ -47,19 +49,20 @@ namespace PacketSniffer
         {
             ISnifferSocket socketIp4 = new SnifferSocket(AddressFamily.InterNetwork,
                 SocketType.Raw,
-                ProtocolType.IP,
+                ProtocolType.Tcp,
                 networkInterface,
                 _packetQueue);
             
-            ISnifferSocket socketIp6 = new SnifferSocket(AddressFamily.InterNetworkV6,
-                SocketType.Raw,
-                ProtocolType.IP,
-                networkInterface,
-                _packetQueue);
+            // TODO IP4 / IP6 Detection
+            // ISnifferSocket socketIp6 = new SnifferSocket(AddressFamily.InterNetworkV6,
+            //     SocketType.Raw,
+            //     ProtocolType.Raw,
+            //     networkInterface,
+            //     _packetQueue);
             
             _ip4SnifferTask = new Task(socketIp4.ReceivePacket, _tokenSource.Token);
-            _ip6SnifferTask = new Task(socketIp6.ReceivePacket, _tokenSource.Token);
-            _ip6SnifferTask.Start();
+            // _ip6SnifferTask = new Task(socketIp6.ReceivePacket, _tokenSource.Token);
+            // _ip6SnifferTask.Start();
             _ip4SnifferTask.Start();
             _dequeueTask.Start();
         }
@@ -67,12 +70,12 @@ namespace PacketSniffer
         public void StopSniffing()
         {
             _tokenSource.Cancel();
-            _packetQueue.Clear();
+            _packetQueue.Dispose();
         }
 
         private void DequeuePacketBuffer()
         {
-            var buffer = _packetQueue.DequeuePacket();
+            var buffer = _packetQueue.Take();
 
             IPacketFrame packet = _frameFactory.CreatePacketFrame(buffer);
             Packets.Add(packet);

@@ -16,7 +16,6 @@ namespace richClosure.Avalonia
     {
         public App()
         {
-            Locator.CurrentMutable.Register(() => new InterfaceSelectionViewModel(), typeof(IViewFor<InterfaceSelectionView>));
             Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetCallingAssembly());
             AppBootstrapper bootstrapper = new();
         }
@@ -31,7 +30,7 @@ namespace richClosure.Avalonia
             base.OnFrameworkInitializationCompleted();
             var mainWindow = new MainWindow()
             {
-                DataContext = new MainWindowViewModel( Locator.Current.GetService<IPacketSniffer>())
+                DataContext = new MainWindowViewModel( Locator.Current.GetService<IPcapSniffer>())
             };
             mainWindow.Show();
         }

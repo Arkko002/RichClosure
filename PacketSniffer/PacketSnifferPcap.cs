@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace PacketSniffer
     {
 
         public ObservableCollection<IPacketFrame> Packets { get; }
-        private readonly IPacketQueue _packetQueue;
+        private readonly BlockingCollection<byte[]> _packetQueue;
         private readonly IAbstractFrameFactory _frameFactory;
 
         public ICaptureDevice SelectedDevice { get; set; }
@@ -26,7 +27,7 @@ namespace PacketSniffer
         
         public PacketSnifferPcap()
         {
-            _packetQueue = new PacketQueue();
+            _packetQueue = new BlockingCollection<byte[]>(new ConcurrentQueue<byte[]>());
             _frameFactory = new PacketFactory();
             Packets = new ObservableCollection<IPacketFrame>();
 
@@ -44,8 +45,10 @@ namespace PacketSniffer
             this.SelectedDevice = CaptureDeviceList.Instance[id];
         }
 
-        public void SniffPackets()
+        public void SniffPackets(ICaptureDevice device)
         {
+            SelectedDevice = device;
+            
             if (!SelectedDevice.Started)
             {
                 SelectedDevice.Open();
@@ -64,18 +67,18 @@ namespace PacketSniffer
                 SelectedDevice.Close();
                 
                 _tokenSource.Cancel();
-                _packetQueue.Clear();
+                _packetQueue.Dispose();
             }
         }
 
         private void OnPacketCapture(object s, PacketCapture e)
         {
-            _packetQueue.EnqueuePacket(e.Data.ToArray());
+            _packetQueue.Add(e.Data.ToArray());
         }
 
         private void DequeuePacketBuffer()
         {
-            var buffer = _packetQueue.DequeuePacket();
+            var buffer = _packetQueue.Take();
 
             IPacketFrame packet = _frameFactory.CreatePacketFrame(buffer);
             Packets.Add(packet);

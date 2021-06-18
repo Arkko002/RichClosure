@@ -10,36 +10,34 @@ using PacketSniffer;
 using PacketSniffer.Packets;
 using ReactiveUI;
 using richClosure.Avalonia.Views;
+using SharpPcap;
 using Splat;
 
 namespace richClosure.Avalonia.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public IPacketSniffer PacketSniffer { get; }
+        public IPcapSniffer PacketSniffer { get; }
         public IPacketFrame SelectedPacket { get; set; }
 
-        public ReactiveCommand<NetworkInterface, Unit> StartSniffingCommand { get; }
-
-        public PacketHexViewModel PacketHexViewModel { get; }
-        public PacketTreeViewModel PacketTreeViewModel { get; }
+        public ReactiveCommand<ICaptureDevice, Unit> StartSniffingCommand { get; }
         public ReactiveCommand<Unit, Unit> ShowInterfaceCommand { get; }
         public ReactiveCommand<Unit, Unit> StopSniffingCommand { get; }
-        public Interaction<InterfaceSelectionViewModel, NetworkInterface?> ShowInterfaceInteraction { get; }
+        public Interaction<InterfaceSelectionViewModel, ICaptureDevice?> ShowInterfaceInteraction { get; }
 
-        public MainWindowViewModel(IPacketSniffer packetSniffer)
+        public MainWindowViewModel(IPcapSniffer packetSniffer)
         {
             PacketSniffer = packetSniffer;
 
-            StartSniffingCommand = ReactiveCommand.Create<NetworkInterface>(StartSniffing);
+            StartSniffingCommand = ReactiveCommand.Create<ICaptureDevice>(StartSniffing);
             StopSniffingCommand = ReactiveCommand.Create(StopSniffing);
 
 
-            ShowInterfaceInteraction = new Interaction<InterfaceSelectionViewModel, NetworkInterface?>();
+            ShowInterfaceInteraction = new Interaction<InterfaceSelectionViewModel, ICaptureDevice?>();
 
             ShowInterfaceCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                var vm = new InterfaceSelectionViewModel();
+                var vm = new InterfaceSelectionViewModel(PacketSniffer.GetAvailableDevices());
 
                 var result = await ShowInterfaceInteraction.Handle(vm);
 
@@ -50,7 +48,7 @@ namespace richClosure.Avalonia.ViewModels
             });
         }
 
-        public void StartSniffing(NetworkInterface networkInterface)
+        public void StartSniffing(ICaptureDevice networkInterface)
         {
             PacketSniffer.SniffPackets(networkInterface);
         }
