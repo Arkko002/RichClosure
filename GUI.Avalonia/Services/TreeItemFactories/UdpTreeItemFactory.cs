@@ -1,28 +1,25 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
-using PacketSniffer.Packets;
-using PacketSniffer.Packets.Transport;
+using PacketDotNet;
 
 namespace richClosure.Avalonia.Services.TreeItemFactories
 {
-    public class UdpTreeItemFactory : IAbstractTreeItemFactory
+    public class UdpTreeItemFactory 
     {
-        public TreeViewItem CreateTreeViewItem(IPacket packet)
+        public TreeViewItem CreateTreeViewItem(UdpPacket packet)
         {
-            UdpPacket udpPacket = packet as UdpPacket;
-
             var udpItem = new TreeViewItem()
             {
-                Header = ", Dest. Port: " + udpPacket.DestinationPort +
-                         ", Src. Port: " + udpPacket.SourcePort
+                Header = ", Dest. Port: " + packet.DestinationPort +
+                         ", Src. Port: " + packet.SourcePort
             };
 
             var childItems = new List<TreeViewItem>();
             
-            childItems.Add(new TreeViewItem { Header = "Dest. Port: " + udpPacket.DestinationPort });
-            childItems.Add(new TreeViewItem { Header = "Src. Port: " + udpPacket.SourcePort });
-            childItems.Add(new TreeViewItem { Header = "Length: " + udpPacket.Length });
-            childItems.Add(new TreeViewItem { Header = "Checksum: " + udpPacket.Checksum });
+            childItems.Add(new TreeViewItem { Header = "Dest. Port: " + packet.DestinationPort });
+            childItems.Add(new TreeViewItem { Header = "Src. Port: " + packet.SourcePort });
+            childItems.Add(new TreeViewItem { Header = "Length: " + packet.Length });
+            childItems.Add(new TreeViewItem { Header = "Checksum: " + packet.Checksum });
 
             udpItem.Items = childItems;
             return udpItem;

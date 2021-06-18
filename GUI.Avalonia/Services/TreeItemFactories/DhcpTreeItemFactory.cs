@@ -5,7 +5,8 @@ using PacketSniffer.Packets.Application.Dhcp;
 
 namespace richClosure.Avalonia.Services.TreeItemFactories
 {
-    public class DhcpTreeItemFactory : IAbstractTreeItemFactory
+    //TODO
+    public class DhcpTreeItemFactory 
     {
         public TreeViewItem CreateTreeViewItem(IPacket packet)
         {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GUI.WPF.Commands;
-using NUnit.Framework;
+﻿using GUI.WPF.Commands;
 
 namespace richClosure.Tests.Commands_Tests
 {

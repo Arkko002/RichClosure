@@ -1,8 +1,7 @@
+using PacketDotNet;
 using PacketSniffer;
-using PacketSniffer.Factories;
-using PacketSniffer.Socket;
-using richClosure.Avalonia.ViewModels;
 using Splat;
+using Swordfish.NET.Collections;
 
 namespace richClosure.Avalonia
 {
@@ -10,7 +9,8 @@ namespace richClosure.Avalonia
     {
         public AppBootstrapper()
         {
-            Locator.CurrentMutable.RegisterConstant(new PacketSnifferPcap(), typeof(IPcapSniffer));
+            Locator.CurrentMutable.RegisterConstant(new ConcurrentObservableCollection<Packet>());
+            Locator.CurrentMutable.RegisterConstant(new PacketSnifferPcap(Locator.Current.GetService<ConcurrentObservableCollection<Packet>>()), typeof(IPcapSniffer));
             Locator.CurrentMutable.RegisterConstant(new PacketSniffer.PacketSniffer(), typeof(IPacketSniffer));
         }
     }

@@ -1,13 +1,13 @@
-using System.Collections.ObjectModel;
-using PacketSniffer.Packets;
+using PacketDotNet;
 using SharpPcap;
+using Swordfish.NET.Collections;
 
 //TODO Create an interface for network devices to merge NetworkInterface and CaptureDevice
 namespace PacketSniffer
 {
     public interface IPcapSniffer
     {
-        ObservableCollection<IPacketFrame> Packets { get; }
+        ConcurrentObservableCollection<Packet> Packets { get; }
         public ICaptureDevice SelectedDevice { get; set; }
         
         public CaptureDeviceList GetAvailableDevices();

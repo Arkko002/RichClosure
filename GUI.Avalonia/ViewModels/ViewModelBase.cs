@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reactive.Disposables;
-using System.Text;
 using Avalonia.ReactiveUI;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ReactiveUI;
 using Splat;
 

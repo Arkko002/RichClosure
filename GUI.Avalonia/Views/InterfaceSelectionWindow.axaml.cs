@@ -5,7 +5,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 using System;
-using System.Reactive.Linq;
 using richClosure.Avalonia.ViewModels;
 
 namespace richClosure.Avalonia.Views

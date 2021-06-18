@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Reactive;
-using System.Reactive.Disposables;
+﻿using System.Reactive;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;

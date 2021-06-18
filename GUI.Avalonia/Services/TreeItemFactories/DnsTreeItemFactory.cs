@@ -6,7 +6,8 @@ using PacketSniffer.Packets.Application.Dns;
 
 namespace richClosure.Avalonia.Services.TreeItemFactories
 {
-    public class DnsTreeItemFactory : IAbstractTreeItemFactory
+    //TODO
+    public class DnsTreeItemFactory 
     {
         public TreeViewItem CreateTreeViewItem(IPacket packet)
         {

@@ -1,5 +1,4 @@
 ﻿using GUI.WPF.Commands;
-using GUI.WPF.Packet_Filtering;
 
 namespace GUI.WPF.ViewModels
 {

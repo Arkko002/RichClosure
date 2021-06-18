@@ -1,6 +1,4 @@
-using System;
 using PacketSniffer.Packets;
-using ReactiveUI;
 
 namespace richClosure.Avalonia.ViewModels
 {

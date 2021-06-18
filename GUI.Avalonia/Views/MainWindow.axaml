@@ -3,95 +3,86 @@
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="clr-namespace:richClosure.Avalonia.Models"
         xmlns:viewmodel="clr-namespace:richClosure.Avalonia.ViewModels"
         xmlns:reactiveui="http://reactiveui.net"
         mc:Ignorable="d"
         x:Class="richClosure.Avalonia.Views.MainWindow"
         Title="MainWindow" Height="659.833" Width="862.5" CanResize="False" >
 
+    <StackPanel Orientation="Vertical" Spacing="5">
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Left">
+                <Button Name="StartButton" Content="Start"  Width="48" Height="25" DockPanel.Dock="Left"/> 
 
-    <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Height="617" Width="852">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="200*"/>
-            <RowDefinition Height="200*"/>
-            <RowDefinition Height="200*"/>
-        </Grid.RowDefinitions>
-        
-        
-    <Grid>
-        <Button Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0"
-                VerticalAlignment="Top" Width="48" Height="25"/> 
+                <Button Name="StopButton" Content="Stop"  
+                        Width="48" Height="25" DockPanel.Dock="Left"/>
+            </DockPanel>
 
-        <Button Name="StopButton" Content="Stop" HorizontalAlignment="Left" Margin="63,10,0,0" VerticalAlignment="Top"
-                Width="48" Height="25"/>
-
-        <TextBox Name="SearchTextBox" HorizontalAlignment="Left" Height="25"
-                 Margin="338,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="420">
-            <!-- TODO -->
-            <!-- <TextBox.InputBinding> -->
-            <!--     <KeyBinding Key="Enter" Command="{Binding SearchPackets, Mode=OneWay }"/> -->
-            <!-- </TextBox.InputBinding> -->
-        </TextBox>
-
-        <Button x:Name="SearchClearButton" Content="Clear" HorizontalAlignment="Left" Margin="763,10,0,0"
-                VerticalAlignment="Top" Width="79" Height="25"/>
-    </Grid>
-        
-    <Grid Grid.Row="1">
-        <DataGrid Name="PacketDataGrid">
+            <DockPanel DockPanel.Dock="Right">
+                <Button Name="SearchClearButton" Content="Clear" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                         Width="79" Height="25"/>
+                
+                <TextBox Name="SearchTextBox" Height="25" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                          TextWrapping="Wrap"  Width="300" />
+            </DockPanel>
+        </DockPanel>
+            
+        <DataGrid Height="400" Items="{Binding Packets.CollectionView}" Name="PacketDataGrid" AutoGenerateColumns="False">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <!--TODO Add DataTriggers for context menu -->
                 </ContextMenu>
             </DataGrid.ContextMenu>
-            <!-- <DataGrid.RowStyle> -->
-            <!--     ~1~TODO Move this into propety in ViewModelBase @1@ -->
-            <!--    <Style TargetType="{x:Type DataGridRow}"> -->
-            <!--         <Style.Triggers> -->
-            <!--             <DataTrigger Binding="{Binding Path=SourcePacket.IpProtocol}" Value="TCP"> -->
-            <!--                 <Setter Property="Background" Value="LightBlue"/> -->
-            <!--             </DataTrigger> -->
-            <!--             <DataTrigger Binding="{Binding Path=SourcePacket.IpProtocol}" Value="UDP"> -->
-            <!--                 <Setter Property="Background" Value="LightGreen"/> -->
-            <!--             </DataTrigger> -->
-            <!--             <DataTrigger Binding="{Binding Path=SourcePacket.IpProtocol}" Value="ICMP"> -->
-            <!--                 <Setter Property="Background" Value="LightSalmon"/> -->
-            <!--             </DataTrigger> -->
-            <!--         </Style.Triggers> -->
-            <!--     </Style> -->
-            <!-- </DataGrid.RowStyle> -->
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Id}" Header="ID"/>
+                <DataGridTextColumn Binding="{Binding Type}" Header="Type"/>
+                <DataGridTextColumn Binding="{Binding SourceAddress}" Header="Src. Address"/>
+                <DataGridTextColumn Binding="{Binding DestinationAddress}" Header="Dst. Address"/>
+                <DataGridTextColumn Binding="{Binding SourcePort}" Header="Src. Port"/>
+                <DataGridTextColumn Binding="{Binding DestinationPort}" Header="Dst. Port"/>
+            </DataGrid.Columns>
         </DataGrid>
+            
+        <TreeView Height="300" Name="PacketTreeView" 
+                  HorizontalAlignment="Left" Foreground="Black" FontSize="14">
+            <!-- <TreeView.DataTemplates> -->
+            <!--     <TreeDataTemplate DataType="models:PacketTreeItem"> -->
+            <!--         <TextBlock Text="{Binding Header}"/> -->
+            <!--     </TreeDataTemplate> -->
+            <!-- </TreeView.DataTemplates> -->
+        </TreeView>
         
-        <Grid Margin="10,0,0,-40" HorizontalAlignment="Left" Width="832" Grid.Row="1">
-            <Label x:Name="ShownPacketsLabel" Content="Shown packets:" VerticalAlignment="Top" Margin="141,0,609,0"
-                   FontSize="10"/>
-            <Label x:Name="TotalPacketsLabel" Content="Total packets: " HorizontalAlignment="Left"
-                   VerticalAlignment="Top" Width="73" FontSize="10"/>
-            <Label x:Name="TotalPacketsLabelNum" Content="{Binding Path=PacketCollectionViewModel.TotalPacketCount}"
-                   HorizontalAlignment="Left"
-                   Margin="73,0,0,0" VerticalAlignment="Top" Width="63" Height="25"/>
-            <Label x:Name="ShownPacketsLabelNum" HorizontalAlignment="Left" Margin="228,0,0,0" VerticalAlignment="Top"
-                   Width="63" Height="25"
-                   Content="{Binding Path=PacketCollectionViewModel.ShownPacketCount}"/>
-        </Grid>
-    </Grid>
-        
-    <TreeView Grid.Row="2" x:Name="PacketTree" Margin="10,0,0,170" Width="832" Height="159" VerticalAlignment="Bottom"
-              HorizontalAlignment="Left" Foreground="Black" FontSize="14"/>
-    
-    
-    <DockPanel Grid.Row="3">
-        <TextBox x:Name="PacketHexTextBox" HorizontalAlignment="Left" Height="155" Margin="10,430,0,0"
-                 TextWrapping="Wrap" VerticalAlignment="Top" DockPanel.Dock="Left" Width="411"
-                 FontFamily="Global Monospace"/>
+        <DockPanel Height="200" >
+            <TextBox Name="PacketHexTextBox" HorizontalAlignment="Left" Height="155"
+                     Width="400"
+                     TextWrapping="Wrap" VerticalAlignment="Top" DockPanel.Dock="Left" 
+                     FontFamily="Global Monospace"/>
 
-        <TextBox x:Name="PacketAsciiTextBox" HorizontalAlignment="Left" Height="155" Margin="426,430,0,0"
-                 TextWrapping="Wrap" VerticalAlignment="Top" DockPanel.Dock="Right" Width="416"
-                 FontFamily="Global Monospace"/>
-    </DockPanel>
-    
-    </Grid>
+            <TextBox Name="PacketAsciiTextBox" HorizontalAlignment="Right" Height="155" 
+                     Width="400"
+                     TextWrapping="Wrap" VerticalAlignment="Top" DockPanel.Dock="Right" 
+                     FontFamily="Global Monospace"/>
+        </DockPanel>
+        
+        <Grid>
+            <Label Name="ShownPacketsLabel" Content="Shown packets: "
+                   FontSize="10"/>
+            <Label Name="TotalPacketsLabel" Content="Total packets: " FontSize="10"/>
+            <Label Name="TotalPacketsLabelNum" Content="{Binding Path=PacketCollectionViewModel.TotalPacketCount}"/>
+            <Label Name="ShownPacketsLabelNum" Content="{Binding Path=PacketCollectionViewModel.ShownPacketCount}"/>
+        </Grid>
+    </StackPanel>
+
+    <!-- <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Height="617" Width="852"> -->
+    <!--     <Grid.RowDefinitions> -->
+    <!--         <RowDefinition /> -->
+    <!--         <RowDefinition /> -->
+    <!--         <RowDefinition /> -->
+    <!--         <RowDefinition /> -->
+    <!--         <RowDefinition /> -->
+    <!--     </Grid.RowDefinitions> -->
+    <!-- </Grid> -->
 </reactiveui:ReactiveWindow>
     

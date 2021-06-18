@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using PacketSniffer.Packet_Sniffing;
-
-namespace richClosure.Tests.Packet_Sniffing_Tests
+﻿namespace richClosure.Tests.Packet_Sniffing_Tests
 {
     [TestFixture]
     class PacketQueueTests

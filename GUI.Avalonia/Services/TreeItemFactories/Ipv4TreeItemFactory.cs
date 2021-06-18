@@ -1,40 +1,35 @@
 using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
+using PacketDotNet;
 using PacketSniffer.Packets;
 using PacketSniffer.Packets.Internet.Ip;
 
 namespace richClosure.Avalonia.Services.TreeItemFactories
 {
-    public class Ipv4TreeItemFactory : IAbstractTreeItemFactory
+    public class Ipv4TreeItemFactory 
     {
-        public TreeViewItem CreateTreeViewItem(IPacket packet)
+        public TreeViewItem CreateTreeViewItem(IPv4Packet packet)
         {
-            Ip4Packet ip4Packet = packet as Ip4Packet;
 
-            TreeViewItem ipItem = new() { Header = "IP4 Layer, " + "Dest: " + ip4Packet.DestinationAddress + ", Src: " + ip4Packet.SourceAddress };
+            TreeViewItem ipItem = new() { Header = "IP4 Layer, " + "Dest: " + packet.DestinationAddress + ", Src: " + packet.SourceAddress };
 
             var childItems = new List<TreeViewItem>();
             
-            childItems.Add(new TreeViewItem { Header = "Version: " + ip4Packet.Version });
-            childItems.Add(new TreeViewItem { Header = "Header Length: " + ip4Packet.HeaderLength });
-            childItems.Add(new TreeViewItem { Header = "Protocol: " + Enum.GetName(ip4Packet.NextProtocol) });
-            childItems.Add(new TreeViewItem { Header = "Dest. Address: " + ip4Packet.DestinationAddress });
-            childItems.Add(new TreeViewItem { Header = "Src. Address: " + ip4Packet.SourceAddress });
-            childItems.Add(new TreeViewItem { Header = "DSCP: " + ip4Packet.Dscp });
-            childItems.Add(new TreeViewItem { Header = "Total Length: " + ip4Packet.TotalLength });
-            childItems.Add(new TreeViewItem { Header = "Identification: " + ip4Packet.Identification });
-            childItems.Add(new TreeViewItem { Header = "Offset: " + ip4Packet.Offset });
-
-            TreeViewItem ipFlagsItem = new TreeViewItem();
+            childItems.Add(new TreeViewItem { Header = "Version: " + packet.Version });
+            childItems.Add(new TreeViewItem { Header = "Header Length: " + packet.HeaderLength });
+            childItems.Add(new TreeViewItem { Header = "Protocol: " + Enum.GetName(packet.Protocol) });
+            childItems.Add(new TreeViewItem { Header = "Dest. Address: " + packet.DestinationAddress });
+            childItems.Add(new TreeViewItem { Header = "Src. Address: " + packet.SourceAddress });
+            childItems.Add(new TreeViewItem { Header = "DSCP: " + packet.DifferentiatedServices });
+            childItems.Add(new TreeViewItem { Header = "Total Length: " + packet.TotalLength });
+            childItems.Add(new TreeViewItem { Header = "Identification: " + packet.Id });
+            childItems.Add(new TreeViewItem { Header = "Offset: " + packet.FragmentOffset });
             //TODO
-            // ipFlagsItem.Items.Add(new TreeViewItem { Header = "DF - " + ip4Packet.Df });
-            // ipFlagsItem.Items.Add(new TreeViewItem { Header = "MF - " + ip4Packet.Ip4Flags.Mf });
-            // ipFlagsItem.Items.Add(new TreeViewItem { Header = "Res. - " + ip4Packet.Ip4Flags.Res });
-            // ipItem.Items.Add(ipFlagsItem);
+            childItems.Add(new TreeViewItem { Header = "Flags: " + packet.FragmentFlags });
 
-            childItems.Add(new TreeViewItem { Header = "TTL: " + ip4Packet.TimeToLive });
-            childItems.Add(new TreeViewItem { Header = "Header Checksum: " + ip4Packet.HeaderChecksum });
+            childItems.Add(new TreeViewItem { Header = "TTL: " + packet.TimeToLive });
+            childItems.Add(new TreeViewItem { Header = "Checksum: " + packet.Checksum });
 
             ipItem.Items = childItems;
 

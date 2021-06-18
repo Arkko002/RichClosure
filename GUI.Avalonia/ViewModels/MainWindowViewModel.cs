@@ -1,34 +1,44 @@
-﻿using System;
-using System.Net.NetworkInformation;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Avalonia.Controls;
+using Avalonia.Threading;
+using PacketDotNet;
 using PacketSniffer;
-using PacketSniffer.Packets;
 using ReactiveUI;
-using richClosure.Avalonia.Views;
+using richClosure.Avalonia.Models;
 using SharpPcap;
-using Splat;
+using Swordfish.NET.Collections;
 
 namespace richClosure.Avalonia.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
         public IPcapSniffer PacketSniffer { get; }
-        public IPacketFrame SelectedPacket { get; set; }
 
+        private PacketWrapper _selectedPacket;
+        public PacketWrapper SelectedPacket
+        {
+            get => _selectedPacket;
+            set => this.RaiseAndSetIfChanged(ref _selectedPacket, value); 
+        }
+        public ConcurrentObservableCollection<PacketWrapper> Packets { get; }
+        private int _id;
+        
         public ReactiveCommand<ICaptureDevice, Unit> StartSniffingCommand { get; }
         public ReactiveCommand<Unit, Unit> ShowInterfaceCommand { get; }
         public ReactiveCommand<Unit, Unit> StopSniffingCommand { get; }
         public Interaction<InterfaceSelectionViewModel, ICaptureDevice?> ShowInterfaceInteraction { get; }
 
+        
         public MainWindowViewModel(IPcapSniffer packetSniffer)
         {
             PacketSniffer = packetSniffer;
-
+            Packets = new ConcurrentObservableCollection<PacketWrapper>();
+            _id = 0;
+            PacketSniffer.Packets.CollectionChanged += PacketsOnCollectionChanged;
+            
             StartSniffingCommand = ReactiveCommand.Create<ICaptureDevice>(StartSniffing);
             StopSniffingCommand = ReactiveCommand.Create(StopSniffing);
 
@@ -46,6 +56,16 @@ namespace richClosure.Avalonia.ViewModels
                     StartSniffing(result);
                 }
             });
+        }
+
+        //TODO Limit Sharppcap dependency to PacketSniffer
+        private async void PacketsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            _id++;
+            foreach (var newPacket in e.NewItems)
+            {
+               await Dispatcher.UIThread.InvokeAsync(async () => Packets.Add(new PacketWrapper(newPacket as Packet, _id))); 
+            }
         }
 
         public void StartSniffing(ICaptureDevice networkInterface)

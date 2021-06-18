@@ -1,13 +1,15 @@
 using Avalonia.Controls;
+using PacketDotNet;
 using PacketSniffer.Packets;
+using richClosure.Avalonia.Models;
 
 namespace richClosure.Avalonia.Services.TreeItemFactories
 {
-    public class FrameTreeItemFactory
+    public class FrameTreeItemFactory 
     {
-        public TreeViewItem CreateTreeViewItem(IPacketFrame packet)
+        public TreeViewItem CreateTreeViewItem(PacketWrapper packet)
         {
-            return new TreeViewItem { Header = "Frame " + packet.PacketId + ", Time Captured: " + packet.DateTimeCaptured };
+            return new TreeViewItem { Header = "Frame " + packet.Id + ", Time Captured: " + packet };
         }
     }
 }

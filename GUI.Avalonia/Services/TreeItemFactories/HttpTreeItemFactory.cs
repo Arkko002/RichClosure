@@ -5,7 +5,8 @@ using PacketSniffer.Packets.Application;
 
 namespace richClosure.Avalonia.Services.TreeItemFactories
 {
-    public class HttpTreeItemFactory : IAbstractTreeItemFactory
+    //TODO
+    public class HttpTreeItemFactory 
     {
         public TreeViewItem CreateTreeViewItem(IPacket packet)
         {

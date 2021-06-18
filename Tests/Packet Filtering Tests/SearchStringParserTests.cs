@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using richClosure.;
-
-namespace richClosure.Tests.Packet_Filtering_Tests
+﻿namespace richClosure.Tests.Packet_Filtering_Tests
 {
     [TestFixture]
     class SearchStringParserTests

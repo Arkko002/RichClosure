@@ -16,6 +16,7 @@
         <PackageReference Include="Avalonia.Diagnostics" Version="0.10.6" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.6" />
         <PackageReference Include="Splat" Version="11.1.1" />
+        <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.7" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\PacketFilter\PacketFilter.csproj" />
